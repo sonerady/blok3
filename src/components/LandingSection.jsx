@@ -66,13 +66,14 @@ const phraseVariants = {
   },
 }
 
-export default function LandingSection({ containerRef }) {
+export default function LandingSection({ containerRef, onVideoProgress }) {
   const sectionRef = useRef(null)
   const firstVideoRef = useRef(null)
   const [key, setKey] = useState(0)
   const [introEnded, setIntroEnded] = useState(false)
   const [showContent, setShowContent] = useState(false)
   const [showBio, setShowBio] = useState(false)
+  const [titleKey, setTitleKey] = useState(0)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
@@ -114,18 +115,23 @@ export default function LandingSection({ containerRef }) {
     return () => video.removeEventListener('playing', handlePlay)
   }, [])
 
-  // Show BLOK3 title ~3 seconds before intro video ends
+  // Show BLOK3 title ~3 seconds before intro video ends + report progress
   useEffect(() => {
     const video = firstVideoRef.current
     if (!video) return
     const handleTime = () => {
-      if (video.duration && video.currentTime >= video.duration - 3 && !showContent) {
-        setShowContent(true)
+      if (video.duration) {
+        if (video.currentTime >= video.duration - 3 && !showContent) {
+          setShowContent(true)
+        }
+        if (onVideoProgress) {
+          onVideoProgress(Math.round((video.currentTime / video.duration) * 100))
+        }
       }
     }
     video.addEventListener('timeupdate', handleTime)
     return () => video.removeEventListener('timeupdate', handleTime)
-  }, [showContent])
+  }, [showContent, onVideoProgress])
 
   // Block scroll until intro video ends
   useEffect(() => {
@@ -146,6 +152,15 @@ export default function LandingSection({ containerRef }) {
     }, 4000)
     return () => clearInterval(interval)
   }, [introEnded])
+
+  // BLOK3 title animation loop every 3 seconds
+  useEffect(() => {
+    if (!showContent) return
+    const interval = setInterval(() => {
+      setTitleKey((k) => k + 1)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [showContent])
 
   // Parallax
   const frontX = useSpring(useTransform(mouseX, (v) => v * -40), springConfig)
@@ -168,7 +183,7 @@ export default function LandingSection({ containerRef }) {
         {/* Nav — always visible */}
         <nav className="hero-nav">
           <div className="hero-nav-left" style={{ position: 'relative' }}>
-            <motion.span className="hero-nav-logo" style={{ opacity: bgOpacity }}>B-3</motion.span>
+            <motion.span className="hero-nav-logo" style={{ opacity: bgOpacity }}><span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>3</span><span style={{ marginLeft: '0.08em' }}>3</span></motion.span>
             <motion.span className="hero-nav-logo hero-nav-logo-alt" style={{ opacity: secondFrontOpacity }}>TREND</motion.span>
           </div>
           <div className="hero-nav-right">
@@ -284,16 +299,27 @@ export default function LandingSection({ containerRef }) {
           </motion.div>
         )}
 
-        {/* BLOK3 title — first screen only */}
+        {/* BLOK3 title — first screen only, letter-by-letter loops every 3s */}
         {showContent && (
           <motion.h1
             className="landing-title"
             style={{ x: titleX, y: titleY, opacity: bgOpacity }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
           >
-            BLOK3
+            {'BLOK3'.split('').map((char, i) => (
+              <motion.span
+                key={`${titleKey}-${i}`}
+                initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{
+                  delay: i * 0.12,
+                  duration: 0.5,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                style={{ display: 'inline-block' }}
+              >
+                {char}
+              </motion.span>
+            ))}
           </motion.h1>
         )}
 
@@ -345,25 +371,6 @@ export default function LandingSection({ containerRef }) {
           </div>
         </motion.div>
 
-        {/* Scroll indicator — mouse icon, appears after intro video ends */}
-        {introEnded && (
-          <motion.div
-            className="scroll-indicator"
-            style={{ opacity: bgOpacity }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-          >
-            <div className="scroll-mouse">
-              <div className="scroll-mouse-wheel" />
-            </div>
-            <div className="scroll-chevrons">
-              <div className="scroll-chevron" />
-              <div className="scroll-chevron" />
-              <div className="scroll-chevron" />
-            </div>
-          </motion.div>
-        )}
       </div>
     </section>
   )
