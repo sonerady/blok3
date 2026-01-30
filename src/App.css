@@ -1,0 +1,695 @@
+/* ========== BLOK3 - Rap Artist Website ========== */
+
+.app {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y proximity;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.app::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  --accent: #ff2d95;
+  --bg: #000;
+  --text: #fff;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* ===== Marquee Banner ===== */
+.marquee-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background: #CA2D57;
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.marquee-track {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee-scroll 25s linear infinite;
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.marquee-text {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.marquee-star {
+  font-size: 1rem;
+  color: #FF8C00;
+  margin: 0 1.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ===== Landing Section ===== */
+.landing-section {
+  height: 300vh;
+  position: relative;
+  background: #000;
+  cursor: none;
+}
+
+.landing-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-section .hero-nav {
+  cursor: auto;
+}
+
+.landing-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.landing-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.landing-front {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 4;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.landing-second-front {
+  z-index: 3;
+}
+
+.landing-title {
+  font-family: var(--font-display);
+  font-size: clamp(10rem, 26vw, 24rem);
+  letter-spacing: 0.15em;
+  line-height: 0.85;
+  color: var(--text);
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  will-change: transform;
+  margin-left: -14vw;
+  margin-top: -10vh;
+}
+
+.landing-bio {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 3rem;
+  z-index: 5;
+  max-width: 320px;
+  text-align: right;
+  pointer-events: none;
+}
+
+.landing-bio-date {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.85);
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.landing-bio-text {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.landing-title-inner {
+  display: inline-flex;
+}
+
+.landing-letter {
+  display: inline-block;
+}
+
+/* ===== Hero Nav ===== */
+.hero-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3rem;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.hero-nav-left,
+.hero-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero-nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.hero-nav-logo {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+.hero-nav-link {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.hero-nav-link:hover {
+  color: #fff;
+}
+
+.hero-nav-divider {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+/* ===== Hero Section ===== */
+.hero-section {
+  height: 200vh;
+  position: relative;
+  background: var(--bg);
+}
+
+.hero-content-wrapper {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  will-change: filter, opacity;
+}
+
+.hero-front {
+  position: absolute;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+  z-index: 4;
+  pointer-events: none;
+  will-change: transform, filter, opacity;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(10rem, 26vw, 24rem);
+  letter-spacing: 0.15em;
+  line-height: 0.85;
+  color: var(--text);
+  text-align: center;
+  will-change: transform, filter, opacity;
+  position: relative;
+  z-index: 3;
+}
+
+.hero-white-overlay {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ===== About / Buradasın Section ===== */
+.about-section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #fff;
+  position: relative;
+  scroll-snap-align: start;
+}
+
+.buradasin-text {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 8rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-align: center;
+  color: #000;
+  text-transform: lowercase;
+}
+
+/* ===== Art Hero Section ===== */
+.art-hero {
+  height: 100vh;
+  background: #3b1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+}
+
+.art-hero-inner {
+  width: 100%;
+  height: 100%;
+  background: #f5f0eb;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Nav */
+.art-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2.5rem;
+  z-index: 10;
+  position: relative;
+}
+
+.art-nav-icon {
+  font-size: 1.8rem;
+  color: #1a1a1a;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.art-nav-logo {
+  font-family: 'Pinyon Script', cursive;
+  font-size: 2.2rem;
+  color: #1a1a1a;
+}
+
+.art-nav-link {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #1a1a1a;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+/* Content area */
+.art-content {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Big title */
+.art-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(4rem, 11vw, 12rem);
+  font-weight: 400;
+  font-style: normal;
+  color: #c44b2b;
+  line-height: 0.9;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.art-title-line {
+  display: block;
+}
+
+/* Side labels */
+.art-side-label {
+  position: absolute;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  z-index: 5;
+  line-height: 1.4;
+}
+
+.art-side-left {
+  left: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.art-side-right {
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: right;
+}
+
+/* Frames */
+.art-frame {
+  position: absolute;
+  z-index: 3;
+  border: 8px solid #8b6914;
+  box-shadow:
+    inset 0 0 0 4px #a8842a,
+    inset 0 0 0 8px #6b4f10,
+    4px 4px 15px rgba(0, 0, 0, 0.3);
+  background: #2a1a0a;
+  overflow: hidden;
+}
+
+.art-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.art-frame-1 {
+  width: 12vw;
+  height: 10vw;
+  top: -3%;
+  left: 12%;
+}
+
+.art-frame-2 {
+  width: 10vw;
+  height: 8vw;
+  top: 5%;
+  left: 28%;
+}
+
+.art-frame-3 {
+  width: 18vw;
+  height: 18vw;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border-width: 12px;
+}
+
+.art-frame-4 {
+  width: 14vw;
+  height: 12vw;
+  bottom: -4%;
+  right: -3%;
+}
+
+/* Bottom */
+.art-bottom {
+  padding: 0 2.5rem 2rem;
+  z-index: 10;
+  position: relative;
+}
+
+.art-exhibition-card {
+  display: flex;
+  align-items: stretch;
+  background: #c44b2b;
+  max-width: 480px;
+  overflow: hidden;
+}
+
+.art-exhibition-thumb {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.art-exhibition-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.art-exhibition-info {
+  padding: 1.2rem 1.5rem;
+  color: #fff;
+}
+
+.art-exhibition-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.art-exhibition-title em {
+  font-style: italic;
+  display: block;
+}
+
+.art-exhibition-desc {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.art-exhibition-arrow {
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+/* ===== Gallery Section ===== */
+.gallery-container {
+  height: 100vh;
+  position: relative;
+  background: var(--bg);
+  scroll-snap-align: start;
+}
+
+.gallery-sticky {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.gallery-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400vw;
+  height: 300vh;
+  animation: diagonal-slide 25s linear infinite;
+}
+
+@keyframes diagonal-slide {
+  0% {
+    transform: translate(-180vw, -120vh);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.gallery-image-wrapper {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 0;
+  transition: z-index 0s, transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+}
+
+.gallery-image-wrapper:hover {
+  z-index: 100 !important;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px var(--accent), 0 8px 30px rgba(255, 45, 149, 0.4);
+  animation-play-state: paused;
+}
+
+.gallery-grid:has(.gallery-image-wrapper:hover) {
+  animation-play-state: paused;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-label {
+  position: absolute;
+  left: 3rem;
+  bottom: 2rem;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.gallery-label-small {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 4rem);
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.6);
+  display: block;
+}
+
+.gallery-label-large {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 18vw, 22rem);
+  letter-spacing: 0.02em;
+  line-height: 0.85;
+  color: var(--text);
+  display: block;
+}
+
+/* ===== CTA Section ===== */
+.cta-section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg);
+  gap: 3rem;
+  scroll-snap-align: start;
+}
+
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 10vw, 10rem);
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  color: var(--text);
+  text-align: center;
+}
+
+.cta-dates {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cta-dates p {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease;
+}
+
+.cta-dates p:hover {
+  color: var(--accent);
+}
+
+/* ===== Footer ===== */
+.site-footer {
+  height: 100vh;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: var(--bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: start;
+}
+
+.footer-text {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .gallery-label {
+    left: 1.5rem;
+    bottom: 1.5rem;
+  }
+
+  .cta-dates {
+    gap: 0.8rem;
+  }
+
+}
