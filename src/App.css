@@ -71,7 +71,7 @@
 
 /* ===== Landing Section ===== */
 .landing-section {
-  height: 300vh;
+  height: 200vh;
   position: relative;
   background: #000;
   cursor: none;
@@ -212,6 +212,78 @@
 
 .landing-letter {
   display: inline-block;
+}
+
+/* Scroll indicator — mouse icon */
+.scroll-indicator {
+  position: absolute;
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.scroll-mouse {
+  width: 26px;
+  height: 42px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 13px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.scroll-mouse-wheel {
+  width: 3px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+  margin-top: 8px;
+  animation: scroll-wheel 2s ease-in-out infinite;
+}
+
+@keyframes scroll-wheel {
+  0% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.3; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-chevrons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-top: 4px;
+}
+
+.scroll-chevron {
+  width: 10px;
+  height: 10px;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.5);
+  transform: rotate(-45deg);
+  animation: scroll-chevron-cascade 2s ease-in-out infinite;
+}
+
+.scroll-chevron:nth-child(2) {
+  margin-top: -4px;
+  animation-delay: 0.2s;
+}
+
+.scroll-chevron:nth-child(3) {
+  margin-top: -4px;
+  animation-delay: 0.4s;
+}
+
+@keyframes scroll-chevron-cascade {
+  0% { opacity: 0; transform: rotate(-45deg) translateY(-4px); }
+  50% { opacity: 1; transform: rotate(-45deg) translateY(0); }
+  100% { opacity: 0; transform: rotate(-45deg) translateY(4px); }
 }
 
 /* YouTube info overlay — second screen */

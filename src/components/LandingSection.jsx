@@ -86,11 +86,11 @@ export default function LandingSection({ containerRef }) {
     offset: ['start start', 'end start'],
   })
 
-  // First layer fades out (completes by 30% of scroll)
-  const bgOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
-  const firstFrontOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
-  // Second front fades in (completes by 35%)
-  const secondFrontOpacity = useTransform(scrollYProgress, [0.15, 0.35], [0, 1])
+  // First layer fades out quickly on first scroll
+  const bgOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
+  const firstFrontOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
+  // Second front fades in immediately
+  const secondFrontOpacity = useTransform(scrollYProgress, [0.02, 0.1], [0, 1])
 
   // Show bio when video starts playing
   useEffect(() => {
@@ -113,6 +113,18 @@ export default function LandingSection({ containerRef }) {
     video.addEventListener('timeupdate', handleTime)
     return () => video.removeEventListener('timeupdate', handleTime)
   }, [showContent])
+
+  // Block scroll until intro video ends
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    if (introEnded) {
+      container.style.overflowY = 'scroll'
+      return
+    }
+    container.style.overflowY = 'hidden'
+    return () => { container.style.overflowY = 'scroll' }
+  }, [introEnded, containerRef])
 
   useEffect(() => {
     if (!introEnded) return
@@ -313,6 +325,26 @@ export default function LandingSection({ containerRef }) {
             </div>
           </div>
         </motion.div>
+
+        {/* Scroll indicator — mouse icon, appears after intro video ends */}
+        {introEnded && (
+          <motion.div
+            className="scroll-indicator"
+            style={{ opacity: bgOpacity }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 1 }}
+          >
+            <div className="scroll-mouse">
+              <div className="scroll-mouse-wheel" />
+            </div>
+            <div className="scroll-chevrons">
+              <div className="scroll-chevron" />
+              <div className="scroll-chevron" />
+              <div className="scroll-chevron" />
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   )
