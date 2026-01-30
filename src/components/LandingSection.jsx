@@ -36,30 +36,34 @@ function TypewriterText({ text, delay = 0, speed = 18 }) {
   )
 }
 
-const letters = ['B', 'L', 'O', 'K', '3']
+const phrases = [
+  'KUSURA BAKMA',
+  '100M+ DİNLENME',
+  '#1 TÜRKİYE',
+  'REKOR HİT',
+  'VİRAL FENOMEN',
+]
 
-const letterVariants = {
-  hidden: { opacity: 0, y: 60, filter: 'blur(10px)' },
-  visible: (i) => ({
+const phraseVariants = {
+  hidden: { opacity: 0, y: 50, filter: 'blur(8px)' },
+  visible: {
     opacity: 1,
     y: 0,
     filter: 'blur(0px)',
     transition: {
-      delay: i * 0.12,
-      duration: 0.6,
+      duration: 0.7,
       ease: [0.25, 0.46, 0.45, 0.94],
     },
-  }),
-  exit: (i) => ({
+  },
+  exit: {
     opacity: 0,
     y: -40,
     filter: 'blur(8px)',
     transition: {
-      delay: i * 0.06,
       duration: 0.4,
       ease: 'easeIn',
     },
-  }),
+  },
 }
 
 export default function LandingSection({ containerRef }) {
@@ -91,6 +95,15 @@ export default function LandingSection({ containerRef }) {
   const firstFrontOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
   // Second front fades in immediately
   const secondFrontOpacity = useTransform(scrollYProgress, [0.02, 0.1], [0, 1])
+
+  // Hide cursor only on first screen
+  const [isFirstScreen, setIsFirstScreen] = useState(true)
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on('change', (v) => {
+      setIsFirstScreen(v < 0.05)
+    })
+    return unsubscribe
+  }, [scrollYProgress])
 
   // Show bio when video starts playing
   useEffect(() => {
@@ -150,7 +163,7 @@ export default function LandingSection({ containerRef }) {
   }
 
   return (
-    <section ref={sectionRef} className="landing-section" onMouseMove={handleMouseMove}>
+    <section ref={sectionRef} className="landing-section" onMouseMove={handleMouseMove} style={{ cursor: isFirstScreen ? 'none' : 'auto' }}>
       <div className="landing-sticky">
         {/* Nav — always visible */}
         <nav className="hero-nav">
@@ -271,37 +284,43 @@ export default function LandingSection({ containerRef }) {
           </motion.div>
         )}
 
-        {/* BLOK3 title — appears ~3s before intro video ends */}
+        {/* BLOK3 title — first screen only */}
         {showContent && (
           <motion.h1
             className="landing-title"
-            style={{ x: titleX, y: titleY }}
+            style={{ x: titleX, y: titleY, opacity: bgOpacity }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, ease: 'easeOut' }}
           >
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={key}
-                className="landing-title-inner"
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              >
-                {letters.map((letter, i) => (
-                  <motion.span
-                    key={letter + i}
-                    custom={i}
-                    variants={letterVariants}
-                    className="landing-letter"
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
-              </motion.span>
-            </AnimatePresence>
+            BLOK3
           </motion.h1>
         )}
+
+        {/* Rotating praise phrases — second screen only */}
+        <motion.h1
+          className="landing-title landing-title-second"
+          style={{ opacity: secondFrontOpacity }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={key}
+              className="landing-title-inner"
+              variants={phraseVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {phrases[key % phrases.length].split(' ').map((word, i, arr) => {
+                const phrase = phrases[key % phrases.length]
+                const isRekorHit = phrase === 'REKOR HİT' && i === 1
+                return (
+                  <span key={i} style={{ display: 'block', alignSelf: isRekorHit ? 'flex-end' : 'flex-start' }}>{word}</span>
+                )
+              })}
+            </motion.span>
+          </AnimatePresence>
+        </motion.h1>
 
         {/* YouTube video info — fades in on second screen */}
         <motion.div

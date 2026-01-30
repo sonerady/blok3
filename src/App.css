@@ -74,7 +74,6 @@
   height: 200vh;
   position: relative;
   background: #000;
-  cursor: none;
 }
 
 .landing-sticky {
@@ -210,8 +209,27 @@
   display: inline-flex;
 }
 
-.landing-letter {
-  display: inline-block;
+.landing-title-second {
+  pointer-events: none;
+  margin-left: 0;
+  margin-top: 0;
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  text-align: left;
+  font-size: clamp(8rem, 20vw, 18rem);
+  line-height: 1.15;
+  letter-spacing: 0.15em;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.6);
+}
+
+.landing-title-second .landing-title-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
 }
 
 /* Scroll indicator — mouse icon */
