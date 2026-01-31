@@ -125,7 +125,8 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           setShowContent(true)
         }
         if (onVideoProgress) {
-          onVideoProgress(Math.round((video.currentTime / video.duration) * 100))
+          const pct = Math.round((video.currentTime / video.duration) * 100)
+          onVideoProgress(pct)
         }
       }
     }
@@ -256,6 +257,7 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           alt=""
           style={{ x: frontX, opacity: firstFrontOpacity }}
         />
+
 
         {/* Bio info — appears when video starts, fades out on scroll */}
         {showBio && (
