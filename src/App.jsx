@@ -3,7 +3,7 @@ import './App.css'
 import LandingSection from './components/LandingSection'
 // import HeroSection from './components/HeroSection'
 // import ArtHeroSection from './components/ArtHeroSection'
-// import GallerySection from './components/GallerySection'
+import GallerySection from './components/GallerySection'
 import StatisticSection from './components/StatisticSection'
 // import CTASection from './components/CTASection'
 // import Footer from './components/Footer'
@@ -25,27 +25,31 @@ function App() {
     const handleScroll = () => {
       const scrollTop = container.scrollTop
       const viewportHeight = container.clientHeight
-      const sections = container.children
-      // DOM: [0]=StepNav(fixed), [1]=Landing, [2]=Statistic, ...
 
-      // Block scroll past StatisticSection
-      if (sections[2]) {
-        const statEnd = sections[2].offsetTop + sections[2].offsetHeight - viewportHeight
-        if (scrollTop > statEnd) {
-          container.scrollTop = statEnd
+      // Block scroll past GallerySection
+      // Find gallery section by class since StepNav may or may not be in DOM
+      const gallery = container.querySelector('.gallery-section')
+      if (gallery) {
+        const galEnd = gallery.offsetTop + gallery.offsetHeight - viewportHeight
+        if (scrollTop > galEnd) {
+          container.scrollTop = galEnd
           return
         }
       }
 
       const landingEnd = viewportHeight * 2
       const landingMid = viewportHeight * 0.5
+      // StatisticSection is 600vh, starts after landing (200vh)
+      const statEnd = viewportHeight * 2 + viewportHeight * 6
 
       if (scrollTop < landingMid) {
         setActiveStep(0) // BİYOGRAFİ
       } else if (scrollTop < landingEnd) {
         setActiveStep(1) // TREND
-      } else {
+      } else if (scrollTop < statEnd) {
         setActiveStep(2) // İSTATİSTİKLER
+      } else {
+        setActiveStep(3) // GALERI
       }
     }
 
@@ -55,13 +59,15 @@ function App() {
 
   return (
     <div className="app" ref={containerRef}>
-      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 2} />
+      {activeStep < 3 && (
+        <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep >= 2} />
+      )}
       <LandingSection containerRef={containerRef} onVideoProgress={handleVideoProgress} />
       <StatisticSection containerRef={containerRef} />
-      {/* Sections below are hidden — scroll blocked after StatisticSection */}
+      <GallerySection containerRef={containerRef} />
+      {/* Sections below are hidden — scroll blocked after GallerySection */}
       {/* <HeroSection containerRef={containerRef} /> */}
       {/* <ArtHeroSection /> */}
-      {/* <GallerySection /> */}
       {/* <CTASection /> */}
       {/* <Footer /> */}
     </div>

@@ -4,7 +4,7 @@ const steps = [
   { label: 'BİYOGRAFİ', hasProgress: true },
   { label: 'TREND' },
   { label: 'İSTATİSTİKLER' },
-  { label: 'EKLENECEK', placeholder: true },
+  { label: 'GALERİ' },
   { label: 'EKLENECEK', placeholder: true },
   { label: 'EKLENECEK', placeholder: true },
   { label: '2025 KONSERLER', placeholder: true },

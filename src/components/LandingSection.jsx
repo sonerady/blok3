@@ -158,7 +158,7 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
     if (!showContent) return
     const interval = setInterval(() => {
       setTitleKey((k) => k + 1)
-    }, 3000)
+    }, 4000)
     return () => clearInterval(interval)
   }, [showContent])
 
@@ -183,7 +183,7 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
         {/* Nav — always visible */}
         <nav className="hero-nav">
           <div className="hero-nav-left" style={{ position: 'relative' }}>
-            <motion.span className="hero-nav-logo" style={{ opacity: bgOpacity }}><span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>3</span><span style={{ marginLeft: '0.08em' }}>3</span></motion.span>
+            <motion.span className="hero-nav-logo" style={{ opacity: bgOpacity }}><span>3</span><span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span></motion.span>
             <motion.span className="hero-nav-logo hero-nav-logo-alt" style={{ opacity: secondFrontOpacity }}>TREND</motion.span>
           </div>
           <div className="hero-nav-right">
@@ -341,7 +341,7 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
                 const phrase = phrases[key % phrases.length]
                 const isRekorHit = phrase === 'REKOR HİT' && i === 1
                 return (
-                  <span key={i} style={{ display: 'block', alignSelf: isRekorHit ? 'flex-end' : 'flex-start' }}>{word}</span>
+                  <span key={i} style={{ display: 'block', alignSelf: 'flex-start', marginLeft: isRekorHit ? '45%' : '0' }}>{word}</span>
                 )
               })}
             </motion.span>
