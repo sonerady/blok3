@@ -50,34 +50,47 @@ function GalleryImage({ song, index, scrollYProgress, total }) {
   const segmentSize = 1 / total
   const start = index * segmentSize
   const end = (index + 1) * segmentSize
-  const [isVisible, setIsVisible] = useState(false)
+  const isFirst = index === 0
+  const [isVisible, setIsVisible] = useState(isFirst)
 
-  const opacity = useTransform(scrollYProgress, [
-    Math.max(0, start - segmentSize * 0.3),
-    start,
-    end - segmentSize * 0.3,
-    end,
-  ], [0, 1, 1, 0])
+  // First album starts fully visible, others fade in
+  const opacity = useTransform(
+    scrollYProgress,
+    isFirst
+      ? [0, end - segmentSize * 0.05, end]
+      : [Math.max(0, start - segmentSize * 0.05), start, end - segmentSize * 0.05, end],
+    isFirst
+      ? [1, 1, 0]
+      : [0, 1, 1, 0]
+  )
 
   const scale = useTransform(scrollYProgress, [start, end], [1.05, 1.15])
 
-  const titleOpacity = useTransform(scrollYProgress, [
-    Math.max(0, start - segmentSize * 0.2),
-    start,
-    end - segmentSize * 0.3,
-    end,
-  ], [0, 1, 1, 0])
+  const titleOpacity = useTransform(
+    scrollYProgress,
+    isFirst
+      ? [0, end - segmentSize * 0.05, end]
+      : [Math.max(0, start - segmentSize * 0.05), start, end - segmentSize * 0.05, end],
+    isFirst
+      ? [1, 1, 0]
+      : [0, 1, 1, 0]
+  )
 
-  // Player fades in from right
-  const playerX = useTransform(scrollYProgress, [
-    Math.max(0, start - segmentSize * 0.2),
-    start,
-  ], [30, 0])
+  // Player — first album starts in place, others slide in
+  const playerX = useTransform(
+    scrollYProgress,
+    isFirst
+      ? [0, 0.001]
+      : [Math.max(0, start - segmentSize * 0.05), start],
+    isFirst
+      ? [0, 0]
+      : [30, 0]
+  )
 
   // Track visibility for letter-by-letter trigger
   useEffect(() => {
     const unsubscribe = titleOpacity.on('change', (v) => {
-      setIsVisible(v > 0.3)
+      setIsVisible(v > 0.5)
     })
     return unsubscribe
   }, [titleOpacity])

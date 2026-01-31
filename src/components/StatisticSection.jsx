@@ -235,8 +235,11 @@ export default function StatisticSection({ containerRef }) {
     <section ref={sectionRef} className="statistic-section">
       <div className="statistic-sticky">
         <nav className="hero-nav">
-          <div className="hero-nav-left">
-            <a href="#about" className="hero-nav-link">ABOUT</a>
+          <div className="hero-nav-left" style={{ position: 'relative' }}>
+            <span className="hero-nav-logo">
+              <span>3</span>
+              <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span>
+            </span>
           </div>
           <div className="hero-nav-center" />
           <div className="hero-nav-right">

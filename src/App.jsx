@@ -59,9 +59,7 @@ function App() {
 
   return (
     <div className="app" ref={containerRef}>
-      {activeStep < 3 && (
-        <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep >= 2} />
-      )}
+      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 2} />
       <LandingSection containerRef={containerRef} onVideoProgress={handleVideoProgress} />
       <StatisticSection containerRef={containerRef} />
       <GallerySection containerRef={containerRef} />
