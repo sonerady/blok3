@@ -2,11 +2,58 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll, AnimatePresence } from 'framer-motion'
 import landingBg from '../assets/first_background.png'
 import landingFront from '../assets/first_front.png'
+import landingFrontV2 from '../assets/first_front_v2.png'
 import firstVideo from '../assets/first_video_background.mp4'
 import secondVideo from '../assets/second_video.mp4'
 import secondFront from '../assets/second_front.png'
+import gitMusic from '../assets/musics/git.mp3'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
+
+// Synced lyrics
+const lyrics = [
+  { time: 0, text: '' },
+  { time: 8, text: 'Git, git peşimi bırak' },
+  { time: 11, text: 'Senin aşkın bana bir tuzak' },
+  { time: 14, text: 'Git, bir kez olsun kendine yakışanı yap' },
+  { time: 20, text: 'Git, fotoğrafımızı sakla' },
+  { time: 23, text: 'Beni soran olursa ona de;' },
+  { time: 26, text: '"Benim için kendinden vazgeçen adam"' },
+  { time: 31, text: '' },
+  { time: 32, text: 'Git, git peşimi bırak' },
+  { time: 35, text: 'Senin aşkın bana bir tuzak' },
+  { time: 38, text: 'Git, bir kez olsun kendine yakışanı yap' },
+  { time: 44, text: 'Git, fotoğrafımızı sakla' },
+  { time: 47, text: 'Beni soran olursa ona de;' },
+  { time: 50, text: '"Benim için kendinden vazgeçen adam"' },
+  { time: 55, text: '' },
+  { time: 56, text: 'O kadar insan varken bana ne diye' },
+  { time: 59, text: 'Geldin de karıştırdın kafamı yine' },
+  { time: 62, text: 'Geceleri düşünürdüm, kuşkulanırdım' },
+  { time: 65, text: 'Hevesi kaçar da benden gider mi diye' },
+  { time: 68, text: 'Madem bozacaktın neden düzelttin?' },
+  { time: 71, text: 'Beni artık yoruldu bu beden, vicdansız seni' },
+  { time: 74, text: 'Kafamın içinde neden, neden, neden, neden bıraktın beni?' },
+  { time: 80, text: '' },
+  { time: 81, text: 'Neden bıraktın beni?' },
+  { time: 84, text: 'Neden bıraktın beni?' },
+  { time: 87, text: 'Neden bıraktın beni?' },
+  { time: 90, text: 'Neden, neden, neden bıraktın?' },
+  { time: 92, text: '' },
+  { time: 93, text: 'Git, git peşimi bırak' },
+  { time: 96, text: 'Senin aşkın bana bir tuzak' },
+  { time: 99, text: 'Git, bir kez olsun kendine yakışanı yap' },
+  { time: 105, text: 'Git, fotoğrafımızı sakla' },
+  { time: 108, text: 'Beni soran olursa ona de;' },
+  { time: 111, text: '"Benim için kendinden vazgeçen adam"' },
+  { time: 116, text: '' },
+  { time: 117, text: 'Git, git peşimi bırak' },
+  { time: 120, text: 'Senin aşkın bana bir tuzak' },
+  { time: 123, text: 'Git, bir kez olsun kendine yakışanı yap' },
+  { time: 129, text: 'Git, fotoğrafımızı sakla' },
+  { time: 132, text: 'Beni soran olursa ona de;' },
+  { time: 135, text: '"Benim için kendinden vazgeçen adam"' },
+]
 
 const bioText = 'BLOK3 (Hakan Aydın), 15 Ağustos 2002 tarihinde Kocaeli\'nin Gebze ilçesinde doğmuş, Türkiye rap sahnesinin yeni nesil ve en etkili isimlerinden biridir. Müziğe erken yaşlarda ilgi duyan sanatçı, sokak kültüründen beslenen güçlü anlatımı ve enerjik vokaliyle kısa sürede geniş bir dinleyici kitlesine ulaşmıştır.'
 
@@ -69,6 +116,12 @@ const phraseVariants = {
 export default function LandingSection({ containerRef, onVideoProgress }) {
   const sectionRef = useRef(null)
   const firstVideoRef = useRef(null)
+  const secondVideoRef = useRef(null)
+  const audioRef = useRef(null)
+  const [entered, setEntered] = useState(false)
+  const [currentLine, setCurrentLine] = useState(-1)
+  const [frontAlt, setFrontAlt] = useState(false)
+  const [glitching, setGlitching] = useState(false)
   const [key, setKey] = useState(0)
   const [introEnded, setIntroEnded] = useState(false)
   const [showContent, setShowContent] = useState(false)
@@ -106,6 +159,34 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
     return unsubscribe
   }, [scrollYProgress])
 
+  // Sync lyrics with audio
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    const handleTime = () => {
+      const t = audio.currentTime
+      let idx = -1
+      for (let i = lyrics.length - 1; i >= 0; i--) {
+        if (t >= lyrics[i].time) { idx = i; break }
+      }
+      setCurrentLine(idx)
+    }
+    audio.addEventListener('timeupdate', handleTime)
+    return () => audio.removeEventListener('timeupdate', handleTime)
+  }, [])
+
+  // Enter site — start music and videos on click
+  const handleEnter = () => {
+    const audio = audioRef.current
+    if (audio) {
+      audio.volume = 0.4
+      audio.play()
+    }
+    if (firstVideoRef.current) firstVideoRef.current.play()
+    if (secondVideoRef.current) secondVideoRef.current.play()
+    setEntered(true)
+  }
+
   // Show bio when video starts playing
   useEffect(() => {
     const video = firstVideoRef.current
@@ -133,6 +214,27 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
     video.addEventListener('timeupdate', handleTime)
     return () => video.removeEventListener('timeupdate', handleTime)
   }, [showContent, onVideoProgress])
+
+  // Electric glitch swap between front images every 2-3s
+  useEffect(() => {
+    if (!entered) return
+    const swap = () => {
+      setGlitching(true)
+      setTimeout(() => {
+        setFrontAlt((v) => !v)
+        setTimeout(() => setGlitching(false), 150)
+      }, 150)
+    }
+    const tick = () => {
+      const delay = 2000 + Math.random() * 1000
+      return setTimeout(() => {
+        swap()
+        timerId = tick()
+      }, delay)
+    }
+    let timerId = tick()
+    return () => clearTimeout(timerId)
+  }, [entered])
 
   // Block scroll until intro video ends
   useEffect(() => {
@@ -179,7 +281,37 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
   }
 
   return (
-    <section ref={sectionRef} className="landing-section" onMouseMove={handleMouseMove} style={{ cursor: isFirstScreen ? 'none' : 'auto' }}>
+    <section ref={sectionRef} className="landing-section" onMouseMove={handleMouseMove} style={{ cursor: isFirstScreen && entered ? 'none' : 'auto' }}>
+      <audio ref={audioRef} src={gitMusic} loop />
+
+      {/* Entry overlay */}
+      <AnimatePresence>
+        {!entered && (
+          <motion.div
+            className="entry-overlay"
+            onClick={handleEnter}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
+          >
+            <motion.div
+              className="entry-logo"
+              animate={{ rotate: [0, 360, 360, 0, 0] }}
+              transition={{ duration: 3, repeat: Infinity, times: [0, 0.4, 0.5, 0.9, 1], ease: 'easeInOut' }}
+            >
+              <span>3</span>
+              <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.05em' }}>3</span>
+            </motion.div>
+            <motion.p
+              className="entry-text"
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              SITEYE GIR
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="landing-sticky">
         {/* Nav — always visible */}
         <nav className="hero-nav">
@@ -199,9 +331,9 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
 
         {/* Video — always behind */}
         <video
+          ref={secondVideoRef}
           className="landing-video"
           src={secondVideo}
-          autoPlay
           muted
           loop
           playsInline
@@ -220,7 +352,6 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           ref={firstVideoRef}
           className="landing-bg"
           src={firstVideo}
-          autoPlay
           muted
           playsInline
           onEnded={() => setIntroEnded(true)}
@@ -250,10 +381,10 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           />
         </motion.div>
 
-        {/* First front — fades out */}
+        {/* First front — electric glitch swap */}
         <motion.img
-          className="landing-front"
-          src={landingFront}
+          className={`landing-front${glitching ? ' front-glitch' : ''}`}
+          src={frontAlt ? landingFrontV2 : landingFront}
           alt=""
           style={{ x: frontX, opacity: firstFrontOpacity }}
         />
@@ -374,6 +505,24 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
         </motion.div>
 
       </div>
+
+      {/* Floating synced lyrics */}
+      {entered && currentLine >= 0 && lyrics[currentLine]?.text && (
+        <div className="lyrics-float">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={currentLine}
+              className="lyrics-line"
+              initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              {lyrics[currentLine].text}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      )}
     </section>
   )
 }
