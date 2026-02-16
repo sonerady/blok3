@@ -87,12 +87,12 @@ export default function CTASection({ containerRef }) {
     }
   }, [isInView])
 
-  // Background image slideshow — 2 second interval, loops
+  // Background image slideshow — 3 second interval, loops
   useEffect(() => {
     const interval = setInterval(() => {
       isFirstRender.current = false
       setBgIndex((prev) => (prev + 1) % bgImages.length)
-    }, 2000)
+    }, 1000)
     return () => clearInterval(interval)
   }, [])
 

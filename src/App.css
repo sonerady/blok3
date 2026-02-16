@@ -2299,6 +2299,10 @@
   will-change: transform;
 }
 
+.bg-glitch {
+  animation: electric-glitch 0.3s steps(2) both;
+}
+
 /* ── Dark clouds ── */
 .turne-clouds {
   position: absolute;

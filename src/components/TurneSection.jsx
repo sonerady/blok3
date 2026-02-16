@@ -1,13 +1,42 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
-import turneBg from '../assets/2026_concer_section_backgorund.png'
+import turneBg1 from '../assets/2026_concer_section_backgorund.png'
+import turneBg3 from '../assets/2026_concer_section_backgorund_3.png.png'
+import turneBg2 from '../assets/2026_concer_section_backgorund_2.png'
+import turneBg4 from '../assets/2026_concer_section_backgorund_4.png'
+
+const bgImages = [turneBg1, turneBg3, turneBg2, turneBg4]
 import turneFront1 from '../assets/2026_concer_section_front_1.png'
 import turneFront2 from '../assets/2026_concer_section_front_2.png'
+import turneFront2Goat from '../assets/2026_concer_section_front_2_goat.png'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
 export default function TurneSection({ containerRef }) {
   const sectionRef = useRef(null)
+  const [bgIndex, setBgIndex] = useState(0)
+  const [frontAlt, setFrontAlt] = useState(false)
+  const [glitching, setGlitching] = useState(false)
+
+  // Electric glitch swap — bg cycles 1→3→2, front2 toggles, every 3s
+  useEffect(() => {
+    const swap = () => {
+      setGlitching(true)
+      setTimeout(() => {
+        setBgIndex((v) => (v + 1) % bgImages.length)
+        setFrontAlt((v) => !v)
+        setTimeout(() => setGlitching(false), 150)
+      }, 150)
+    }
+    const tick = () => {
+      return setTimeout(() => {
+        swap()
+        timerId = tick()
+      }, 3000)
+    }
+    let timerId = tick()
+    return () => clearTimeout(timerId)
+  }, [])
 
   // Scroll-based parallax
   const { scrollYProgress } = useScroll({
@@ -31,10 +60,10 @@ export default function TurneSection({ containerRef }) {
 
   return (
     <section ref={sectionRef} className="turne-section" onMouseMove={handleMouseMove}>
-      {/* Background */}
+      {/* Background — electric glitch swap */}
       <motion.img
-        className="turne-bg"
-        src={turneBg}
+        className={`turne-bg${glitching ? ' bg-glitch' : ''}`}
+        src={bgImages[bgIndex]}
         alt=""
         style={{ x: bgMoveX, y: bgY }}
       />
@@ -54,10 +83,10 @@ export default function TurneSection({ containerRef }) {
         <span className="turne-year-char" style={{ transform: 'translateY(4%)' }}>6</span>
       </div>
 
-      {/* Front 2 (behind front 1) */}
+      {/* Front 2 (behind front 1) — electric glitch swap */}
       <motion.img
-        className="turne-front turne-front-2"
-        src={turneFront2}
+        className={`turne-front turne-front-2${glitching ? ' bg-glitch' : ''}`}
+        src={frontAlt ? turneFront2Goat : turneFront2}
         alt=""
         style={{ x: front2X }}
       />
