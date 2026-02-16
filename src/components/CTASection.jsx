@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, memo } from 'react'
-import { motion, useMotionValue, useSpring, useInView, AnimatePresence } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import concerBg1 from '../assets/concer_section_1.png'
 import concerBg2 from '../assets/concer_section_2.png'
 import concerBg3 from '../assets/concer_section_3.png'
@@ -64,12 +64,21 @@ const numberPop = {
   show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
 }
 
-export default function CTASection() {
+export default function CTASection({ containerRef }) {
   const sectionRef = useRef(null)
   const mouseX = useMotionValue(0)
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 })
+
+  // Scroll-based parallax
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    container: containerRef,
+    offset: ['start end', 'end start'],
+  })
+  const bgY = useTransform(scrollYProgress, [0, 0.5, 1], ['10%', '0%', '-10%'])
   const [countersActive, setCountersActive] = useState(false)
   const [bgIndex, setBgIndex] = useState(0)
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
     if (isInView) {
@@ -81,6 +90,7 @@ export default function CTASection() {
   // Background image slideshow — 2 second interval, loops
   useEffect(() => {
     const interval = setInterval(() => {
+      isFirstRender.current = false
       setBgIndex((prev) => (prev + 1) % bgImages.length)
     }, 2000)
     return () => clearInterval(interval)
@@ -106,8 +116,8 @@ export default function CTASection() {
           className="cta-bg"
           src={bgImages[bgIndex]}
           alt=""
-          style={{ x: bgMoveX }}
-          initial={{ opacity: 0 }}
+          style={{ x: bgMoveX, y: bgY }}
+          initial={isFirstRender.current ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1, ease: 'easeInOut' }}

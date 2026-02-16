@@ -80,7 +80,7 @@ function App() {
       <LandingSection containerRef={containerRef} onVideoProgress={handleVideoProgress} />
       <StatisticSection containerRef={containerRef} />
       <GallerySection containerRef={containerRef} />
-      <CTASection />
+      <CTASection containerRef={containerRef} />
       <TurneSection />
     </div>
   )

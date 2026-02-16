@@ -2095,12 +2095,13 @@
 
 .cta-bg {
   position: absolute;
-  inset: -15%;
-  width: 130%;
-  height: 130%;
+  inset: -25%;
+  width: 150%;
+  height: 150%;
   object-fit: cover;
   z-index: 0;
   will-change: transform;
+  filter: grayscale(100%);
 }
 
 .cta-front {
@@ -2114,6 +2115,7 @@
   z-index: 2;
   pointer-events: none;
   will-change: transform;
+  filter: grayscale(100%);
 }
 
 .cta-overlay {
