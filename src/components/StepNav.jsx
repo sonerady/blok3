@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 const steps = [
   { label: 'BİYOGRAFİ', hasProgress: true },
   { label: 'TREND' },
-  { label: 'İSTATİSTİKLER' },
-  { label: 'GALERİ' },
   { label: '2025 KONSER PERFORMANSLARI' },
   { label: '2026 TURNE PLANLAMASI' },
+  { label: 'İSTATİSTİKLER' },
+  { label: 'GALERİ' },
 ]
 
 export default function StepNav({ activeStep = 0, videoProgress = 0, light = false }) {

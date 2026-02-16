@@ -27,27 +27,30 @@ function App() {
       const scrollTop = container.scrollTop
       const viewportHeight = container.clientHeight
 
-      const landingEnd = viewportHeight * 2
       const landingMid = viewportHeight * 0.5
-      // StatisticSection is 600vh, starts after landing (200vh)
-      const statEnd = viewportHeight * 2 + viewportHeight * 6
-      // GallerySection ends, then CTASection (100vh), then TurneSection (100vh)
+      const landingEnd = viewportHeight * 2
+      // CTASection (100vh) after landing (200vh)
+      const ctaEnd = landingEnd + viewportHeight
+      // TurneSection (100vh) after CTA
+      const turneEnd = ctaEnd + viewportHeight
+      // StatisticSection is 600vh, starts after Turne
+      const statEnd = turneEnd + viewportHeight * 6
+      // GallerySection ends
       const gallery = container.querySelector('.gallery-section')
       const galEnd = gallery ? gallery.offsetTop + gallery.offsetHeight : statEnd + viewportHeight * 4
-      const ctaEnd = galEnd + viewportHeight
 
       if (scrollTop < landingMid) {
         setActiveStep(0) // BİYOGRAFİ
       } else if (scrollTop < landingEnd) {
         setActiveStep(1) // TREND
-      } else if (scrollTop < statEnd) {
-        setActiveStep(2) // İSTATİSTİKLER
-      } else if (scrollTop < galEnd) {
-        setActiveStep(3) // GALERİ
       } else if (scrollTop < ctaEnd) {
-        setActiveStep(4) // KONSERLER
+        setActiveStep(2) // 2025 KONSER PERFORMANSLARI
+      } else if (scrollTop < turneEnd) {
+        setActiveStep(3) // 2026 TURNE PLANLAMASI
+      } else if (scrollTop < statEnd) {
+        setActiveStep(4) // İSTATİSTİKLER
       } else {
-        setActiveStep(5) // TURNE
+        setActiveStep(5) // GALERİ
       }
     }
 
@@ -57,7 +60,7 @@ function App() {
 
   return (
     <div className="app" ref={containerRef}>
-      <nav className={`global-nav${activeStep === 2 ? ' light' : ''}`}>
+      <nav className={`global-nav${activeStep === 4 ? ' light' : ''}`}>
         <div className="global-nav-left">
           <span className="hero-nav-logo">
             <span>3</span>
@@ -76,12 +79,12 @@ function App() {
           <a className="hero-nav-link" href="https://www.biletinial.com" target="_blank" rel="noreferrer">BILETINIAL</a>
         </div>
       </nav>
-      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 2} />
+      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 4} />
       <LandingSection containerRef={containerRef} onVideoProgress={handleVideoProgress} />
+      <CTASection containerRef={containerRef} />
+      <TurneSection containerRef={containerRef} />
       <StatisticSection containerRef={containerRef} />
       <GallerySection containerRef={containerRef} />
-      <CTASection containerRef={containerRef} />
-      <TurneSection />
     </div>
   )
 }
