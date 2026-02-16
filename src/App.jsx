@@ -7,6 +7,7 @@ import GallerySection from './components/GallerySection'
 import StatisticSection from './components/StatisticSection'
 import CTASection from './components/CTASection'
 import TurneSection from './components/TurneSection'
+import AlbumSection from './components/AlbumSection'
 // import Footer from './components/Footer'
 import StepNav from './components/StepNav'
 
@@ -33,8 +34,10 @@ function App() {
       const ctaEnd = landingEnd + viewportHeight
       // TurneSection (100vh) after CTA
       const turneEnd = ctaEnd + viewportHeight
-      // StatisticSection is 600vh, starts after Turne
-      const statEnd = turneEnd + viewportHeight * 6
+      // AlbumSection (500vh) after Turne
+      const albumEnd = turneEnd + viewportHeight * 3
+      // StatisticSection is 600vh, starts after Album
+      const statEnd = albumEnd + viewportHeight * 6
       // GallerySection ends
       const gallery = container.querySelector('.gallery-section')
       const galEnd = gallery ? gallery.offsetTop + gallery.offsetHeight : statEnd + viewportHeight * 4
@@ -47,10 +50,12 @@ function App() {
         setActiveStep(2) // 2025 KONSER PERFORMANSLARI
       } else if (scrollTop < turneEnd) {
         setActiveStep(3) // 2026 TURNE PLANLAMASI
+      } else if (scrollTop < albumEnd) {
+        setActiveStep(4) // ALBÜMLER
       } else if (scrollTop < statEnd) {
-        setActiveStep(4) // İSTATİSTİKLER
+        setActiveStep(5) // İSTATİSTİKLER
       } else {
-        setActiveStep(5) // GALERİ
+        setActiveStep(6) // GALERİ
       }
     }
 
@@ -60,7 +65,7 @@ function App() {
 
   return (
     <div className="app" ref={containerRef}>
-      <nav className={`global-nav${activeStep === 4 ? ' light' : ''}`}>
+      <nav className={`global-nav${activeStep === 5 ? ' light' : ''}`}>
         <div className="global-nav-left">
           <span className="hero-nav-logo">
             <span>3</span>
@@ -79,10 +84,11 @@ function App() {
           <a className="hero-nav-link" href="https://www.biletinial.com" target="_blank" rel="noreferrer">BILETINIAL</a>
         </div>
       </nav>
-      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 4} />
+      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 5} />
       <LandingSection containerRef={containerRef} onVideoProgress={handleVideoProgress} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />
+      <AlbumSection containerRef={containerRef} />
       <StatisticSection containerRef={containerRef} />
       <GallerySection containerRef={containerRef} />
     </div>
