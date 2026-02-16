@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
 
 /* Import all frames eagerly & sort by filename */
 const frameModules = import.meta.glob('../assets/frames_1/frame_*.jpg', { eager: true, import: 'default' })
@@ -75,10 +75,30 @@ export default function AlbumSection({ containerRef }) {
     if (loaded) drawFrame(Math.round(v))
   })
 
+  // Scroll-driven opacity for song info
+  const infoOpacity = useTransform(scrollYProgress, [0, 0.08, 0.15, 0.85, 0.92], [0, 0, 1, 1, 0])
+  const song1Y = useTransform(scrollYProgress, [0, 0.08, 0.18], [40, 40, 0])
+  const song2Y = useTransform(scrollYProgress, [0, 0.12, 0.22], [40, 40, 0])
+
   return (
     <section ref={sectionRef} className="album-section">
       <div className="album-sticky">
         <canvas ref={canvasRef} className="album-canvas" />
+
+        <motion.div className="album-info" style={{ opacity: infoOpacity }}>
+          <div className="album-info-label">ALBÜM</div>
+          <div className="album-info-line" />
+          <div className="album-songs">
+            <motion.div className="album-song" style={{ y: song1Y }}>
+              <span className="album-song-num">01</span>
+              <span className="album-song-name">GİT</span>
+            </motion.div>
+            <motion.div className="album-song" style={{ y: song2Y }}>
+              <span className="album-song-num">02</span>
+              <span className="album-song-name">NAPIYOSUN MESELA?</span>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

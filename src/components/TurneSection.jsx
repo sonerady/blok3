@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
-import turneBg1 from '../assets/2026_concer_section_backgorund.png'
-import turneBg3 from '../assets/2026_concer_section_backgorund_3.png.png'
-import turneBg2 from '../assets/2026_concer_section_backgorund_2.png'
-import turneBg4 from '../assets/2026_concer_section_backgorund_4.png'
+import turneBg1 from '../assets/2026_concer_section_backgorund.jpg'
+import turneBg3 from '../assets/2026_concer_section_backgorund_3.jpg'
+import turneBg2 from '../assets/2026_concer_section_backgorund_2.jpg'
+import turneBg4 from '../assets/2026_concer_section_backgorund_4.jpg'
 
 const bgImages = [turneBg1, turneBg3, turneBg2, turneBg4]
 import turneFront1 from '../assets/2026_concer_section_front_1.png'

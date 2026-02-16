@@ -65,7 +65,7 @@ function App() {
 
   return (
     <div className="app" ref={containerRef}>
-      <nav className={`global-nav${activeStep === 5 ? ' light' : ''}`}>
+      <nav className={`global-nav${activeStep === 4 || activeStep === 5 ? ' light' : ''}`}>
         <div className="global-nav-left">
           <span className="hero-nav-logo">
             <span>3</span>
@@ -84,7 +84,7 @@ function App() {
           <a className="hero-nav-link" href="https://www.biletinial.com" target="_blank" rel="noreferrer">BILETINIAL</a>
         </div>
       </nav>
-      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 5} />
+      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 4 || activeStep === 5} />
       <LandingSection containerRef={containerRef} onVideoProgress={handleVideoProgress} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />

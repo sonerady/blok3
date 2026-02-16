@@ -5,7 +5,7 @@ const steps = [
   { label: 'TREND' },
   { label: '2025 KONSER PERFORMANSLARI' },
   { label: '2026 TURNE PLANLAMASI' },
-  { label: 'ALBÜMLER' },
+  { label: 'ÖNE ÇIKAN PARÇALAR' },
   { label: 'İSTATİSTİKLER' },
   { label: 'GALERİ' },
 ]

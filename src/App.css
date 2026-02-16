@@ -2455,6 +2455,63 @@
   object-fit: cover;
 }
 
+.album-info {
+  position: absolute;
+  bottom: 4rem;
+  left: 4rem;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  pointer-events: none;
+}
+
+.album-info-label {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+}
+
+.album-info-line {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0));
+}
+
+.album-songs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.album-song {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.album-song-num {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.album-song-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(0, 0, 0, 0.75);
+  line-height: 1.1;
+  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.3);
+}
+
 /* ===== Footer ===== */
 .site-footer {
   height: 100vh;
