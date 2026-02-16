@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Frame Extractor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+    .container {
+      background: #141414;
+      border: 1px solid #222;
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 600px;
+    }
+    .upload-area {
+      border: 2px dashed #333;
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+      margin-bottom: 1.5rem;
+    }
+    .upload-area:hover { border-color: #555; background: #1a1a1a; }
+    .upload-area.has-file { border-color: #4ade80; border-style: solid; }
+    .upload-area p { color: #888; font-size: 0.9rem; margin-top: 0.5rem; }
+    .upload-area .filename { color: #4ade80; font-weight: 600; font-size: 1rem; }
+    input[type="file"] { display: none; }
+    .settings {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .settings label { color: #aaa; font-size: 0.85rem; }
+    .settings select, .settings input[type="number"] {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 0.5rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      width: 80px;
+    }
+    .settings select { width: 100px; }
+    .btn {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-generate {
+      background: #fff;
+      color: #000;
+      margin-bottom: 0.8rem;
+    }
+    .btn-download {
+      background: #4ade80;
+      color: #000;
+      display: none;
+    }
+    .btn-download.show { display: block; }
+    .progress-wrap {
+      margin: 1.5rem 0;
+      display: none;
+    }
+    .progress-wrap.show { display: block; }
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #222;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #fff;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.15s;
+    }
+    .progress-text {
+      color: #888;
+      font-size: 0.8rem;
+      margin-top: 0.6rem;
+      text-align: center;
+    }
+    video { display: none; }
+    canvas { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Video Frame Extractor</h1>
+  <div class="container">
+    <div class="upload-area" id="uploadArea">
+      <svg width="48" height="48" fill="none" stroke="#555" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p id="uploadText">Video dosyasini surukle veya tikla</p>
+    </div>
+    <input type="file" id="fileInput" accept="video/*">
+
+    <div class="settings">
+      <label>FPS:</label>
+      <input type="number" id="fpsInput" value="30" min="1" max="60">
+      <label>Format:</label>
+      <select id="formatSelect">
+        <option value="png">PNG</option>
+        <option value="jpeg">JPEG</option>
+      </select>
+    </div>
+
+    <button class="btn btn-generate" id="generateBtn" disabled>Generate</button>
+    <button class="btn btn-download" id="downloadBtn">Download ZIP</button>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <p class="progress-text" id="progressText">Hazirlaniyor...</p>
+    </div>
+  </div>
+
+  <video id="video"></video>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const uploadArea = document.getElementById('uploadArea')
+    const fileInput = document.getElementById('fileInput')
+    const uploadText = document.getElementById('uploadText')
+    const generateBtn = document.getElementById('generateBtn')
+    const downloadBtn = document.getElementById('downloadBtn')
+    const progressWrap = document.getElementById('progressWrap')
+    const progressBar = document.getElementById('progressBar')
+    const progressText = document.getElementById('progressText')
+    const fpsInput = document.getElementById('fpsInput')
+    const formatSelect = document.getElementById('formatSelect')
+    const video = document.getElementById('video')
+    const canvas = document.getElementById('canvas')
+    const ctx = canvas.getContext('2d')
+
+    let selectedFile = null
+    let zipBlob = null
+
+    // Upload area click & drag
+    uploadArea.addEventListener('click', () => fileInput.click())
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = '#555' })
+    uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = selectedFile ? '#4ade80' : '#333' })
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault()
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0])
+    })
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) handleFile(fileInput.files[0])
+    })
+
+    function handleFile(file) {
+      if (!file.type.startsWith('video/')) { alert('Lutfen video dosyasi secin'); return }
+      selectedFile = file
+      uploadText.innerHTML = `<span class="filename">${file.name}</span><br><span style="color:#888;font-size:0.8rem">${(file.size / 1024 / 1024).toFixed(1)} MB</span>`
+      uploadArea.classList.add('has-file')
+      generateBtn.disabled = false
+      downloadBtn.classList.remove('show')
+      zipBlob = null
+    }
+
+    generateBtn.addEventListener('click', extractFrames)
+
+    async function extractFrames() {
+      if (!selectedFile) return
+
+      const fps = parseInt(fpsInput.value) || 30
+      const format = formatSelect.value
+      const mimeType = format === 'png' ? 'image/png' : 'image/jpeg'
+      const ext = format
+
+      generateBtn.disabled = true
+      downloadBtn.classList.remove('show')
+      progressWrap.classList.add('show')
+      progressBar.style.width = '0%'
+      progressText.textContent = 'Video yukleniyor...'
+
+      const url = URL.createObjectURL(selectedFile)
+      video.src = url
+
+      await new Promise((resolve, reject) => {
+        video.onloadedmetadata = resolve
+        video.onerror = reject
+      })
+
+      const duration = video.duration
+      const interval = 1 / fps
+      const totalFrames = Math.floor(duration * fps)
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+
+      progressText.textContent = `0 / ${totalFrames} kare`
+
+      const zip = new JSZip()
+      const folder = zip.folder('frames')
+      let frameIndex = 0
+
+      for (let time = 0; time < duration; time += interval) {
+        video.currentTime = time
+        await new Promise((resolve) => {
+          video.onseeked = resolve
+        })
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+        const dataUrl = canvas.toDataURL(mimeType, 0.95)
+        const base64 = dataUrl.split(',')[1]
+        const padded = String(frameIndex + 1).padStart(5, '0')
+        folder.file(`frame_${padded}.${ext}`, base64, { base64: true })
+
+        frameIndex++
+        const pct = Math.round((frameIndex / totalFrames) * 100)
+        progressBar.style.width = pct + '%'
+        progressText.textContent = `${frameIndex} / ${totalFrames} kare`
+      }
+
+      progressText.textContent = 'ZIP hazirlaniyor...'
+
+      zipBlob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+        progressBar.style.width = meta.percent.toFixed(0) + '%'
+      })
+
+      URL.revokeObjectURL(url)
+      progressBar.style.width = '100%'
+      progressText.textContent = `Tamamlandi! ${frameIndex} kare — ${(zipBlob.size / 1024 / 1024).toFixed(1)} MB`
+      generateBtn.disabled = false
+      downloadBtn.classList.add('show')
+    }
+
+    downloadBtn.addEventListener('click', () => {
+      if (!zipBlob) return
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(zipBlob)
+      const name = selectedFile.name.replace(/\.[^.]+$/, '')
+      a.download = `${name}_frames.zip`
+      a.click()
+      URL.revokeObjectURL(a.href)
+    })
+  </script>
+</body>
+</html>
