@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLOK3 — Aboneler</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #f8f8f8; color: #1a1a1a; min-height: 100vh; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; }
+
+    .header { margin-bottom: 2.5rem; }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.3rem; }
+    .logo { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; }
+    .subtitle { font-size: 0.8rem; color: #999; margin-top: 0.2rem; }
+    .divider { height: 1px; background: #e0e0e0; margin-top: 1rem; }
+
+    .stats { display: flex; gap: 2rem; margin-bottom: 2rem; }
+    .stat-box { }
+    .stat-num { font-size: 1.8rem; font-weight: 600; color: #1a1a1a; line-height: 1; }
+    .stat-label { font-size: 0.7rem; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.3rem; }
+
+    .toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
+    .refresh-btn { background: #1a1a1a; color: #fff; border: none; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.55rem 1.2rem; cursor: pointer; transition: background 0.2s; }
+    .refresh-btn:hover { background: #333; }
+
+    .card { background: #fff; border: 1px solid #eaeaea; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #999; padding: 0.75rem 1.2rem; border-bottom: 1px solid #eaeaea; background: #fafafa; }
+    td { font-size: 0.82rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid #f0f0f0; color: #444; }
+    td:first-child { color: #ccc; font-size: 0.75rem; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+
+    .name { font-weight: 500; color: #1a1a1a; }
+    .tag { display: inline-block; background: #f0f0f0; padding: 0.15rem 0.55rem; font-size: 0.72rem; color: #555; }
+    .date { color: #aaa; font-size: 0.75rem; }
+    .phone { color: #777; }
+
+    .empty { text-align: center; padding: 3rem; color: #bbb; font-size: 0.85rem; }
+    .loading { text-align: center; padding: 3rem; color: #bbb; font-size: 0.85rem; }
+
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+    .page-btn { background: #1a1a1a; color: #fff; border: none; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.5rem 1rem; cursor: pointer; transition: background 0.2s; }
+    .page-btn:hover { background: #333; }
+    .page-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .page-info { font-size: 0.75rem; color: #999; letter-spacing: 0.04em; }
+
+    @media print {
+      body { background: #fff; }
+      .toolbar, .pagination { display: none; }
+      .card { border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <div class="logo">BLOK3 Abonelik Kayitlari</div>
+          <div class="subtitle">blok3_subscribers</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-num" id="total">—</div>
+        <div class="stat-label">Toplam Abone</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="refresh-btn" onclick="loadData()">Yenile</button>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ad Soyad</th>
+            <th>E-posta</th>
+            <th>Telefon</th>
+            <th>Sehir</th>
+            <th>Tarih</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="6" class="loading">Yukleniyor...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination" id="pagination" style="display:none;">
+      <button class="page-btn" id="prevBtn" onclick="prevPage()">← Onceki</button>
+      <span class="page-info" id="pageInfo"></span>
+      <button class="page-btn" id="nextBtn" onclick="nextPage()">Sonraki →</button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://wearup-server.onrender.com/api/blok3/subscribers'
+    const LIMIT = 50
+    let currentPage = 1
+    let totalCount = 0
+    let totalPages = 1
+
+    async function loadData(page = 1) {
+      const tbody = document.getElementById('tbody')
+      const total = document.getElementById('total')
+      const pagination = document.getElementById('pagination')
+      currentPage = page
+
+      try {
+        const res = await fetch(`${API_URL}?page=${page}&limit=${LIMIT}`)
+        const json = await res.json()
+
+        // Support both paginated and non-paginated response
+        const data = json.data || json
+        totalCount = json.total != null ? json.total : data.length
+        totalPages = json.totalPages || Math.ceil(totalCount / LIMIT)
+
+        total.textContent = totalCount
+
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="empty">Henuz abone yok</td></tr>'
+          pagination.style.display = 'none'
+          return
+        }
+
+        const offset = (currentPage - 1) * LIMIT
+        tbody.innerHTML = data.map((row, i) => {
+          const date = new Date(row.created_at).toLocaleDateString('tr-TR', {
+            day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+          })
+          return `<tr>
+            <td>${offset + i + 1}</td>
+            <td class="name">${row.first_name} ${row.last_name}</td>
+            <td>${row.email}</td>
+            <td class="phone">${row.phone ? '+90 ' + row.phone : '\u2014'}</td>
+            <td><span class="tag">${row.city}</span></td>
+            <td class="date">${date}</td>
+          </tr>`
+        }).join('')
+
+        // Pagination controls
+        if (totalPages > 1) {
+          pagination.style.display = 'flex'
+          document.getElementById('pageInfo').textContent = `Sayfa ${currentPage} / ${totalPages}`
+          document.getElementById('prevBtn').disabled = currentPage <= 1
+          document.getElementById('nextBtn').disabled = currentPage >= totalPages
+        } else {
+          pagination.style.display = 'none'
+        }
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty">Hata: ' + err.message + '</td></tr>'
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) loadData(currentPage - 1)
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) loadData(currentPage + 1)
+    }
+
+    loadData()
+  </script>
+</body>
+</html>

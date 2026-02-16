@@ -256,24 +256,6 @@ export default function GallerySection({ containerRef }) {
       style={{ height: `${songs.length * 100}vh` }}
     >
       <div className="gallery-sticky">
-        {/* Nav */}
-        <nav className="hero-nav gallery-nav">
-          <div className="hero-nav-left" style={{ position: 'relative' }}>
-            <span className="hero-nav-logo">
-              <span>3</span>
-              <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span>
-            </span>
-            <span className="gallery-nav-category">ÖNE ÇIKAN PARÇALAR</span>
-          </div>
-          <div className="hero-nav-right">
-            <a href="https://spotify.com" target="_blank" rel="noreferrer" className="hero-nav-link">SPOTIFY</a>
-            <a href="https://music.apple.com" target="_blank" rel="noreferrer" className="hero-nav-link">ITUNES</a>
-            <a href="https://deezer.com" target="_blank" rel="noreferrer" className="hero-nav-link">DEEZER</a>
-            <span className="hero-nav-divider">|</span>
-            <a href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" className="hero-nav-link">BUBILET</a>
-            <a href="https://biletinial.com/tr-tr/profile/blok" target="_blank" rel="noreferrer" className="hero-nav-link">BILETINIAL</a>
-          </div>
-        </nav>
 
         {songs.map((song, i) => (
           <GalleryImage

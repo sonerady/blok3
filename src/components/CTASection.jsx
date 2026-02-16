@@ -1,30 +1,192 @@
-import { useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useRef, useEffect, useState, memo } from 'react'
+import { motion, useMotionValue, useSpring, useInView, AnimatePresence } from 'framer-motion'
+import concerBg1 from '../assets/concer_section_1.png'
+import concerBg2 from '../assets/concer_section_2.png'
+import concerBg3 from '../assets/concer_section_3.png'
+import concerBg4 from '../assets/concer_section_4.png'
+import concerBg5 from '../assets/concer_section_5.png'
+import concerFront from '../assets/concer_section_front.png'
+
+const bgImages = [concerBg1, concerBg2, concerBg3, concerBg4, concerBg5]
+
+const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
+
+/* ── Animated number counter ── */
+const AnimatedCounter = memo(function AnimatedCounter({ target, suffix = '', active }) {
+  const motionVal = useMotionValue(0)
+  const springVal = useSpring(motionVal, { damping: 30, stiffness: 80, mass: 0.5 })
+  const displayRef = useRef(null)
+
+  useEffect(() => {
+    if (active) motionVal.set(target)
+  }, [active, target, motionVal])
+
+  useEffect(() => {
+    const unsubscribe = springVal.on('change', (v) => {
+      if (displayRef.current) {
+        displayRef.current.textContent = Math.floor(v).toLocaleString('tr-TR') + suffix
+      }
+    })
+    return unsubscribe
+  }, [springVal, suffix])
+
+  return <span ref={displayRef}>0{suffix}</span>
+})
+
+/* ── Animation variants ── */
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.15, delayChildren: 0.3 } },
+}
+
+const slideLeft = {
+  hidden: { opacity: 0, x: -60 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
+}
+
+const slideRight = {
+  hidden: { opacity: 0, x: 60 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } },
+}
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+}
+
+const lineGrow = {
+  hidden: { scaleX: 0 },
+  show: { scaleX: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } },
+}
+
+const numberPop = {
+  hidden: { opacity: 0, scale: 0.6, y: 20 },
+  show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+}
 
 export default function CTASection() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: false, margin: '-30%' })
+  const sectionRef = useRef(null)
+  const mouseX = useMotionValue(0)
+  const isInView = useInView(sectionRef, { once: true, amount: 0.3 })
+  const [countersActive, setCountersActive] = useState(false)
+  const [bgIndex, setBgIndex] = useState(0)
+
+  useEffect(() => {
+    if (isInView) {
+      const timer = setTimeout(() => setCountersActive(true), 800)
+      return () => clearTimeout(timer)
+    }
+  }, [isInView])
+
+  // Background image slideshow — 2 second interval, loops
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % bgImages.length)
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const frontX = useSpring(useMotionValue(0), springConfig)
+  const bgMoveX = useSpring(useMotionValue(0), springConfig)
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const nx = (e.clientX - centerX) / (rect.width / 2)
+    frontX.set(nx * -30)
+    bgMoveX.set(nx * 10)
+  }
 
   return (
-    <section ref={ref} className="cta-section">
-      <motion.h2
-        className="cta-title"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-        transition={{ duration: 0.6 }}
-      >
-        CATCH ME LIVE
-      </motion.h2>
+    <section ref={sectionRef} className="cta-section" onMouseMove={handleMouseMove}>
+      {/* Parallax BG — crossfade slideshow */}
+      <AnimatePresence mode="sync">
+        <motion.img
+          key={bgIndex}
+          className="cta-bg"
+          src={bgImages[bgIndex]}
+          alt=""
+          style={{ x: bgMoveX }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1, ease: 'easeInOut' }}
+        />
+      </AnimatePresence>
+      <motion.img className="cta-front" src={concerFront} alt="" style={{ x: frontX }} />
+      <div className="cta-overlay" />
+
+      {/* ── Editorial Layout ── */}
       <motion.div
-        className="cta-dates"
-        initial={{ opacity: 0, y: 40 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
+        className="cta-layout"
+        variants={stagger}
+        initial="hidden"
+        animate={isInView ? 'show' : 'hidden'}
       >
-        <p>ISTANBUL - JUL 15</p>
-        <p>BERLIN - JUL 22</p>
-        <p>LONDON - AUG 03</p>
-        <p>PARIS - AUG 10</p>
+        {/* Left column — title + description */}
+        <div className="cta-col-left">
+          <motion.span className="cta-year" variants={slideLeft}>2025</motion.span>
+          <motion.h2 className="cta-heading" variants={slideLeft}>
+            KONSER<br />PERFORMANS<span className="cta-heading-accent">LARI</span>
+          </motion.h2>
+          <motion.div className="cta-heading-line" variants={lineGrow} />
+          <motion.p className="cta-lead" variants={slideLeft}>
+            Sahnenin enerjisi,<br />rakamların ötesinde.
+          </motion.p>
+        </div>
+
+        {/* Bottom-right — stats */}
+        <motion.div className="cta-stats-area" variants={fadeUp}>
+          {/* Turkey */}
+          <motion.div className="cta-stat-block" variants={slideRight}>
+            <span className="cta-tag">TÜRKİYE</span>
+            <div className="cta-stat-row">
+              <motion.div className="cta-stat" variants={numberPop}>
+                <span className="cta-num"><AnimatedCounter target={50} active={countersActive} /></span>
+                <span className="cta-label">ŞEHİR</span>
+              </motion.div>
+              <motion.div className="cta-stat" variants={numberPop}>
+                <span className="cta-num"><AnimatedCounter target={90} active={countersActive} /></span>
+                <span className="cta-label">KONSER</span>
+              </motion.div>
+              <motion.div className="cta-stat cta-stat-highlight" variants={numberPop}>
+                <span className="cta-num"><AnimatedCounter target={300000} suffix="+" active={countersActive} /></span>
+                <span className="cta-label">BİLETLİ İZLEYİCİ</span>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Europe */}
+          <motion.div className="cta-stat-block" variants={slideRight}>
+            <span className="cta-tag">AVRUPA</span>
+            <div className="cta-stat-row cta-stat-row-4">
+              <motion.div className="cta-stat" variants={numberPop}>
+                <span className="cta-num"><AnimatedCounter target={8} active={countersActive} /></span>
+                <span className="cta-label">ÜLKE</span>
+              </motion.div>
+              <motion.div className="cta-stat" variants={numberPop}>
+                <span className="cta-num"><AnimatedCounter target={20} active={countersActive} /></span>
+                <span className="cta-label">ŞEHİR</span>
+              </motion.div>
+              <motion.div className="cta-stat" variants={numberPop}>
+                <span className="cta-num"><AnimatedCounter target={45} active={countersActive} /></span>
+                <span className="cta-label">KONSER</span>
+              </motion.div>
+              <motion.div className="cta-stat cta-stat-highlight" variants={numberPop}>
+                <span className="cta-num"><AnimatedCounter target={125000} suffix="+" active={countersActive} /></span>
+                <span className="cta-label">BİLETLİ MİSAFİR</span>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Total */}
+          <motion.div className="cta-total-row" variants={fadeUp}>
+            <span className="cta-bottom-num">
+              <AnimatedCounter target={425000} suffix="+" active={countersActive} />
+            </span>
+            <span className="cta-bottom-label">TOPLAM BİLETLİ İZLEYİCİ</span>
+          </motion.div>
+        </motion.div>
       </motion.div>
     </section>
   )

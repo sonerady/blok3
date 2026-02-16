@@ -5,11 +5,8 @@ const steps = [
   { label: 'TREND' },
   { label: 'İSTATİSTİKLER' },
   { label: 'GALERİ' },
-  { label: 'EKLENECEK', placeholder: true },
-  { label: 'EKLENECEK', placeholder: true },
-  { label: '2025 KONSERLER', placeholder: true },
-  { label: '2026 TURNE', placeholder: true },
-  { label: 'MARKA İŞBİRLİKLERİ', placeholder: true },
+  { label: '2025 KONSER PERFORMANSLARI' },
+  { label: '2026 TURNE PLANLAMASI' },
 ]
 
 export default function StepNav({ activeStep = 0, videoProgress = 0, light = false }) {

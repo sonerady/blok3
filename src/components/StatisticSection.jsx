@@ -234,23 +234,6 @@ export default function StatisticSection({ containerRef }) {
   return (
     <section ref={sectionRef} className="statistic-section">
       <div className="statistic-sticky">
-        <nav className="hero-nav">
-          <div className="hero-nav-left" style={{ position: 'relative' }}>
-            <span className="hero-nav-logo">
-              <span>3</span>
-              <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span>
-            </span>
-          </div>
-          <div className="hero-nav-center" />
-          <div className="hero-nav-right">
-            <a href="https://spotify.com" target="_blank" rel="noreferrer" className="hero-nav-link">SPOTIFY</a>
-            <a href="https://music.apple.com" target="_blank" rel="noreferrer" className="hero-nav-link">ITUNES</a>
-            <a href="https://deezer.com" target="_blank" rel="noreferrer" className="hero-nav-link">DEEZER</a>
-            <span className="hero-nav-divider">|</span>
-            <a href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" className="hero-nav-link">BUBILET</a>
-            <a href="https://biletinial.com/tr-tr/profile/blok" target="_blank" rel="noreferrer" className="hero-nav-link">BILETINIAL</a>
-          </div>
-        </nav>
         <img src={statisticImg} alt="Statistics" className="statistic-img" />
 
         {/* Platform icons — left sidebar */}

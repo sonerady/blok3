@@ -34,31 +34,163 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
-  cursor: pointer;
+  gap: 1.2rem;
+  padding: 2rem;
+  overflow-y: auto;
 }
 
 .entry-logo {
   font-family: var(--font-display);
-  font-size: 6rem;
+  font-size: 4rem;
   color: #fff;
   letter-spacing: 0.02em;
   line-height: 1;
   user-select: none;
 }
 
-.entry-text {
+.entry-desc {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  max-width: 340px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.entry-phone-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.entry-phone-prefix {
+  color: rgba(255, 255, 255, 0.4);
   font-family: var(--font-body);
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.3em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  padding-bottom: 0.2rem;
+}
+
+.entry-phone-row .entry-input {
+  flex: 1;
+}
+
+.entry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+.entry-row {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.entry-row .entry-input {
+  flex: 1;
+}
+
+.entry-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.7rem 0.2rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+  letter-spacing: 0.02em;
+  width: 100%;
+}
+
+.entry-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.05em;
+}
+
+.entry-input:focus {
+  border-bottom-color: rgba(255, 255, 255, 0.8);
+}
+
+.entry-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.2rem center;
+  cursor: pointer;
+}
+
+.entry-select option {
+  background: #111;
+  color: #fff;
+}
+
+.entry-btn {
+  margin-top: 0.6rem;
+  background: #fff;
+  color: #000;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  user-select: none;
+  padding: 0.85rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.entry-btn:hover {
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
+}
+
+.entry-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.entry-btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+.entry-skip {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.entry-skip:hover {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* ===== Floating Lyrics ===== */
 .lyrics-float {
-  position: fixed;
+  position: absolute;
   bottom: 3rem;
   right: 3rem;
   z-index: 800;
@@ -1255,7 +1387,102 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ===== Hero Nav ===== */
+/* ===== Version Toggle ===== */
+.version-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-left: 1.2rem;
+}
+
+.version-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  padding: 0.25rem 0.45rem;
+  transition: color 0.3s ease;
+  text-transform: uppercase;
+}
+
+.version-btn:hover {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.version-btn.active {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ===== Global Nav ===== */
+.global-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3rem;
+  z-index: 9000;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.global-nav > * {
+  pointer-events: auto;
+}
+
+.global-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.global-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-left: auto;
+}
+
+/* Light mode (statistics section) */
+.global-nav.light .hero-nav-logo {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.global-nav.light .hero-nav-link {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.global-nav.light .hero-nav-link:hover {
+  color: #000;
+}
+
+.global-nav.light .hero-nav-divider {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+/* ===== Landing Version Toggle + Trend Label ===== */
+.landing-version-toggle {
+  position: absolute;
+  top: 1.7rem;
+  left: 7rem;
+  z-index: 10;
+}
+
+.landing-trend-label {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* ===== Hero Nav (legacy) ===== */
 .hero-nav {
   position: absolute;
   top: 0;
@@ -1858,8 +2085,199 @@
   margin-left: 2px;
 }
 
-/* ===== CTA Section ===== */
+/* ===== CTA Section (Konser) ===== */
 .cta-section {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+
+.cta-bg {
+  position: absolute;
+  inset: -15%;
+  width: 130%;
+  height: 130%;
+  object-fit: cover;
+  z-index: 0;
+  will-change: transform;
+}
+
+.cta-front {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  height: 110%;
+  width: auto;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cta-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.75) 100%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ── Editorial layout ── */
+.cta-layout {
+  position: relative;
+  z-index: 4;
+  height: 100%;
+  padding: 6rem 4rem 3rem;
+}
+
+/* Left column — title area, vertically centered */
+.cta-col-left {
+  position: absolute;
+  top: 50%;
+  left: 4rem;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+}
+
+.cta-year {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 0.8rem;
+}
+
+.cta-heading {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 5.5rem);
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.3);
+}
+
+.cta-heading-accent {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.cta-heading-line {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0));
+  margin: 1.5rem 0;
+  transform-origin: left center;
+}
+
+.cta-lead {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1vw, 1rem);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+/* Stats area — bottom right */
+.cta-stats-area {
+  position: absolute;
+  bottom: 3rem;
+  right: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.8rem;
+}
+
+/* Stat block (Turkey / Europe) */
+.cta-stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+
+.cta-tag {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+}
+
+/* Stat row */
+.cta-stat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5rem;
+}
+
+.cta-stat-row-4 {
+  gap: 2rem;
+}
+
+.cta-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.cta-num {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  letter-spacing: 0.02em;
+  color: #fff;
+  line-height: 1;
+}
+
+.cta-stat-highlight .cta-num {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: clamp(2.2rem, 3.8vw, 3.5rem);
+}
+
+.cta-label {
+  font-family: var(--font-body);
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+}
+
+/* Total row */
+.cta-total-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cta-bottom-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
+  color: #fff;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.cta-bottom-label {
+  font-family: var(--font-body);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+}
+
+/* ===== Turne Section ===== */
+.turne-section {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -1867,35 +2285,44 @@
   justify-content: center;
   padding: 2rem;
   background: var(--bg);
-  gap: 3rem;
+  gap: 2.5rem;
   scroll-snap-align: start;
 }
 
-.cta-title {
+.turne-title {
   font-family: var(--font-display);
-  font-size: clamp(4rem, 10vw, 10rem);
+  font-size: clamp(3rem, 8vw, 8rem);
   letter-spacing: 0.02em;
   line-height: 0.9;
   color: var(--text);
   text-align: center;
 }
 
-.cta-dates {
+.turne-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.turne-dates {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
-.cta-dates p {
+.turne-dates p {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.5);
   transition: color 0.3s ease;
 }
 
-.cta-dates p:hover {
+.turne-dates p:hover {
   color: var(--accent);
 }
 

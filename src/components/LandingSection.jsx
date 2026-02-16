@@ -10,6 +10,17 @@ import gitMusic from '../assets/musics/git.mp3'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
+const cities = [
+  'Adana','Adıyaman','Afyonkarahisar','Ağrı','Aksaray','Amasya','Ankara','Antalya','Ardahan','Artvin',
+  'Aydın','Balıkesir','Bartın','Batman','Bayburt','Bilecik','Bingöl','Bitlis','Bolu','Burdur',
+  'Bursa','Çanakkale','Çankırı','Çorum','Denizli','Diyarbakır','Düzce','Edirne','Elazığ','Erzincan',
+  'Erzurum','Eskişehir','Gaziantep','Giresun','Gümüşhane','Hakkari','Hatay','Iğdır','Isparta','İstanbul',
+  'İzmir','Kahramanmaraş','Karabük','Karaman','Kars','Kastamonu','Kayseri','Kilis','Kırıkkale','Kırklareli',
+  'Kırşehir','Kocaeli','Konya','Kütahya','Malatya','Manisa','Mardin','Mersin','Muğla','Muş',
+  'Nevşehir','Niğde','Ordu','Osmaniye','Rize','Sakarya','Samsun','Şanlıurfa','Siirt','Sinop',
+  'Sivas','Şırnak','Tekirdağ','Tokat','Trabzon','Tunceli','Uşak','Van','Yalova','Yozgat','Zonguldak',
+]
+
 // Synced lyrics
 const lyrics = [
   { time: 0, text: '' },
@@ -119,6 +130,9 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
   const secondVideoRef = useRef(null)
   const audioRef = useRef(null)
   const [entered, setEntered] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [version, setVersion] = useState('v1')
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', phone: '', city: '' })
   const [currentLine, setCurrentLine] = useState(-1)
   const [frontAlt, setFrontAlt] = useState(false)
   const [glitching, setGlitching] = useState(false)
@@ -150,14 +164,27 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
   // Second front fades in immediately
   const secondFrontOpacity = useTransform(scrollYProgress, [0.02, 0.1], [0, 1])
 
-  // Hide cursor only on first screen
+  // Hide cursor only on first screen + track if in landing section
   const [isFirstScreen, setIsFirstScreen] = useState(true)
+  const [inFirstSection, setInFirstSection] = useState(true)
   useEffect(() => {
     const unsubscribe = scrollYProgress.on('change', (v) => {
       setIsFirstScreen(v < 0.05)
+      setInFirstSection(v < 0.95)
     })
     return unsubscribe
   }, [scrollYProgress])
+
+  // Pause/resume music when leaving/entering first section
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio || !entered) return
+    if (inFirstSection) {
+      audio.play()
+    } else {
+      audio.pause()
+    }
+  }, [inFirstSection, entered])
 
   // Sync lyrics with audio
   useEffect(() => {
@@ -175,16 +202,42 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
     return () => audio.removeEventListener('timeupdate', handleTime)
   }, [])
 
-  // Enter site — start music and videos on click
+  // Enter site — start music and videos
   const handleEnter = () => {
     const audio = audioRef.current
     if (audio) {
       audio.volume = 0.4
       audio.play()
     }
-    if (firstVideoRef.current) firstVideoRef.current.play()
+    if (version === 'v2' && firstVideoRef.current) firstVideoRef.current.play()
     if (secondVideoRef.current) secondVideoRef.current.play()
+    if (version === 'v1') {
+      setIntroEnded(true)
+      setShowContent(true)
+      setShowBio(true)
+    }
     setEntered(true)
+  }
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await fetch('https://wearup-server.onrender.com/api/blok3/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+    } catch (err) {
+      // sessizce devam et
+    }
+    setLoading(false)
+    handleEnter()
+  }
+
+  const handleSkip = (e) => {
+    e.stopPropagation()
+    handleEnter()
   }
 
   // Show bio when video starts playing
@@ -215,9 +268,13 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
     return () => video.removeEventListener('timeupdate', handleTime)
   }, [showContent, onVideoProgress])
 
-  // Electric glitch swap between front images every 2-3s
+  // Electric glitch swap between front images every 2-3s (v2 only)
   useEffect(() => {
-    if (!entered) return
+    if (!entered || version !== 'v2') {
+      setFrontAlt(false)
+      setGlitching(false)
+      return
+    }
     const swap = () => {
       setGlitching(true)
       setTimeout(() => {
@@ -234,36 +291,57 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
     }
     let timerId = tick()
     return () => clearTimeout(timerId)
-  }, [entered])
+  }, [entered, version])
+
+  // Handle version switch after entry
+  useEffect(() => {
+    if (!entered) return
+    if (version === 'v1') {
+      setIntroEnded(true)
+      setShowContent(true)
+      setShowBio(true)
+    } else if (version === 'v2') {
+      if (firstVideoRef.current) {
+        firstVideoRef.current.currentTime = 0
+        setIntroEnded(false)
+        setShowContent(false)
+        setShowBio(false)
+        firstVideoRef.current.play()
+      }
+    }
+  }, [version])
 
   // Block scroll until intro video ends
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
-    if (introEnded) {
+    const ended = version === 'v1' || introEnded
+    if (ended) {
       container.style.overflowY = 'scroll'
       return
     }
     container.style.overflowY = 'hidden'
     return () => { container.style.overflowY = 'scroll' }
-  }, [introEnded, containerRef])
+  }, [introEnded, version, containerRef])
 
   useEffect(() => {
-    if (!introEnded) return
+    const ended = version === 'v1' || introEnded
+    if (!ended) return
     const interval = setInterval(() => {
       setKey((k) => k + 1)
     }, 4000)
     return () => clearInterval(interval)
-  }, [introEnded])
+  }, [introEnded, version])
 
   // BLOK3 title animation loop every 3 seconds
   useEffect(() => {
-    if (!showContent) return
+    const show = version === 'v1' || showContent
+    if (!show) return
     const interval = setInterval(() => {
       setTitleKey((k) => k + 1)
     }, 4000)
     return () => clearInterval(interval)
-  }, [showContent])
+  }, [showContent, version])
 
   // Parallax
   const frontX = useSpring(useTransform(mouseX, (v) => v * -40), springConfig)
@@ -284,12 +362,11 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
     <section ref={sectionRef} className="landing-section" onMouseMove={handleMouseMove} style={{ cursor: isFirstScreen && entered ? 'none' : 'auto' }}>
       <audio ref={audioRef} src={gitMusic} loop />
 
-      {/* Entry overlay */}
+      {/* Entry overlay with subscribe form */}
       <AnimatePresence>
         {!entered && (
           <motion.div
             className="entry-overlay"
-            onClick={handleEnter}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: 'easeInOut' }}
           >
@@ -301,33 +378,94 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
               <span>3</span>
               <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.05em' }}>3</span>
             </motion.div>
+
             <motion.p
-              className="entry-text"
-              animate={{ opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="entry-desc"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
             >
-              SITEYE GIR
+              Konserler, özel içerikler ve erken erişim fırsatları için abone ol.
             </motion.p>
+
+            <motion.form
+              className="entry-form"
+              onSubmit={handleSubscribe}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              <div className="entry-row">
+                <input
+                  className="entry-input"
+                  type="text"
+                  placeholder="Ad"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  required
+                />
+                <input
+                  className="entry-input"
+                  type="text"
+                  placeholder="Soyad"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  required
+                />
+              </div>
+              <input
+                className="entry-input"
+                type="email"
+                placeholder="E-posta"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+              <div className="entry-phone-row">
+                <span className="entry-phone-prefix">+90</span>
+                <input
+                  className="entry-input"
+                  type="tel"
+                  placeholder="Telefon (opsiyonel)"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </div>
+              <select
+                className="entry-input entry-select"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                required
+              >
+                <option value="" disabled>Şehir seç</option>
+                {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+
+              <button type="submit" className="entry-btn" disabled={loading}>
+                {loading ? <span className="entry-btn-spinner" /> : 'ABONE OL VE SITEYE GİR'}
+              </button>
+            </motion.form>
+
+            <motion.button
+              className="entry-skip"
+              onClick={handleSkip}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.6 }}
+            >
+              Abone olmadan devam et
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
 
       <div className="landing-sticky">
-        {/* Nav — always visible */}
-        <nav className="hero-nav">
-          <div className="hero-nav-left" style={{ position: 'relative' }}>
-            <motion.span className="hero-nav-logo" style={{ opacity: bgOpacity }}><span>3</span><span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span></motion.span>
-            <motion.span className="hero-nav-logo hero-nav-logo-alt" style={{ opacity: secondFrontOpacity }}>TREND</motion.span>
-          </div>
-          <div className="hero-nav-right">
-            <a href="https://spotify.com" target="_blank" rel="noreferrer" className="hero-nav-link">SPOTIFY</a>
-            <a href="https://music.apple.com" target="_blank" rel="noreferrer" className="hero-nav-link">ITUNES</a>
-            <a href="https://deezer.com" target="_blank" rel="noreferrer" className="hero-nav-link">DEEZER</a>
-            <span className="hero-nav-divider">|</span>
-            <a href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" className="hero-nav-link">BUBILET</a>
-            <a href="https://biletinial.com/tr-tr/profile/blok" target="_blank" rel="noreferrer" className="hero-nav-link">BILETINIAL</a>
-          </div>
-        </nav>
+        {/* Version toggle + TREND label */}
+        <motion.div className="version-toggle landing-version-toggle" style={{ opacity: bgOpacity }}>
+          <button className={`version-btn${version === 'v1' ? ' active' : ''}`} onClick={() => setVersion('v1')}>v1</button>
+          <button className={`version-btn${version === 'v2' ? ' active' : ''}`} onClick={() => setVersion('v2')}>v2</button>
+        </motion.div>
+        <motion.span className="hero-nav-logo landing-trend-label" style={{ opacity: secondFrontOpacity }}>TREND</motion.span>
 
         {/* Video — always behind */}
         <video
@@ -347,7 +485,7 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           style={{ opacity: secondFrontOpacity, x: secondFrontX }}
         />
 
-        {/* Intro video — plays once, then fades out */}
+        {/* Intro video — plays once, then fades out (v2 only) */}
         <motion.video
           ref={firstVideoRef}
           className="landing-bg"
@@ -355,7 +493,7 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           muted
           playsInline
           onEnded={() => setIntroEnded(true)}
-          animate={{ opacity: introEnded ? 0 : 1 }}
+          animate={{ opacity: version === 'v2' && !introEnded ? 1 : 0 }}
           transition={{ duration: 1.2, ease: 'easeInOut' }}
           style={{
             WebkitMaskImage: maskImage,
@@ -363,10 +501,10 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           }}
         />
 
-        {/* Background with spotlight — fades in after video ends, then fades out on scroll */}
+        {/* Background with spotlight — fades in after video ends (or immediately in v1), then fades out on scroll */}
         <motion.div
           className="landing-bg-wrapper"
-          animate={{ opacity: introEnded ? 1 : 0 }}
+          animate={{ opacity: (version === 'v1' || introEnded) ? 1 : 0 }}
           transition={{ duration: 1.2, ease: 'easeInOut' }}
         >
           <motion.img
@@ -381,17 +519,17 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           />
         </motion.div>
 
-        {/* First front — electric glitch swap */}
+        {/* First front — electric glitch swap (v2) or static (v1) */}
         <motion.img
-          className={`landing-front${glitching ? ' front-glitch' : ''}`}
-          src={frontAlt ? landingFrontV2 : landingFront}
+          className={`landing-front${version === 'v2' && glitching ? ' front-glitch' : ''}`}
+          src={version === 'v2' && frontAlt ? landingFrontV2 : landingFront}
           alt=""
           style={{ x: frontX, opacity: firstFrontOpacity }}
         />
 
 
-        {/* Bio info — appears when video starts, fades out on scroll */}
-        {showBio && (
+        {/* Bio info — appears when video starts (v2) or immediately (v1), fades out on scroll */}
+        {(version === 'v1' || showBio) && (
           <motion.div
             className="landing-bio"
             style={{ opacity: bgOpacity }}
@@ -433,7 +571,7 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
         )}
 
         {/* BLOK3 title — first screen only, letter-by-letter loops every 3s */}
-        {showContent && (
+        {(version === 'v1' || showContent) && (
           <motion.h1
             className="landing-title"
             style={{ x: titleX, y: titleY, opacity: bgOpacity }}
@@ -504,25 +642,25 @@ export default function LandingSection({ containerRef, onVideoProgress }) {
           </div>
         </motion.div>
 
-      </div>
+        {/* Floating synced lyrics — inside sticky so it stays within first section */}
+        {entered && currentLine >= 0 && lyrics[currentLine]?.text && (
+          <motion.div className="lyrics-float" style={{ opacity: bgOpacity }}>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={currentLine}
+                className="lyrics-line"
+                initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              >
+                {lyrics[currentLine].text}
+              </motion.p>
+            </AnimatePresence>
+          </motion.div>
+        )}
 
-      {/* Floating synced lyrics */}
-      {entered && currentLine >= 0 && lyrics[currentLine]?.text && (
-        <div className="lyrics-float">
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={currentLine}
-              className="lyrics-line"
-              initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              {lyrics[currentLine].text}
-            </motion.p>
-          </AnimatePresence>
-        </div>
-      )}
+      </div>
     </section>
   )
 }
