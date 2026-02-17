@@ -34,8 +34,8 @@ function App() {
       const ctaEnd = landingEnd + viewportHeight
       // TurneSection (100vh) after CTA
       const turneEnd = ctaEnd + viewportHeight
-      // AlbumSection (500vh) after Turne
-      const albumEnd = turneEnd + viewportHeight * 3
+      // AlbumSection (500vh) after Turne — both albums in one section
+      const albumEnd = turneEnd + viewportHeight * 5
       // StatisticSection is 600vh, starts after Album
       const statEnd = albumEnd + viewportHeight * 6
       // GallerySection ends
@@ -51,7 +51,7 @@ function App() {
       } else if (scrollTop < turneEnd) {
         setActiveStep(3) // 2026 TURNE PLANLAMASI
       } else if (scrollTop < albumEnd) {
-        setActiveStep(4) // ALBÜMLER
+        setActiveStep(4) // ÖNE ÇIKAN PARÇALAR
       } else if (scrollTop < statEnd) {
         setActiveStep(5) // İSTATİSTİKLER
       } else {
