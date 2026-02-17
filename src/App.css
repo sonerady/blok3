@@ -187,6 +187,31 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.entry-credit {
+  position: absolute;
+  bottom: 1.5rem;
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.35);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.entry-credit:hover {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.entry-credit-name {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s ease;
+}
+
+.entry-credit:hover .entry-credit-name {
+  color: rgba(255, 255, 255, 0.75);
+}
+
 /* ===== Floating Lyrics ===== */
 .lyrics-float {
   position: absolute;
@@ -351,7 +376,7 @@
   z-index: 2;
   will-change: transform;
   margin-left: -14vw;
-  margin-top: -10vh;
+  margin-top: -30vh;
 }
 
 .landing-bio {
@@ -693,6 +718,10 @@
   object-position: center 35%;
   display: block;
   will-change: transform;
+}
+
+.stat-glitch {
+  animation: electric-glitch 0.3s steps(2) both;
 }
 
 /* Platform sidebar — left */
@@ -2705,6 +2734,62 @@
   .doc-a4 {
     box-shadow: none;
   }
+}
+
+/* ===== Music Toggle ===== */
+.music-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2.5rem;
+  z-index: 9000;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 6px;
+  transition: opacity 0.3s ease;
+}
+
+.music-btn:hover {
+  opacity: 0.7;
+}
+
+.music-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 22px;
+}
+
+.music-eq-bar {
+  width: 2.5px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 1px;
+  height: 4px;
+  transition: background 0.3s ease;
+}
+
+.music-btn.light .music-eq-bar {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.music-btn.playing .music-eq-bar {
+  animation: music-eq-bounce 1.3s ease-in-out infinite;
+}
+
+.music-btn.playing .music-eq-bar:nth-child(1) { animation-delay: 0s; }
+.music-btn.playing .music-eq-bar:nth-child(2) { animation-delay: 0.2s; }
+.music-btn.playing .music-eq-bar:nth-child(3) { animation-delay: 0.4s; }
+.music-btn.playing .music-eq-bar:nth-child(4) { animation-delay: 0.15s; }
+
+@keyframes music-eq-bounce {
+  0%, 100% { height: 4px; }
+  20% { height: 22px; }
+  40% { height: 8px; }
+  60% { height: 18px; }
+  80% { height: 10px; }
 }
 
 /* ===== Responsive ===== */

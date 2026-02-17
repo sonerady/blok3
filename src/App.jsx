@@ -1,23 +1,42 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import './App.css'
 import LandingSection from './components/LandingSection'
-// import HeroSection from './components/HeroSection'
-// import ArtHeroSection from './components/ArtHeroSection'
 import StatisticSection from './components/StatisticSection'
 import CTASection from './components/CTASection'
 import TurneSection from './components/TurneSection'
 import AlbumSection from './components/AlbumSection'
-// import Footer from './components/Footer'
 import StepNav from './components/StepNav'
+import gitMusic from './assets/musics/git.mp3'
 
 function App() {
   const containerRef = useRef(null)
-  const [videoProgress, setVideoProgress] = useState(0)
+  const audioRef = useRef(null)
   const [activeStep, setActiveStep] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [hasStarted, setHasStarted] = useState(false)
 
-  const handleVideoProgress = useCallback((progress) => {
-    setVideoProgress(progress)
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    const onPlay = () => { setIsPlaying(true); setHasStarted(true) }
+    const onPause = () => setIsPlaying(false)
+    audio.addEventListener('play', onPlay)
+    audio.addEventListener('pause', onPause)
+    return () => {
+      audio.removeEventListener('play', onPlay)
+      audio.removeEventListener('pause', onPause)
+    }
   }, [])
+
+  const toggleMusic = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (audio.paused) {
+      audio.play()
+    } else {
+      audio.pause()
+    }
+  }
 
   useEffect(() => {
     const container = containerRef.current
@@ -57,9 +76,28 @@ function App() {
     return () => container.removeEventListener('scroll', handleScroll)
   }, [])
 
+  const isLight = activeStep === 4 || activeStep === 5
+
   return (
     <div className="app" ref={containerRef}>
-      <nav className={`global-nav${activeStep === 4 || activeStep === 5 ? ' light' : ''}`}>
+      <audio ref={audioRef} src={gitMusic} loop />
+
+      {hasStarted && activeStep === 0 && (
+        <button
+          className={`music-btn${isPlaying ? ' playing' : ''}`}
+          onClick={toggleMusic}
+          aria-label={isPlaying ? 'Müziği durdur' : 'Müziği çal'}
+        >
+          <div className="music-eq">
+            <span className="music-eq-bar" />
+            <span className="music-eq-bar" />
+            <span className="music-eq-bar" />
+            <span className="music-eq-bar" />
+          </div>
+        </button>
+      )}
+
+      <nav className={`global-nav${isLight ? ' light' : ''}`}>
         <div className="global-nav-left">
           <span className="hero-nav-logo">
             <span>3</span>
@@ -67,19 +105,19 @@ function App() {
           </span>
         </div>
         <div className="global-nav-right">
-          <a className="hero-nav-link" href="https://open.spotify.com" target="_blank" rel="noreferrer">SPOTIFY</a>
+          <a className="hero-nav-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer">SPOTIFY</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://music.apple.com" target="_blank" rel="noreferrer">ITUNES</a>
+          <a className="hero-nav-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer">ITUNES</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://www.deezer.com" target="_blank" rel="noreferrer">DEEZER</a>
+          <a className="hero-nav-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer">DEEZER</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://www.bubilet.com" target="_blank" rel="noreferrer">BUBILET</a>
+          <a className="hero-nav-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer">BUBILET</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://www.biletinial.com" target="_blank" rel="noreferrer">BILETINIAL</a>
+          <a className="hero-nav-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer">BILETINIAL</a>
         </div>
       </nav>
-      <StepNav activeStep={activeStep} videoProgress={videoProgress} light={activeStep === 4 || activeStep === 5} />
-      <LandingSection containerRef={containerRef} onVideoProgress={handleVideoProgress} />
+      <StepNav activeStep={activeStep} light={isLight} />
+      <LandingSection containerRef={containerRef} audioRef={audioRef} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />
       <AlbumSection containerRef={containerRef} />
