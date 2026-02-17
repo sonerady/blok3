@@ -38,13 +38,16 @@ export default function TurneSection({ containerRef }) {
     return () => clearTimeout(timerId)
   }, [])
 
-  // Scroll-based parallax
+  // Scroll-based parallax & cinematic transition
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     container: containerRef,
-    offset: ['start end', 'end start'],
+    offset: ['start start', 'end start'],
   })
-  const bgY = useTransform(scrollYProgress, [0, 0.5, 1], ['10%', '0%', '-10%'])
+
+  // Background parallax (first half only)
+  const bgY = useTransform(scrollYProgress, [0, 0.25, 0.5], ['10%', '0%', '-10%'])
+
   const front1X = useSpring(useMotionValue(0), springConfig)
   const front2X = useSpring(useMotionValue(0), springConfig)
   const bgMoveX = useSpring(useMotionValue(0), springConfig)
@@ -58,54 +61,85 @@ export default function TurneSection({ containerRef }) {
     bgMoveX.set(nx * 10)
   }
 
+  /* ── Cinematic transition (scroll 0.45→1.0) ── */
+
+  // 2026 text: scale up
+  const yearScale = useTransform(scrollYProgress, [0, 0.45, 0.7, 0.85, 1], [1, 1, 3, 6, 10])
+  // 2026 text: move from top:12% to center (translateY)
+  const yearY = useTransform(scrollYProgress, [0, 0.45, 0.7], ['0%', '0%', '120%'])
+  // 2026 letter-spacing: merge
+  const yearSpacing = useTransform(scrollYProgress, [0, 0.5, 0.8, 1], ['0.02em', '0.02em', '-0.15em', '-0.3em'])
+
+  // Fade out: bg, fronts, clouds, desc, overlay
+  const elementsOp = useTransform(scrollYProgress, [0, 0.45, 0.65], [1, 1, 0])
+
+  // White overlay
+  const whiteOp = useTransform(scrollYProgress, [0, 0.7, 0.9, 1], [0, 0, 0.8, 1])
+
+  // 2026 text opacity (keep visible then fade as white takes over)
+  const yearOp = useTransform(scrollYProgress, [0, 0.85, 1], [1, 1, 0])
+
   return (
     <section ref={sectionRef} className="turne-section" onMouseMove={handleMouseMove}>
-      {/* Background — electric glitch swap */}
-      <motion.img
-        className={`turne-bg${glitching ? ' bg-glitch' : ''}`}
-        src={bgImages[bgIndex]}
-        alt=""
-        style={{ x: bgMoveX, y: bgY }}
-      />
+      <div className="turne-sticky">
+        {/* Background — electric glitch swap */}
+        <motion.img
+          className={`turne-bg${glitching ? ' bg-glitch' : ''}`}
+          src={bgImages[bgIndex]}
+          alt=""
+          style={{ x: bgMoveX, y: bgY, opacity: elementsOp }}
+        />
 
-      {/* Dark clouds — behind text & fronts */}
-      <div className="turne-clouds">
-        <div className="turne-cloud turne-cloud-1" />
-        <div className="turne-cloud turne-cloud-2" />
-        <div className="turne-cloud turne-cloud-3" />
+        {/* Dark clouds — behind text & fronts */}
+        <motion.div className="turne-clouds" style={{ opacity: elementsOp }}>
+          <div className="turne-cloud turne-cloud-1" />
+          <div className="turne-cloud turne-cloud-2" />
+          <div className="turne-cloud turne-cloud-3" />
+        </motion.div>
+
+        {/* 2026 Text — zoom in during transition */}
+        <motion.div
+          className="turne-year"
+          style={{
+            scale: yearScale,
+            y: yearY,
+            letterSpacing: yearSpacing,
+            opacity: yearOp,
+          }}
+        >
+          <span className="turne-year-char" style={{ transform: 'translateY(-8%)' }}>2</span>
+          <span className="turne-year-char" style={{ transform: 'translateY(6%)' }}>0</span>
+          <span className="turne-year-char" style={{ transform: 'translateY(-12%)' }}>2</span>
+          <span className="turne-year-char" style={{ transform: 'translateY(4%)' }}>6</span>
+        </motion.div>
+
+        {/* Front 2 (behind front 1) — electric glitch swap */}
+        <motion.img
+          className={`turne-front turne-front-2${glitching ? ' bg-glitch' : ''}`}
+          src={frontAlt ? turneFront2Goat : turneFront2}
+          alt=""
+          style={{ x: front2X, opacity: elementsOp }}
+        />
+
+        {/* Front 1 (on top) */}
+        <motion.img
+          className="turne-front turne-front-1"
+          src={turneFront1}
+          alt=""
+          style={{ x: front1X, opacity: elementsOp }}
+        />
+
+        {/* Overlay */}
+        <motion.div className="turne-overlay" style={{ opacity: elementsOp }} />
+
+        {/* Bottom description */}
+        <motion.p className="turne-desc" style={{ opacity: elementsOp }}>
+          BLOK3, 2026 konser planlamasına göre bu yıl içerisinde Türkiye içinde 34 Şehirde 62 Konser, Yurt dışında 10 Ülke, 25 Şehirde 50 Konser gerçekleştirmesi planlanmaktadır.
+        </motion.p>
+
+        {/* White overlay — fills screen at end of transition */}
+        <motion.div className="turne-white-overlay" style={{ opacity: whiteOp }} />
       </div>
-
-      {/* 2026 Text — behind front images */}
-      <div className="turne-year">
-        <span className="turne-year-char" style={{ transform: 'translateY(-8%)' }}>2</span>
-        <span className="turne-year-char" style={{ transform: 'translateY(6%)' }}>0</span>
-        <span className="turne-year-char" style={{ transform: 'translateY(-12%)' }}>2</span>
-        <span className="turne-year-char" style={{ transform: 'translateY(4%)' }}>6</span>
-      </div>
-
-      {/* Front 2 (behind front 1) — electric glitch swap */}
-      <motion.img
-        className={`turne-front turne-front-2${glitching ? ' bg-glitch' : ''}`}
-        src={frontAlt ? turneFront2Goat : turneFront2}
-        alt=""
-        style={{ x: front2X }}
-      />
-
-      {/* Front 1 (on top) */}
-      <motion.img
-        className="turne-front turne-front-1"
-        src={turneFront1}
-        alt=""
-        style={{ x: front1X }}
-      />
-
-      {/* Overlay */}
-      <div className="turne-overlay" />
-
-      {/* Bottom description */}
-      <p className="turne-desc">
-        BLOK3, 2026 konser planlamasına göre bu yıl içerisinde Türkiye içinde 34 Şehirde 62 Konser, Yurt dışında 10 Ülke, 25 Şehirde 50 Konser gerçekleştirmesi planlanmaktadır.
-      </p>
     </section>
   )
 }

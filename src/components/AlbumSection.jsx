@@ -1,18 +1,22 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion'
 
-/* Import frames — order: 1, 3, 2 */
+/* Import frames — order: 1, 2, 6, 3 */
 const f1Mods = import.meta.glob('../assets/frames_1/frame_*.jpg', { eager: true, import: 'default' })
 const f1Srcs = Object.keys(f1Mods).sort().map((k) => f1Mods[k])
 const T1 = f1Srcs.length
 
-const f3Mods = import.meta.glob('../assets/frames_3/frame_*.jpg', { eager: true, import: 'default' })
-const f3Srcs = Object.keys(f3Mods).sort().map((k) => f3Mods[k])
-const T3 = f3Srcs.length
-
 const f2Mods = import.meta.glob('../assets/frames_2/frame_*.jpg', { eager: true, import: 'default' })
 const f2Srcs = Object.keys(f2Mods).sort().map((k) => f2Mods[k])
 const T2 = f2Srcs.length
+
+const f6Mods = import.meta.glob('../assets/frames_6/frame_*.jpg', { eager: true, import: 'default' })
+const f6Srcs = Object.keys(f6Mods).sort().map((k) => f6Mods[k])
+const T6 = f6Srcs.length
+
+const f3Mods = import.meta.glob('../assets/frames_3/frame_*.jpg', { eager: true, import: 'default' })
+const f3Srcs = Object.keys(f3Mods).sort().map((k) => f3Mods[k])
+const T3 = f3Srcs.length
 
 function useFrames(srcs) {
   const imagesRef = useRef([])
@@ -47,11 +51,13 @@ export default function AlbumSection({ containerRef }) {
   const sectionRef = useRef(null)
   const c1 = useRef(null)
   const c2 = useRef(null)
+  const c6 = useRef(null)
   const c3 = useRef(null)
 
   const { imagesRef: i1, loaded: l1 } = useFrames(f1Srcs)
-  const { imagesRef: i3, loaded: l3 } = useFrames(f3Srcs)
   const { imagesRef: i2, loaded: l2 } = useFrames(f2Srcs)
+  const { imagesRef: i6, loaded: l6 } = useFrames(f6Srcs)
+  const { imagesRef: i3, loaded: l3 } = useFrames(f3Srcs)
 
   const draw = useCallback((ref, imgs, idx) => {
     const canvas = ref.current
@@ -69,8 +75,9 @@ export default function AlbumSection({ containerRef }) {
   }, [])
 
   useEffect(() => { if (l1) draw(c1, i1, 0) }, [l1, draw, i1])
-  useEffect(() => { if (l3) draw(c2, i3, 0) }, [l3, draw, i3])
-  useEffect(() => { if (l2) draw(c3, i2, 0) }, [l2, draw, i2])
+  useEffect(() => { if (l2) draw(c2, i2, 0) }, [l2, draw, i2])
+  useEffect(() => { if (l6) draw(c6, i6, 0) }, [l6, draw, i6])
+  useEffect(() => { if (l3) draw(c3, i3, 0) }, [l3, draw, i3])
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -79,45 +86,55 @@ export default function AlbumSection({ containerRef }) {
   })
 
   /*
-    Timeline (scroll 0→1) — 3 albums, order 1→3→2:
-    0.00–0.28  frames_1 plays
-    0.28–0.35  crossfade 1→3
-    0.35–0.60  frames_3 plays
-    0.60–0.67  crossfade 3→2
-    0.67–0.95  frames_2 plays
+    Timeline (scroll 0→1) — 4 albums, order 1→2→6→3:
+    0.00–0.20  frames_1 plays
+    0.20–0.25  crossfade 1→2
+    0.25–0.45  frames_2 plays
+    0.45–0.50  crossfade 2→6
+    0.50–0.70  frames_6 plays
+    0.70–0.75  crossfade 6→3
+    0.75–0.95  frames_3 plays
     0.95–1.00  fade out
   */
-  const idx1 = useTransform(scrollYProgress, [0, 0.28], [0, T1 - 1])
-  const idx3 = useTransform(scrollYProgress, [0.35, 0.60], [0, T3 - 1])
-  const idx2 = useTransform(scrollYProgress, [0.67, 0.95], [0, T2 - 1])
+  const idx1 = useTransform(scrollYProgress, [0, 0.20], [0, T1 - 1])
+  const idx2 = useTransform(scrollYProgress, [0.25, 0.45], [0, T2 - 1])
+  const idx6 = useTransform(scrollYProgress, [0.50, 0.70], [0, T6 - 1])
+  const idx3 = useTransform(scrollYProgress, [0.75, 0.95], [0, T3 - 1])
 
-  const op1 = useTransform(scrollYProgress, [0, 0.28, 0.35], [1, 1, 0])
-  const op3 = useTransform(scrollYProgress, [0.28, 0.35, 0.60, 0.67], [0, 1, 1, 0])
-  const op2 = useTransform(scrollYProgress, [0.60, 0.67, 0.95, 1], [0, 1, 1, 0])
+  const op1 = useTransform(scrollYProgress, [0, 0.20, 0.25], [1, 1, 0])
+  const op2 = useTransform(scrollYProgress, [0.20, 0.25, 0.45, 0.50], [0, 1, 1, 0])
+  const op6 = useTransform(scrollYProgress, [0.45, 0.50, 0.70, 0.75], [0, 1, 1, 0])
+  const op3 = useTransform(scrollYProgress, [0.70, 0.75, 0.95, 1], [0, 1, 1, 0])
 
   // Song info — frames_1
-  const info1Op = useTransform(scrollYProgress, [0.02, 0.06, 0.24, 0.30], [0, 1, 1, 0])
-  const s1aY = useTransform(scrollYProgress, [0.02, 0.08], [40, 0])
-  const s1bY = useTransform(scrollYProgress, [0.04, 0.10], [40, 0])
-
-  // Song info — frames_3
-  const info3Op = useTransform(scrollYProgress, [0.36, 0.40, 0.56, 0.62], [0, 1, 1, 0])
-  const s3Y = useTransform(scrollYProgress, [0.36, 0.42], [30, 0])
+  const info1Op = useTransform(scrollYProgress, [0.02, 0.05, 0.17, 0.22], [0, 1, 1, 0])
+  const s1aY = useTransform(scrollYProgress, [0.02, 0.06], [40, 0])
+  const s1bY = useTransform(scrollYProgress, [0.03, 0.07], [40, 0])
 
   // Song info — frames_2
-  const info2Op = useTransform(scrollYProgress, [0.68, 0.72, 0.90, 0.96], [0, 1, 1, 0])
-  const s2Y = useTransform(scrollYProgress, [0.68, 0.74], [30, 0])
+  const info2Op = useTransform(scrollYProgress, [0.26, 0.30, 0.42, 0.47], [0, 1, 1, 0])
+  const s2Y = useTransform(scrollYProgress, [0.26, 0.32], [30, 0])
+
+  // Song info — frames_6
+  const info6Op = useTransform(scrollYProgress, [0.51, 0.55, 0.67, 0.72], [0, 1, 1, 0])
+  const s6Y = useTransform(scrollYProgress, [0.51, 0.57], [30, 0])
+
+  // Song info — frames_3
+  const info3Op = useTransform(scrollYProgress, [0.76, 0.80, 0.92, 0.97], [0, 1, 1, 0])
+  const s3Y = useTransform(scrollYProgress, [0.76, 0.82], [30, 0])
 
   useMotionValueEvent(idx1, 'change', (v) => { if (l1) draw(c1, i1, Math.round(v)) })
-  useMotionValueEvent(idx3, 'change', (v) => { if (l3) draw(c2, i3, Math.max(0, Math.round(v))) })
-  useMotionValueEvent(idx2, 'change', (v) => { if (l2) draw(c3, i2, Math.max(0, Math.round(v))) })
+  useMotionValueEvent(idx2, 'change', (v) => { if (l2) draw(c2, i2, Math.max(0, Math.round(v))) })
+  useMotionValueEvent(idx6, 'change', (v) => { if (l6) draw(c6, i6, Math.max(0, Math.round(v))) })
+  useMotionValueEvent(idx3, 'change', (v) => { if (l3) draw(c3, i3, Math.max(0, Math.round(v))) })
 
   return (
     <section ref={sectionRef} className="album-section">
       <div className="album-sticky">
         <motion.canvas ref={c1} className="album-canvas" style={{ opacity: op1 }} />
-        <motion.canvas ref={c2} className="album-canvas album-canvas-2" style={{ opacity: op3 }} />
-        <motion.canvas ref={c3} className="album-canvas album-canvas-2" style={{ opacity: op2 }} />
+        <motion.canvas ref={c2} className="album-canvas album-canvas-2" style={{ opacity: op2 }} />
+        <motion.canvas ref={c6} className="album-canvas album-canvas-2" style={{ opacity: op6 }} />
+        <motion.canvas ref={c3} className="album-canvas album-canvas-2" style={{ opacity: op3 }} />
 
         {/* Info — frames_1 */}
         <motion.div className="album-info" style={{ opacity: info1Op }}>
@@ -135,6 +152,28 @@ export default function AlbumSection({ containerRef }) {
           </div>
         </motion.div>
 
+        {/* Info — frames_2 */}
+        <motion.div className="album-info" style={{ opacity: info2Op }}>
+          <div className="album-info-label">ALBÜM</div>
+          <div className="album-info-line" />
+          <div className="album-songs">
+            <motion.div className="album-song" style={{ y: s2Y }}>
+              <span className="album-song-name">KUSURA BAKMA</span>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Info — frames_6 */}
+        <motion.div className="album-info" style={{ opacity: info6Op }}>
+          <div className="album-info-label">ALBÜM</div>
+          <div className="album-info-line" />
+          <div className="album-songs">
+            <motion.div className="album-song" style={{ y: s6Y }}>
+              <span className="album-song-name">GELME İSTEMEM</span>
+            </motion.div>
+          </div>
+        </motion.div>
+
         {/* Info — frames_3 */}
         <motion.div className="album-info" style={{ opacity: info3Op }}>
           <div className="album-info-label">ALBÜM</div>
@@ -142,17 +181,6 @@ export default function AlbumSection({ containerRef }) {
           <div className="album-songs">
             <motion.div className="album-song" style={{ y: s3Y }}>
               <span className="album-song-name">SEVMEYİ DENEMEDİN</span>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Info — frames_2 */}
-        <motion.div className="album-info" style={{ opacity: info2Op }}>
-          <div className="album-info-label">ALBÜM</div>
-          <div className="album-info-line" />
-          <div className="album-songs">
-            <motion.div className="album-song" style={{ y: s2Y }}>
-              <span className="album-song-name">FRAMES 2</span>
             </motion.div>
           </div>
         </motion.div>

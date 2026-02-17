@@ -2279,10 +2279,24 @@
 
 /* ===== Turne Section ===== */
 .turne-section {
-  height: 100vh;
+  height: 200vh;
   position: relative;
+}
+
+.turne-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
   overflow: hidden;
-  scroll-snap-align: start;
+}
+
+.turne-white-overlay {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .turne-bg {
@@ -2433,7 +2447,7 @@
 
 /* ===== Album Section (scroll-driven video) ===== */
 .album-section {
-  height: 500vh;
+  height: 700vh;
   position: relative;
   background: #000;
 }

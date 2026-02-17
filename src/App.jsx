@@ -32,10 +32,10 @@ function App() {
       const landingEnd = viewportHeight * 2
       // CTASection (100vh) after landing (200vh)
       const ctaEnd = landingEnd + viewportHeight
-      // TurneSection (100vh) after CTA
-      const turneEnd = ctaEnd + viewportHeight
-      // AlbumSection (500vh) after Turne — both albums in one section
-      const albumEnd = turneEnd + viewportHeight * 5
+      // TurneSection (200vh) after CTA — includes cinematic transition
+      const turneEnd = ctaEnd + viewportHeight * 2
+      // AlbumSection (700vh) after Turne — 4 albums in one section
+      const albumEnd = turneEnd + viewportHeight * 7
       // StatisticSection is 600vh, starts after Album
       const statEnd = albumEnd + viewportHeight * 6
       // GallerySection ends
