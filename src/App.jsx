@@ -3,7 +3,6 @@ import './App.css'
 import LandingSection from './components/LandingSection'
 // import HeroSection from './components/HeroSection'
 // import ArtHeroSection from './components/ArtHeroSection'
-import GallerySection from './components/GallerySection'
 import StatisticSection from './components/StatisticSection'
 import CTASection from './components/CTASection'
 import TurneSection from './components/TurneSection'
@@ -38,9 +37,6 @@ function App() {
       const albumEnd = turneEnd + viewportHeight * 7
       // StatisticSection is 600vh, starts after Album
       const statEnd = albumEnd + viewportHeight * 6
-      // GallerySection ends
-      const gallery = container.querySelector('.gallery-section')
-      const galEnd = gallery ? gallery.offsetTop + gallery.offsetHeight : statEnd + viewportHeight * 4
 
       if (scrollTop < landingMid) {
         setActiveStep(0) // BİYOGRAFİ
@@ -52,10 +48,8 @@ function App() {
         setActiveStep(3) // 2026 TURNE PLANLAMASI
       } else if (scrollTop < albumEnd) {
         setActiveStep(4) // ÖNE ÇIKAN PARÇALAR
-      } else if (scrollTop < statEnd) {
-        setActiveStep(5) // İSTATİSTİKLER
       } else {
-        setActiveStep(6) // GALERİ
+        setActiveStep(5) // İSTATİSTİKLER
       }
     }
 
@@ -90,7 +84,6 @@ function App() {
       <TurneSection containerRef={containerRef} />
       <AlbumSection containerRef={containerRef} />
       <StatisticSection containerRef={containerRef} />
-      <GallerySection containerRef={containerRef} />
     </div>
   )
 }

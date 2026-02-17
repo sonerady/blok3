@@ -7,7 +7,6 @@ const steps = [
   { label: '2026 TURNE PLANLAMASI' },
   { label: 'ÖNE ÇIKAN PARÇALAR' },
   { label: 'İSTATİSTİKLER' },
-  { label: 'GALERİ' },
 ]
 
 export default function StepNav({ activeStep = 0, videoProgress = 0, light = false }) {
