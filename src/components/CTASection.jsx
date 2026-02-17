@@ -1,10 +1,10 @@
 import { useRef, useEffect, useState, memo } from 'react'
 import { motion, useMotionValue, useSpring, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import concerBg1 from '../assets/concer_section_1.png'
-import concerBg2 from '../assets/concer_section_2.png'
-import concerBg3 from '../assets/concer_section_3.png'
-import concerBg4 from '../assets/concer_section_4.png'
-import concerBg5 from '../assets/concer_section_5.png'
+import concerBg1 from '../assets/concer_section_1.jpg'
+import concerBg2 from '../assets/concer_section_2.jpg'
+import concerBg3 from '../assets/concer_section_3.jpg'
+import concerBg4 from '../assets/concer_section_4.jpg'
+import concerBg5 from '../assets/concer_section_5.jpg'
 import concerFront from '../assets/concer_section_front.png'
 
 const bgImages = [concerBg1, concerBg2, concerBg3, concerBg4, concerBg5]

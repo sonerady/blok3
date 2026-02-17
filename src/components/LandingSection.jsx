@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll, AnimatePresence } from 'framer-motion'
-import landingBg from '../assets/first_background.png'
+import landingBg from '../assets/first_background.jpg'
 import landingFront from '../assets/first_front.png'
 import landingFrontV2 from '../assets/first_front_v2.png'
 import firstVideo from '../assets/first_video_background.mp4'
