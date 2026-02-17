@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, memo } from 'react'
 import { motion, useInView, useScroll, useSpring, useMotionValue, AnimatePresence } from 'framer-motion'
 import statisticImg from '../assets/statistic_gold.jpg'
-import statisticGoat from '../assets/statistic_gold_goat.png'
+import statisticGoat from '../assets/statistic_gold_goat.jpg'
 
 /* ── Animated number counter ── */
 const AnimatedCounter = memo(function AnimatedCounter({ target, suffix = '' }) {
@@ -234,9 +234,11 @@ export default function StatisticSection({ containerRef }) {
 
   // Glitch swap between two images every 3s
   const [showGoat, setShowGoat] = useState(false)
+  const [glitchKey, setGlitchKey] = useState(0)
   const [glitching, setGlitching] = useState(false)
   useEffect(() => {
     const interval = setInterval(() => {
+      setGlitchKey((k) => k + 1)
       setGlitching(true)
       setTimeout(() => {
         setShowGoat((v) => !v)
@@ -250,6 +252,7 @@ export default function StatisticSection({ containerRef }) {
     <section ref={sectionRef} className="statistic-section">
       <div className="statistic-sticky">
         <img
+          key={glitchKey}
           src={showGoat ? statisticGoat : statisticImg}
           alt="Statistics"
           className={`statistic-img${glitching ? ' stat-glitch' : ''}`}
