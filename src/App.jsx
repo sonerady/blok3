@@ -109,6 +109,7 @@ function App() {
             <div className="version-toggle">
               <button className={`version-btn${version === 'v1' ? ' active' : ''}`} onClick={() => setVersion('v1')}>V1</button>
               <button className={`version-btn${version === 'v2' ? ' active' : ''}`} onClick={() => setVersion('v2')}>V2</button>
+              <button className={`version-btn${version === 'v3' ? ' active' : ''}`} onClick={() => setVersion('v3')}>V3</button>
             </div>
           )}
         </div>

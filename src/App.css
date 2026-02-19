@@ -2786,11 +2786,12 @@
 
   /* ── Landing Section — Mobile ── */
   .landing-front {
-    inset: auto -100% 0 -65%;
-    width: 300%;
-    height: 300%;
-    object-fit: contain;
-    object-position: right bottom;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    z-index: 5;
   }
 
   .landing-title {

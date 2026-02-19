@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll, AnimatePresence } from 'framer-motion'
 import landingBgV2 from '../assets/first_background.jpg'
 import landingFrontV2 from '../assets/first_front.png'
-import landingBgV1Video from '../assets/section_v1_background_video_v3.mp4'
+import landingBgV1Video from '../assets/section_v1_background_video_v4.mp4'
+import landingBgV3Video from '../assets/section_v1_background_video_v3.mp4'
 import landingFrontV1 from '../assets/section_v1_front.png'
+import landingFrontV1Mobile from '../assets/section_v1_front_mobile.png'
 import secondVideo from '../assets/second_video.mp4'
 import secondFront from '../assets/second_front.png'
 
@@ -79,7 +81,18 @@ const phraseVariants = {
 }
 
 export default function LandingSection({ containerRef, audioRef, version = 'v1' }) {
-  const landingFront = version === 'v1' ? landingFrontV1 : landingFrontV2
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const isVideoVersion = version === 'v1' || version === 'v3'
+  const landingFront = isVideoVersion
+    ? (isMobile ? landingFrontV1Mobile : landingFrontV1)
+    : landingFrontV2
+  const activeVideo = version === 'v1' ? landingBgV1Video : landingBgV3Video
   const sectionRef = useRef(null)
   const secondVideoRef = useRef(null)
   const v1BgVideoRef = useRef(null)
@@ -100,11 +113,16 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
     }, 3000)
     return () => clearInterval(interval)
   }, [version])
-  const showFirstContent = version === 'v2' || v1VideoEnded
+  const showFirstContent = !isVideoVersion || v1VideoEnded
 
-  // Reset video ended state when switching versions
+  // Reset and replay video when switching versions
   useEffect(() => {
     setV1VideoEnded(false)
+    const video = v1BgVideoRef.current
+    if (video && (version === 'v1' || version === 'v3')) {
+      video.currentTime = 0
+      video.play()
+    }
   }, [version])
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -339,11 +357,11 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
 
         {/* Background with spotlight */}
         <motion.div className="landing-bg-wrapper">
-          {version === 'v1' ? (
+          {isVideoVersion ? (
             <motion.video
               ref={v1BgVideoRef}
               className="landing-bg"
-              src={landingBgV1Video}
+              src={activeVideo}
               muted
               playsInline
               onEnded={() => setV1VideoEnded(true)}
@@ -369,7 +387,7 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
 
         {/* First front — always visible */}
         <motion.img
-          className={`landing-front${frontGlitching && version === 'v1' ? ' front-glitch' : ''}`}
+          className={`landing-front${frontGlitching && isVideoVersion ? ' front-glitch' : ''}`}
           src={landingFront}
           alt=""
           style={{ x: frontX, opacity: firstFrontOpacity }}
