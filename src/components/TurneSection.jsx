@@ -4,8 +4,13 @@ import turneBg1 from '../assets/2026_concer_section_backgorund.jpg'
 import turneBg3 from '../assets/2026_concer_section_backgorund_3.jpg'
 import turneBg2 from '../assets/2026_concer_section_backgorund_2.jpg'
 import turneBg4 from '../assets/2026_concer_section_backgorund_4.jpg'
+import turneBgMobile from '../assets/2026_concer_section_backgorund_mobile.png'
+import turneBg2Mobile from '../assets/2026_concer_section_backgorund_2_mobile.jpg'
+import turneBg3Mobile from '../assets/2026_concer_section_backgorund_3_mobile.png'
+import turneBg4Mobile from '../assets/2026_concer_section_backgorund_4_mobile.png'
 
 const bgImages = [turneBg1, turneBg3, turneBg2, turneBg4]
+const bgImagesMobile = [turneBgMobile, turneBg2Mobile, turneBg3Mobile, turneBg4Mobile]
 import turneFront1 from '../assets/2026_concer_section_front_1.png'
 import turneFront2 from '../assets/2026_concer_section_front_2.png'
 import turneFront2Goat from '../assets/2026_concer_section_front_2_goat.png'
@@ -17,6 +22,12 @@ export default function TurneSection({ containerRef }) {
   const [bgIndex, setBgIndex] = useState(0)
   const [frontAlt, setFrontAlt] = useState(false)
   const [glitching, setGlitching] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   // Electric glitch swap — bg cycles 1→3→2, front2 toggles, every 3s
   useEffect(() => {
@@ -85,9 +96,9 @@ export default function TurneSection({ containerRef }) {
         {/* Background — electric glitch swap */}
         <motion.img
           className={`turne-bg${glitching ? ' bg-glitch' : ''}`}
-          src={bgImages[bgIndex]}
+          src={isMobile ? bgImagesMobile[bgIndex % bgImagesMobile.length] : bgImages[bgIndex]}
           alt=""
-          style={{ x: bgMoveX, y: bgY, opacity: elementsOp }}
+          style={{ x: isMobile ? 0 : bgMoveX, y: isMobile ? 0 : bgY, opacity: elementsOp }}
         />
 
         {/* Dark clouds — behind text & fronts */}
@@ -118,7 +129,7 @@ export default function TurneSection({ containerRef }) {
           className={`turne-front turne-front-2${glitching ? ' bg-glitch' : ''}`}
           src={frontAlt ? turneFront2Goat : turneFront2}
           alt=""
-          style={{ x: front2X, opacity: elementsOp }}
+          style={{ x: isMobile ? 0 : front2X, opacity: elementsOp }}
         />
 
         {/* Front 1 (on top) */}
@@ -126,7 +137,7 @@ export default function TurneSection({ containerRef }) {
           className="turne-front turne-front-1"
           src={turneFront1}
           alt=""
-          style={{ x: front1X, opacity: elementsOp }}
+          style={{ x: isMobile ? 0 : front1X, opacity: elementsOp }}
         />
 
         {/* Overlay */}
