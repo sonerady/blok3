@@ -7,7 +7,8 @@ import landingBgV3Video from '../assets/section_v1_background_video_v3.mp4'
 import landingFrontV1 from '../assets/section_v1_front.png'
 import landingFrontV1Mobile from '../assets/section_v1_front_mobile.png'
 import secondVideo from '../assets/second_video.mp4'
-import secondFront from '../assets/second_front.png'
+import secondFrontDesktop from '../assets/second_front.png'
+import secondFrontMobile from '../assets/second_front_mobile.png'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
@@ -93,6 +94,7 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
     ? (isMobile ? landingFrontV1Mobile : landingFrontV1)
     : landingFrontV2
   const activeVideo = version === 'v1' ? landingBgV1Video : landingBgV3Video
+  const secondFront = isMobile ? secondFrontMobile : secondFrontDesktop
   const sectionRef = useRef(null)
   const secondVideoRef = useRef(null)
   const v1BgVideoRef = useRef(null)
@@ -372,12 +374,14 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
                   maskImage: maskImage,
                 }}
               />
-              <div className="smoke-overlay">
-                <div className="smoke-layer smoke-layer-1" />
-                <div className="smoke-layer smoke-layer-2" />
-                <div className="smoke-layer smoke-layer-3" />
-              </div>
-              {v1VideoEnded && <div className="video-ended-glow" />}
+              {isFirstScreen && (
+                <div className="smoke-overlay">
+                  <div className="smoke-layer smoke-layer-1" />
+                  <div className="smoke-layer smoke-layer-2" />
+                  <div className="smoke-layer smoke-layer-3" />
+                </div>
+              )}
+              {isFirstScreen && v1VideoEnded && <div className="video-ended-glow" />}
             </>
           ) : (
             <motion.img
@@ -398,8 +402,11 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
           className={`landing-front${frontGlitching && isVideoVersion ? ' front-glitch' : ''}`}
           src={landingFront}
           alt=""
-          style={{ x: frontX, opacity: firstFrontOpacity }}
+          style={{ x: isMobile ? 0 : frontX, opacity: firstFrontOpacity }}
         />
+
+        {/* Bottom gradient — fades with scroll */}
+        <motion.div className="landing-bottom-gradient" style={{ opacity: bgOpacity }} />
 
         {/* Bio info — always visible */}
         <motion.div
