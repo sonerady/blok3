@@ -115,7 +115,7 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
     }, 3000)
     return () => clearInterval(interval)
   }, [version])
-  const showFirstContent = !isVideoVersion || v1VideoEnded
+  const showFirstContent = entered && (!isVideoVersion || v1VideoEnded)
 
   // Reset and replay video when switching versions
   useEffect(() => {
@@ -178,10 +178,15 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
       audio.volume = 0.4
       audio.play()
     }
-    if (secondVideoRef.current) secondVideoRef.current.play()
-    if (v1BgVideoRef.current) v1BgVideoRef.current.play()
     setEntered(true)
   }
+
+  // Play videos after entry (refs are available after render)
+  useEffect(() => {
+    if (!entered) return
+    if (secondVideoRef.current) secondVideoRef.current.play()
+    if (v1BgVideoRef.current) v1BgVideoRef.current.play()
+  }, [entered])
 
   const handleSubscribe = async (e) => {
     e.preventDefault()
@@ -354,59 +359,71 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
           className="landing-front landing-second-front"
           src={secondFront}
           alt=""
-          style={{ opacity: secondFrontOpacity, x: secondFrontX }}
+          style={{ opacity: secondFrontOpacity, x: isMobile ? 0 : secondFrontX }}
         />
 
-        {/* Background with spotlight */}
-        <motion.div className="landing-bg-wrapper">
-          {isVideoVersion ? (
-            <>
-              <motion.video
-                ref={v1BgVideoRef}
-                className={`landing-bg${v1VideoEnded ? ' video-ended-pulse' : ''}`}
-                src={activeVideo}
-                muted
-                playsInline
-                onEnded={() => setV1VideoEnded(true)}
-                style={{
-                  opacity: bgOpacity,
-                  WebkitMaskImage: maskImage,
-                  maskImage: maskImage,
-                }}
-              />
-              {isFirstScreen && (
-                <div className="smoke-overlay">
-                  <div className="smoke-layer smoke-layer-1" />
-                  <div className="smoke-layer smoke-layer-2" />
-                  <div className="smoke-layer smoke-layer-3" />
-                </div>
+        {/* Background with spotlight — only after entry */}
+        {entered && (
+          <>
+            <motion.div className="landing-bg-wrapper">
+              {isVideoVersion ? (
+                <>
+                  <motion.video
+                    ref={v1BgVideoRef}
+                    className={`landing-bg${v1VideoEnded ? ' video-ended-pulse' : ''}`}
+                    src={activeVideo}
+                    muted
+                    playsInline
+                    onEnded={() => setV1VideoEnded(true)}
+                    style={{
+                      opacity: bgOpacity,
+                      WebkitMaskImage: maskImage,
+                      maskImage: maskImage,
+                    }}
+                  />
+                  {isFirstScreen && (
+                    <>
+                      <div className="concert-spotlights">
+                        <div className="spotlight spotlight-1" />
+                        <div className="spotlight spotlight-2" />
+                        <div className="spotlight spotlight-3" />
+                        <div className="spotlight spotlight-4" />
+                      </div>
+                      <div className="smoke-overlay">
+                        <div className="smoke-layer smoke-layer-1" />
+                        <div className="smoke-layer smoke-layer-2" />
+                        <div className="smoke-layer smoke-layer-3" />
+                      </div>
+                    </>
+                  )}
+                  {isFirstScreen && v1VideoEnded && <div className="video-ended-glow" />}
+                </>
+              ) : (
+                <motion.img
+                  className="landing-bg"
+                  src={landingBgV2}
+                  alt=""
+                  style={{
+                    opacity: bgOpacity,
+                    WebkitMaskImage: maskImage,
+                    maskImage: maskImage,
+                  }}
+                />
               )}
-              {isFirstScreen && v1VideoEnded && <div className="video-ended-glow" />}
-            </>
-          ) : (
+            </motion.div>
+
+            {/* First front */}
             <motion.img
-              className="landing-bg"
-              src={landingBgV2}
+              className={`landing-front${frontGlitching && isVideoVersion ? ' front-glitch' : ''}`}
+              src={landingFront}
               alt=""
-              style={{
-                opacity: bgOpacity,
-                WebkitMaskImage: maskImage,
-                maskImage: maskImage,
-              }}
+              style={{ x: isMobile ? 0 : frontX, opacity: firstFrontOpacity }}
             />
-          )}
-        </motion.div>
 
-        {/* First front — always visible */}
-        <motion.img
-          className={`landing-front${frontGlitching && isVideoVersion ? ' front-glitch' : ''}`}
-          src={landingFront}
-          alt=""
-          style={{ x: isMobile ? 0 : frontX, opacity: firstFrontOpacity }}
-        />
-
-        {/* Bottom gradient — fades with scroll */}
-        <motion.div className="landing-bottom-gradient" style={{ opacity: bgOpacity }} />
+            {/* Bottom gradient */}
+            <motion.div className="landing-bottom-gradient" style={{ opacity: bgOpacity }} />
+          </>
+        )}
 
         {/* Bio info — always visible */}
         <motion.div
