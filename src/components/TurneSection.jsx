@@ -22,6 +22,8 @@ export default function TurneSection({ containerRef }) {
   const [bgIndex, setBgIndex] = useState(0)
   const [frontAlt, setFrontAlt] = useState(false)
   const [glitching, setGlitching] = useState(false)
+  const [frontGlitchKey, setFrontGlitchKey] = useState(0)
+  const [frontGlitching, setFrontGlitching] = useState(false)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768)
@@ -33,10 +35,15 @@ export default function TurneSection({ containerRef }) {
   useEffect(() => {
     const swap = () => {
       setGlitching(true)
+      setFrontGlitching(true)
+      setFrontGlitchKey((k) => k + 1)
       setTimeout(() => {
         setBgIndex((v) => (v + 1) % bgImages.length)
         setFrontAlt((v) => !v)
-        setTimeout(() => setGlitching(false), 150)
+        setTimeout(() => {
+          setGlitching(false)
+          setFrontGlitching(false)
+        }, 150)
       }, 150)
     }
     const tick = () => {
@@ -126,7 +133,8 @@ export default function TurneSection({ containerRef }) {
 
         {/* Front 2 (behind front 1) — electric glitch swap */}
         <motion.img
-          className={`turne-front turne-front-2${glitching ? ' bg-glitch' : ''}`}
+          key={frontGlitchKey}
+          className={`turne-front turne-front-2${frontGlitching ? ' front-glitch' : ''}`}
           src={frontAlt ? turneFront2Goat : turneFront2}
           alt=""
           style={{ x: isMobile ? 0 : front2X, opacity: elementsOp }}
