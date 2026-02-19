@@ -358,19 +358,27 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
         {/* Background with spotlight */}
         <motion.div className="landing-bg-wrapper">
           {isVideoVersion ? (
-            <motion.video
-              ref={v1BgVideoRef}
-              className="landing-bg"
-              src={activeVideo}
-              muted
-              playsInline
-              onEnded={() => setV1VideoEnded(true)}
-              style={{
-                opacity: bgOpacity,
-                WebkitMaskImage: maskImage,
-                maskImage: maskImage,
-              }}
-            />
+            <>
+              <motion.video
+                ref={v1BgVideoRef}
+                className={`landing-bg${v1VideoEnded ? ' video-ended-pulse' : ''}`}
+                src={activeVideo}
+                muted
+                playsInline
+                onEnded={() => setV1VideoEnded(true)}
+                style={{
+                  opacity: bgOpacity,
+                  WebkitMaskImage: maskImage,
+                  maskImage: maskImage,
+                }}
+              />
+              <div className="smoke-overlay">
+                <div className="smoke-layer smoke-layer-1" />
+                <div className="smoke-layer smoke-layer-2" />
+                <div className="smoke-layer smoke-layer-3" />
+              </div>
+              {v1VideoEnded && <div className="video-ended-glow" />}
+            </>
           ) : (
             <motion.img
               className="landing-bg"

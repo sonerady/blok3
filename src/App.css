@@ -318,6 +318,88 @@
   z-index: 1;
 }
 
+/* ── Smoke / Fog Overlay ── */
+.smoke-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.smoke-layer {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 20% 80%, rgba(138, 43, 226, 0.25) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(186, 85, 211, 0.2) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(75, 0, 130, 0.15) 0%, transparent 60%);
+  filter: blur(40px);
+  animation: smoke-drift-1 8s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+.smoke-layer-2 {
+  background: radial-gradient(ellipse at 70% 70%, rgba(148, 0, 211, 0.2) 0%, transparent 45%),
+              radial-gradient(ellipse at 30% 30%, rgba(199, 21, 133, 0.18) 0%, transparent 50%),
+              radial-gradient(ellipse at 60% 90%, rgba(128, 0, 128, 0.15) 0%, transparent 55%);
+  filter: blur(50px);
+  animation: smoke-drift-2 12s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.smoke-layer-3 {
+  background: radial-gradient(ellipse at 40% 60%, rgba(186, 85, 211, 0.15) 0%, transparent 40%),
+              radial-gradient(ellipse at 90% 50%, rgba(138, 43, 226, 0.12) 0%, transparent 50%);
+  filter: blur(60px);
+  animation: smoke-drift-3 15s ease-in-out infinite;
+  opacity: 0.5;
+}
+
+@keyframes smoke-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(5%, -3%) scale(1.05); }
+  50% { transform: translate(-3%, 5%) scale(0.95); }
+  75% { transform: translate(3%, 2%) scale(1.02); }
+}
+
+@keyframes smoke-drift-2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  33% { transform: translate(-4%, 3%) rotate(2deg) scale(1.08); }
+  66% { transform: translate(4%, -4%) rotate(-2deg) scale(0.92); }
+}
+
+@keyframes smoke-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate(6%, -5%) scale(1.1) rotate(3deg); }
+}
+
+/* ── Video Ended Effects ── */
+.video-ended-pulse {
+  animation: ended-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ended-pulse {
+  0%, 100% { filter: brightness(1) saturate(1.2); }
+  50% { filter: brightness(1.15) saturate(1.6); }
+}
+
+.video-ended-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 60%, rgba(138, 43, 226, 0.35) 0%, rgba(75, 0, 130, 0.15) 40%, transparent 70%);
+  animation: glow-breathe 3s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.05); }
+}
+
 .landing-bg {
   position: absolute;
   inset: 0;
@@ -354,6 +436,8 @@
   will-change: transform;
   margin-left: 0;
   margin-top: -30vh;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .landing-bio {
