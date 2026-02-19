@@ -3027,7 +3027,7 @@
   }
 
   .landing-title.landing-title-second {
-    font-size: clamp(3.5rem, 12vw, 7rem);
+    font-size: clamp(4rem, 14vw, 8rem);
     margin-top: 0;
     top: 15%;
     left: 1.5rem;
@@ -3043,8 +3043,54 @@
     gap: 0.5rem;
   }
 
+  .landing-bottom-gradient {
+    height: 70%;
+  }
+
   .landing-sticky::after {
     display: none;
+  }
+
+  /* ── CTA Section — Mobile ── */
+  .cta-col-left {
+    top: 12%;
+    left: 1.5rem;
+    transform: none;
+  }
+
+  .cta-heading {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    line-height: 1.15;
+  }
+
+  .cta-lead {
+    font-size: 0.85rem;
+  }
+
+  .cta-front {
+    height: auto;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    object-fit: contain;
+    object-position: center bottom;
+  }
+
+
+  .global-nav {
+    padding: 1.2rem 1.5rem;
+    align-items: center;
+  }
+
+  .step-nav {
+    right: 0.8rem;
+    top: 34%;
+  }
+
+  .landing-trend-label {
+    top: 1.2rem;
   }
 
   /* ── Hamburger — Mobile ── */

@@ -60,24 +60,27 @@ const phrases = [
 ]
 
 const phraseVariants = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(8px)' },
+  hidden: {},
   visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
     transition: {
-      duration: 0.7,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      staggerChildren: 0.04,
     },
   },
   exit: {
     opacity: 0,
-    y: -40,
-    filter: 'blur(8px)',
     transition: {
-      duration: 0.4,
+      duration: 0.3,
       ease: 'easeIn',
     },
+  },
+}
+
+const charVariants = {
+  hidden: { opacity: 0, display: 'none' },
+  visible: {
+    opacity: 1,
+    display: 'inline',
+    transition: { duration: 0.01 },
   },
 }
 
@@ -151,25 +154,23 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
 
   // Hide cursor only on first screen + track if in landing section
   const [isFirstScreen, setIsFirstScreen] = useState(true)
-  const [inFirstSection, setInFirstSection] = useState(true)
   useEffect(() => {
     const unsubscribe = scrollYProgress.on('change', (v) => {
       setIsFirstScreen(v < 0.05)
-      setInFirstSection(v < 0.45)
     })
     return unsubscribe
   }, [scrollYProgress])
 
-  // Pause/resume music when leaving/entering first section
+  // Pause/resume music when leaving/entering first screen
   useEffect(() => {
     const audio = audioRef.current
     if (!audio || !entered) return
-    if (inFirstSection) {
+    if (isFirstScreen) {
       audio.play()
     } else {
       audio.pause()
     }
-  }, [inFirstSection, entered])
+  }, [isFirstScreen, entered])
 
   // Enter site — start music and video
   const handleEnter = () => {
@@ -511,13 +512,23 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
               animate="visible"
               exit="exit"
             >
-              {phrases[key % phrases.length].split(' ').map((word, i) => {
+              {(() => {
                 const phrase = phrases[key % phrases.length]
-                const isRekorHit = phrase === 'REKOR HİT' && i === 1
-                return (
-                  <span key={i} style={{ display: 'block', alignSelf: 'flex-start', marginLeft: isRekorHit && !isMobile ? '45%' : '0' }}>{word}</span>
-                )
-              })}
+                const words = phrase.split(' ')
+                const orderedWords = isMobile && phrase === '#1 TÜRKİYE' ? [...words].reverse() : words
+                return orderedWords.map((word, wi) => {
+                  const isRekorHit = phrase === 'REKOR HİT' && wi === 1
+                  return (
+                    <span key={wi} style={{ display: 'block', alignSelf: 'flex-start', marginLeft: isRekorHit && !isMobile ? '45%' : '0' }}>
+                      {word.split('').map((char, ci) => (
+                        <motion.span key={ci} variants={charVariants} style={{ display: 'inline' }}>
+                          {char}
+                        </motion.span>
+                      ))}
+                    </span>
+                  )
+                })
+              })()}
             </motion.span>
           </AnimatePresence>
         </motion.h1>

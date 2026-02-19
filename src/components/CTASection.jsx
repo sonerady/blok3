@@ -1,11 +1,30 @@
-import { useRef, useEffect, useState, memo } from 'react'
+import { useRef, useEffect, useState, memo, useCallback } from 'react'
 import { motion, useMotionValue, useSpring, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+
+function TypewriterHeading({ text, active, speed = 40 }) {
+  const [charCount, setCharCount] = useState(0)
+
+  useEffect(() => {
+    if (!active) return
+    if (charCount >= text.length) return
+    const timer = setTimeout(() => setCharCount((c) => c + 1), speed)
+    return () => clearTimeout(timer)
+  }, [active, charCount, text, speed])
+
+  return (
+    <span>
+      {text.slice(0, charCount)}
+      {active && charCount < text.length && <span className="typewriter-cursor">|</span>}
+    </span>
+  )
+}
 import concerBg1 from '../assets/concer_section_1.jpg'
 import concerBg2 from '../assets/concer_section_2.jpg'
 import concerBg3 from '../assets/concer_section_3.jpg'
 import concerBg4 from '../assets/concer_section_4.jpg'
 import concerBg5 from '../assets/concer_section_5.jpg'
 import concerFront from '../assets/concer_section_front.png'
+import concerFrontMobile from '../assets/section_v1_front_mobile.png'
 
 const bgImages = [concerBg1, concerBg2, concerBg3, concerBg4, concerBg5]
 
@@ -68,6 +87,12 @@ export default function CTASection({ containerRef }) {
   const sectionRef = useRef(null)
   const mouseX = useMotionValue(0)
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 })
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   // Scroll-based parallax
   const { scrollYProgress } = useScroll({
@@ -77,6 +102,15 @@ export default function CTASection({ containerRef }) {
   })
   const bgY = useTransform(scrollYProgress, [0, 0.5, 1], ['10%', '0%', '-10%'])
   const [countersActive, setCountersActive] = useState(false)
+  const [frontGlitching, setFrontGlitching] = useState(false)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFrontGlitching(true)
+      setTimeout(() => setFrontGlitching(false), 200)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
   const [bgIndex, setBgIndex] = useState(0)
   const isFirstRender = useRef(true)
 
@@ -123,7 +157,7 @@ export default function CTASection({ containerRef }) {
           transition={{ duration: 1, ease: 'easeInOut' }}
         />
       </AnimatePresence>
-      <motion.img className="cta-front" src={concerFront} alt="" style={{ x: frontX }} />
+      <motion.img className={`cta-front${frontGlitching ? ' front-glitch' : ''}`} src={isMobile ? concerFrontMobile : concerFront} alt="" style={{ x: isMobile ? 0 : frontX }} />
       <div className="cta-overlay" />
 
       {/* ── Editorial Layout ── */}
@@ -139,9 +173,8 @@ export default function CTASection({ containerRef }) {
           <motion.h2 className="cta-heading" variants={slideLeft}>
             KONSER<br />PERFORMANS<span className="cta-heading-accent">LARI</span>
           </motion.h2>
-          <motion.div className="cta-heading-line" variants={lineGrow} />
           <motion.p className="cta-lead" variants={slideLeft}>
-            Sahnenin enerjisi,<br />rakamların ötesinde.
+            Sahnenin enerjisi, rakamların ötesinde.
           </motion.p>
         </div>
 
