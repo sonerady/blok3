@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll, AnimatePresence } from 'framer-motion'
-import landingBg from '../assets/first_background.jpg'
-import landingFront from '../assets/first_front.png'
+import landingBgV2 from '../assets/first_background.jpg'
+import landingFrontV2 from '../assets/first_front.png'
+import landingBgV1Video from '../assets/section_v1_background_video_v3.mp4'
+import landingFrontV1 from '../assets/section_v1_front.png'
 import secondVideo from '../assets/second_video.mp4'
 import secondFront from '../assets/second_front.png'
 
@@ -76,14 +78,34 @@ const phraseVariants = {
   },
 }
 
-export default function LandingSection({ containerRef, audioRef }) {
+export default function LandingSection({ containerRef, audioRef, version = 'v1' }) {
+  const landingFront = version === 'v1' ? landingFrontV1 : landingFrontV2
   const sectionRef = useRef(null)
   const secondVideoRef = useRef(null)
+  const v1BgVideoRef = useRef(null)
   const [entered, setEntered] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', phone: '', city: '' })
   const [key, setKey] = useState(0)
   const [titleKey, setTitleKey] = useState(0)
+  const [v1VideoEnded, setV1VideoEnded] = useState(false)
+  const [frontGlitching, setFrontGlitching] = useState(false)
+
+  // Glitch effect on V1 front image every 3s
+  useEffect(() => {
+    if (version !== 'v1') return
+    const interval = setInterval(() => {
+      setFrontGlitching(true)
+      setTimeout(() => setFrontGlitching(false), 300)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [version])
+  const showFirstContent = version === 'v2' || v1VideoEnded
+
+  // Reset video ended state when switching versions
+  useEffect(() => {
+    setV1VideoEnded(false)
+  }, [version])
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
@@ -137,6 +159,7 @@ export default function LandingSection({ containerRef, audioRef }) {
       audio.play()
     }
     if (secondVideoRef.current) secondVideoRef.current.play()
+    if (v1BgVideoRef.current) v1BgVideoRef.current.play()
     setEntered(true)
   }
 
@@ -288,17 +311,6 @@ export default function LandingSection({ containerRef, audioRef }) {
               Abone olmadan devam et
             </motion.button>
 
-            <motion.a
-              className="entry-credit"
-              href="https://www.monailisa.com/"
-              target="_blank"
-              rel="noreferrer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2, duration: 0.8 }}
-            >
-              made by <span className="entry-credit-name">Monailisa Lab</span>
-            </motion.a>
           </motion.div>
         )}
       </AnimatePresence>
@@ -327,27 +339,43 @@ export default function LandingSection({ containerRef, audioRef }) {
 
         {/* Background with spotlight */}
         <motion.div className="landing-bg-wrapper">
-          <motion.img
-            className="landing-bg"
-            src={landingBg}
-            alt=""
-            style={{
-              opacity: bgOpacity,
-              WebkitMaskImage: maskImage,
-              maskImage: maskImage,
-            }}
-          />
+          {version === 'v1' ? (
+            <motion.video
+              ref={v1BgVideoRef}
+              className="landing-bg"
+              src={landingBgV1Video}
+              muted
+              playsInline
+              onEnded={() => setV1VideoEnded(true)}
+              style={{
+                opacity: bgOpacity,
+                WebkitMaskImage: maskImage,
+                maskImage: maskImage,
+              }}
+            />
+          ) : (
+            <motion.img
+              className="landing-bg"
+              src={landingBgV2}
+              alt=""
+              style={{
+                opacity: bgOpacity,
+                WebkitMaskImage: maskImage,
+                maskImage: maskImage,
+              }}
+            />
+          )}
         </motion.div>
 
-        {/* First front — static */}
+        {/* First front — always visible */}
         <motion.img
-          className="landing-front"
+          className={`landing-front${frontGlitching && version === 'v1' ? ' front-glitch' : ''}`}
           src={landingFront}
           alt=""
           style={{ x: frontX, opacity: firstFrontOpacity }}
         />
 
-        {/* Bio info */}
+        {/* Bio info — always visible */}
         <motion.div
           className="landing-bio"
           style={{ opacity: bgOpacity }}
@@ -387,27 +415,37 @@ export default function LandingSection({ containerRef, audioRef }) {
           </motion.p>
         </motion.div>
 
-        {/* BLOK3 title — first screen only, letter-by-letter loops every 4s */}
-        <motion.h1
-          className="landing-title"
-          style={{ x: titleX, y: titleY, opacity: bgOpacity }}
-        >
-          {'BLOK3'.split('').map((char, i) => (
-            <motion.span
-              key={`${titleKey}-${i}`}
-              initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{
-                delay: i * 0.12,
-                duration: 0.5,
-                ease: [0.25, 0.46, 0.45, 0.94],
-              }}
-              style={{ display: 'inline-block' }}
+        {/* BLOK3 title — appears after V1 video ends, letter-by-letter loops every 4s */}
+        <AnimatePresence>
+          {showFirstContent && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
             >
-              {char}
-            </motion.span>
-          ))}
-        </motion.h1>
+              <motion.h1
+                className="landing-title"
+                style={{ x: titleX, y: titleY, opacity: bgOpacity }}
+              >
+                {'BLOK3'.split('').map((char, i) => (
+                  <motion.span
+                    key={`${titleKey}-${i}`}
+                    initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    transition={{
+                      delay: i * 0.12,
+                      duration: 0.5,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </motion.h1>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Rotating praise phrases — second screen only */}
         <motion.h1

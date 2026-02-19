@@ -14,6 +14,8 @@ function App() {
   const [activeStep, setActiveStep] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [version, setVersion] = useState('v1')
 
   useEffect(() => {
     const audio = audioRef.current
@@ -103,21 +105,30 @@ function App() {
             <span>3</span>
             <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span>
           </span>
+          {activeStep === 0 && (
+            <div className="version-toggle">
+              <button className={`version-btn${version === 'v1' ? ' active' : ''}`} onClick={() => setVersion('v1')}>V1</button>
+              <button className={`version-btn${version === 'v2' ? ' active' : ''}`} onClick={() => setVersion('v2')}>V2</button>
+            </div>
+          )}
         </div>
-        <div className="global-nav-right">
-          <a className="hero-nav-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer">SPOTIFY</a>
+        <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen((v) => !v)} aria-label="Menü">
+          <span /><span /><span />
+        </button>
+        <div className={`global-nav-right${menuOpen ? ' open' : ''}`}>
+          <a className="hero-nav-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>SPOTIFY</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer">ITUNES</a>
+          <a className="hero-nav-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>ITUNES</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer">DEEZER</a>
+          <a className="hero-nav-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>DEEZER</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer">BUBILET</a>
+          <a className="hero-nav-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>BUBILET</a>
           <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer">BILETINIAL</a>
+          <a className="hero-nav-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>BILETINIAL</a>
         </div>
       </nav>
       <StepNav activeStep={activeStep} light={isLight} />
-      <LandingSection containerRef={containerRef} audioRef={audioRef} />
+      <LandingSection containerRef={containerRef} audioRef={audioRef} version={version} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />
       <AlbumSection containerRef={containerRef} />
