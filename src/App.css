@@ -3026,6 +3026,23 @@
     padding-left: 0.15em;
   }
 
+  .landing-title.landing-title-second {
+    font-size: clamp(3.5rem, 12vw, 7rem);
+    margin-top: 0;
+    top: 15%;
+    left: 1.5rem;
+    right: auto;
+    transform: translate(0, 0);
+    width: 80%;
+    text-align: left;
+    padding-left: 0;
+    line-height: 1.1;
+  }
+
+  .landing-title-second .landing-title-inner {
+    gap: 0.5rem;
+  }
+
   .landing-sticky::after {
     display: none;
   }

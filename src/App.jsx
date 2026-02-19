@@ -48,7 +48,7 @@ function App() {
       const scrollTop = container.scrollTop
       const viewportHeight = container.clientHeight
 
-      const landingMid = viewportHeight * 0.5
+      const landingMid = viewportHeight * 0.15
       const landingEnd = viewportHeight * 2
       // CTASection (100vh) after landing (200vh)
       const ctaEnd = landingEnd + viewportHeight

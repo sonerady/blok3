@@ -515,7 +515,7 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
                 const phrase = phrases[key % phrases.length]
                 const isRekorHit = phrase === 'REKOR HİT' && i === 1
                 return (
-                  <span key={i} style={{ display: 'block', alignSelf: 'flex-start', marginLeft: isRekorHit ? '45%' : '0' }}>{word}</span>
+                  <span key={i} style={{ display: 'block', alignSelf: 'flex-start', marginLeft: isRekorHit && !isMobile ? '45%' : '0' }}>{word}</span>
                 )
               })}
             </motion.span>
