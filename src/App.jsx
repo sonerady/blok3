@@ -128,7 +128,7 @@ function App() {
           <a className="hero-nav-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>BILETINIAL</a>
         </div>
       </nav>
-      <StepNav activeStep={activeStep} light={isLight} />
+      <StepNav activeStep={activeStep} light={isLight} hideOnMobile={activeStep >= 4} />
       <LandingSection containerRef={containerRef} audioRef={audioRef} version={version} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />

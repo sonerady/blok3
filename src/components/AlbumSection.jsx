@@ -4,7 +4,9 @@ import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-mot
 /* Import frames — order: 1, 2, 6, 3 */
 const f1Mods = import.meta.glob('../assets/frames_1/frame_*.jpg', { eager: true, import: 'default' })
 const f1Srcs = Object.keys(f1Mods).sort().map((k) => f1Mods[k])
-const T1 = f1Srcs.length
+
+const f1MobileMods = import.meta.glob('../assets/frames_1_mobile/frame_*.jpg', { eager: true, import: 'default' })
+const f1MobileSrcs = Object.keys(f1MobileMods).sort().map((k) => f1MobileMods[k])
 
 const f2Mods = import.meta.glob('../assets/frames_2/frame_*.jpg', { eager: true, import: 'default' })
 const f2Srcs = Object.keys(f2Mods).sort().map((k) => f2Mods[k])
@@ -53,8 +55,16 @@ export default function AlbumSection({ containerRef }) {
   const c2 = useRef(null)
   const c6 = useRef(null)
   const c3 = useRef(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
-  const { imagesRef: i1, loaded: l1 } = useFrames(f1Srcs)
+  const activeF1Srcs = isMobile ? f1MobileSrcs : f1Srcs
+  const T1 = activeF1Srcs.length
+  const { imagesRef: i1, loaded: l1 } = useFrames(activeF1Srcs)
   const { imagesRef: i2, loaded: l2 } = useFrames(f2Srcs)
   const { imagesRef: i6, loaded: l6 } = useFrames(f6Srcs)
   const { imagesRef: i3, loaded: l3 } = useFrames(f3Srcs)
@@ -66,12 +76,29 @@ export default function AlbumSection({ containerRef }) {
     const ctx = canvas.getContext('2d')
     const img = images[idx]
     if (!img) return
-    if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
-      canvas.width = img.naturalWidth
-      canvas.height = img.naturalHeight
+
+    if (isMobile) {
+      // Mobile: fit image to viewport, shifted slightly left
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      canvas.width = vw
+      canvas.height = vh
+      const scale = Math.max(vw / img.naturalWidth, vh / img.naturalHeight) * 0.85
+      const dw = img.naturalWidth * scale
+      const dh = img.naturalHeight * scale
+      const dx = (vw - dw) / 2
+      const dy = (vh - dh) / 2 + vh * 0.05
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(0, 0, vw, vh)
+      ctx.drawImage(img, dx, dy, dw, dh)
+    } else {
+      if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
+        canvas.width = img.naturalWidth
+        canvas.height = img.naturalHeight
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(img, 0, 0)
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(img, 0, 0)
   }, [])
 
   useEffect(() => { if (l1) draw(c1, i1, 0) }, [l1, draw, i1])
@@ -135,6 +162,9 @@ export default function AlbumSection({ containerRef }) {
         <motion.canvas ref={c2} className="album-canvas album-canvas-2" style={{ opacity: op2 }} />
         <motion.canvas ref={c6} className="album-canvas album-canvas-2" style={{ opacity: op6 }} />
         <motion.canvas ref={c3} className="album-canvas album-canvas-2" style={{ opacity: op3 }} />
+
+        {/* Section title — mobile */}
+        <div className="album-section-title">ÖNE ÇIKAN PARÇALAR</div>
 
         {/* Info — frames_1 */}
         <motion.div className="album-info" style={{ opacity: info1Op }}>

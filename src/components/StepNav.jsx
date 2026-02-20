@@ -9,10 +9,10 @@ const steps = [
   { label: 'İSTATİSTİKLER' },
 ]
 
-export default function StepNav({ activeStep = 0, videoProgress = 0, light = false }) {
+export default function StepNav({ activeStep = 0, videoProgress = 0, light = false, hideOnMobile = false }) {
   return (
     <motion.nav
-      className={`step-nav${light ? ' light' : ''}`}
+      className={`step-nav${light ? ' light' : ''}${hideOnMobile ? ' hide-mobile' : ''}`}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 1, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}

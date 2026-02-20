@@ -525,7 +525,7 @@
 
 .landing-title {
   font-family: 'Anton', var(--font-display);
-  font-size: clamp(10rem, 26vw, 24rem);
+  font-size: clamp(9rem, 24vw, 22rem);
   letter-spacing: 0.15em;
   line-height: 0.85;
   color: var(--text);
@@ -534,6 +534,7 @@
   z-index: 2;
   will-change: transform;
   margin-left: 0;
+  white-space: nowrap;
   margin-top: -30vh;
   user-select: none;
   -webkit-user-select: none;
@@ -2654,7 +2655,7 @@
 .album-section {
   height: 700vh;
   position: relative;
-  background: #000;
+  background: #fff;
 }
 
 .album-sticky {
@@ -2677,6 +2678,10 @@
 .album-canvas-2 {
   position: absolute;
   inset: 0;
+}
+
+.album-section-title {
+  display: none;
 }
 
 .album-info {
@@ -3061,6 +3066,52 @@
 
   .landing-sticky::after {
     display: none;
+  }
+
+  /* ── Album Section — Mobile ── */
+  .album-canvas {
+    background: #fff;
+  }
+
+  .album-section-title {
+    display: block;
+    position: absolute;
+    top: 12%;
+    left: 1.5rem;
+    z-index: 6;
+    font-family: var(--font-body);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: rgba(0, 0, 0, 0.4);
+    text-transform: uppercase;
+  }
+
+  .album-info {
+    bottom: 2rem;
+    left: 1.5rem;
+    z-index: 6;
+  }
+
+  .album-song-name {
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .step-nav.hide-mobile {
+    display: none;
+  }
+
+  .album-sticky::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    background: linear-gradient(to top, #fff 0%, #fff 30%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.5) 65%, rgba(255, 255, 255, 0.25) 80%, rgba(255, 255, 255, 0.1) 90%, transparent 100%);
+    z-index: 4;
+    pointer-events: none;
   }
 
   /* ── CTA Section — Mobile ── */
