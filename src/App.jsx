@@ -119,15 +119,49 @@ function App() {
         </button>
         {menuOpen && <div className="menu-overlay" onClick={() => setMenuOpen(false)} />}
         <div className={`global-nav-right${menuOpen ? ' open' : ''}`}>
-          <a className="hero-nav-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>SPOTIFY</a>
-          <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>ITUNES</a>
-          <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>DEEZER</a>
-          <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>BUBILET</a>
-          <span className="hero-nav-divider">/</span>
-          <a className="hero-nav-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>BILETINIAL</a>
+          {/* Desktop — flat links */}
+          <div className="menu-desktop-links">
+            <a className="hero-nav-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer">SPOTIFY</a>
+            <span className="hero-nav-divider">/</span>
+            <a className="hero-nav-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer">ITUNES</a>
+            <span className="hero-nav-divider">/</span>
+            <a className="hero-nav-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer">DEEZER</a>
+            <span className="hero-nav-divider">/</span>
+            <a className="hero-nav-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer">BUBILET</a>
+            <span className="hero-nav-divider">/</span>
+            <a className="hero-nav-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer">BILETINIAL</a>
+          </div>
+
+          {/* Mobile — sectioned menu */}
+          <div className="menu-mobile-sections">
+            <div className="menu-section">
+              <span className="menu-section-title">Müzik Platformlarımız</span>
+              <a className="menu-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Spotify</a>
+              <a className="menu-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Apple Music</a>
+              <a className="menu-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Deezer</a>
+            </div>
+
+            <div className="menu-section">
+              <span className="menu-section-title">Biletlerimiz</span>
+              <a className="menu-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Bubilet</a>
+              <a className="menu-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Biletinial</a>
+            </div>
+
+            <div className="menu-section">
+              <span className="menu-section-title">Yaklaşan Etkinlikler</span>
+              <a className="menu-link" href="#events" onClick={() => setMenuOpen(false)}>Konser Takvimi</a>
+            </div>
+
+            <div className="menu-section">
+              <span className="menu-section-title">Basında Biz</span>
+              <a className="menu-link" href="#press" onClick={() => setMenuOpen(false)}>Basında Biz</a>
+            </div>
+
+            <div className="menu-section">
+              <span className="menu-section-title">İletişim</span>
+              <a className="menu-link" href="mailto:info@blok3team.com" onClick={() => setMenuOpen(false)}>info@blok3team.com</a>
+            </div>
+          </div>
         </div>
       </nav>
       <StepNav activeStep={activeStep} light={isLight} hideOnMobile={activeStep >= 4} />
