@@ -16,6 +16,7 @@ function App() {
   const [hasStarted, setHasStarted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [version, setVersion] = useState('v1')
+  const [isDarkAlbum, setIsDarkAlbum] = useState(false)
 
   useEffect(() => {
     const audio = audioRef.current
@@ -99,7 +100,7 @@ function App() {
         </button>
       )}
 
-      <nav className={`global-nav${isLight ? ' light' : ''}`}>
+      <nav className={`global-nav${isLight ? ' light' : ''}${isDarkAlbum ? ' dark-album' : ''}`}>
         <div className="global-nav-left">
           <span className="hero-nav-logo">
             <span>3</span>
@@ -132,7 +133,7 @@ function App() {
       <LandingSection containerRef={containerRef} audioRef={audioRef} version={version} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />
-      <AlbumSection containerRef={containerRef} />
+      <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} />
       <StatisticSection containerRef={containerRef} />
     </div>
   )

@@ -49,7 +49,7 @@ function useFrames(srcs) {
   return { imagesRef, loaded }
 }
 
-export default function AlbumSection({ containerRef }) {
+export default function AlbumSection({ containerRef, onDarkChange }) {
   const sectionRef = useRef(null)
   const c1 = useRef(null)
   const c2 = useRef(null)
@@ -154,16 +154,24 @@ export default function AlbumSection({ containerRef }) {
   useMotionValueEvent(idx6, 'change', (v) => { if (l6) draw(c6, i6, Math.max(0, Math.round(v))) })
   useMotionValueEvent(idx3, 'change', (v) => { if (l3) draw(c3, i3, Math.max(0, Math.round(v))) })
 
+  // Track when frames_2 is active (dark background) and notify parent
+  const [isDark, setIsDark] = useState(false)
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    const dark = v >= 0.20 && v < 0.50
+    setIsDark(dark)
+    if (onDarkChange) onDarkChange(dark)
+  })
+
   return (
     <section ref={sectionRef} className="album-section">
-      <div className="album-sticky">
+      <div className={`album-sticky${isDark ? ' album-sticky-dark' : ''}`}>
         <motion.canvas ref={c1} className="album-canvas" style={{ opacity: op1 }} />
         <motion.canvas ref={c2} className="album-canvas album-canvas-2" style={{ opacity: op2 }} />
         <motion.canvas ref={c6} className="album-canvas album-canvas-2" style={{ opacity: op6 }} />
         <motion.canvas ref={c3} className="album-canvas album-canvas-2" style={{ opacity: op3 }} />
 
         {/* Section title — mobile */}
-        <div className="album-section-title">ÖNE ÇIKAN PARÇALAR</div>
+        <div className={`album-section-title${isDark ? ' dark' : ''}`}>ÖNE ÇIKAN PARÇALAR</div>
 
         {/* Info — frames_1 */}
         <motion.div className="album-info" style={{ opacity: info1Op }}>

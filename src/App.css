@@ -1635,8 +1635,13 @@
 }
 
 .global-nav.light::before {
-  height: 200px;
-  background: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.85) 20%, rgba(0, 0, 0, 0.5) 45%, rgba(0, 0, 0, 0.25) 65%, rgba(0, 0, 0, 0.1) 85%, transparent 100%);
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 40%, transparent 100%);
+}
+
+.global-nav.dark-album::before {
+  height: 280px;
+  background: linear-gradient(to bottom, #000 0%, #000 15%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.3) 50%, transparent 70%);
 }
 
 .global-nav > * {
@@ -3087,10 +3092,9 @@
     z-index: 6;
     font-family: var(--font-body);
     font-size: 0.6rem;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 0.3em;
-    color: #fff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    color: rgba(0, 0, 0, 0.4);
     text-transform: uppercase;
   }
 
@@ -3119,6 +3123,37 @@
     background: linear-gradient(to top, #fff 0%, #fff 30%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.5) 65%, rgba(255, 255, 255, 0.25) 80%, rgba(255, 255, 255, 0.1) 90%, transparent 100%);
     z-index: 4;
     pointer-events: none;
+  }
+
+  .album-sticky-dark::after {
+    background: linear-gradient(to top, #000 0%, #000 30%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.5) 65%, rgba(0, 0, 0, 0.25) 80%, rgba(0, 0, 0, 0.1) 90%, transparent 100%) !important;
+  }
+
+  .album-sticky-dark .album-canvas {
+    background: #000 !important;
+  }
+
+  .album-section-title.dark {
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 0.35em;
+  }
+
+  .album-sticky-dark .album-info-label {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .album-sticky-dark .album-info-line {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+  }
+
+  .album-sticky-dark .album-song-name {
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .album-sticky-dark .album-song-num {
+    color: rgba(255, 255, 255, 0.25);
   }
 
   /* ── CTA Section — Mobile ── */
@@ -3221,10 +3256,12 @@
     transition: all 0.3s ease;
   }
   .global-nav.light .hamburger span {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.5);
   }
-
-  .global-nav.light .hero-nav-logo {
+  .global-nav.dark-album .hamburger span {
+    background: rgba(255, 255, 255, 0.8);
+  }
+  .global-nav.dark-album .hero-nav-logo {
     color: #fff;
   }
   .hamburger.open span:nth-child(1) {
