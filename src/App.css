@@ -2718,6 +2718,21 @@
   display: none;
 }
 
+/* Stat marquee — hidden on desktop */
+.stat-marquee {
+  display: none;
+}
+
+@keyframes stat-marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes stat-marquee-scroll-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
 .album-info {
   position: absolute;
   bottom: 4rem;
@@ -3312,81 +3327,102 @@
   }
 
   /* Info block — full-width bottom panel */
+  /* Hide info block on mobile — replaced by marquee */
   .stat-info-block {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-width: 100%;
-    text-align: left;
-    padding: 1rem 1.2rem 1.5rem;
-    background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 60%, rgba(255, 255, 255, 0.4) 85%, transparent 100%);
+    display: none;
   }
 
-  .stat-info-title {
+  /* ── Stat Marquee — mobile scrolling stats (2 white skewed strips) ── */
+  .stat-marquee {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: absolute;
+    bottom: 2.5rem;
+    left: -1rem;
+    right: -1rem;
+    z-index: 12;
+    pointer-events: none;
+  }
+
+  .stat-marquee-strip {
+    background: rgba(255, 255, 255, 0.93);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.7rem 0;
+    overflow: hidden;
+  }
+
+  .stat-marquee-strip.strip-1 {
+    transform: rotate(-2deg);
+  }
+
+  .stat-marquee-strip.strip-2 {
+    transform: rotate(2deg);
+  }
+
+  .stat-marquee-track {
+    display: flex;
+    white-space: nowrap;
+  }
+
+  .stat-marquee-row1 {
+    animation: stat-marquee-scroll 15s linear infinite;
+  }
+
+  .stat-marquee-row2 {
+    animation: stat-marquee-scroll-reverse 18s linear infinite;
+  }
+
+  .stat-marquee-copy {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding-right: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .stat-marquee-title {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .stat-marquee-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .stat-marquee-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .stat-marquee-value {
+    font-family: var(--font-display);
     font-size: 0.9rem;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.3rem;
+    letter-spacing: 0.02em;
+    font-weight: 700;
   }
 
-  .stat-info-desc {
-    font-size: 0.6rem;
-    line-height: 1.6;
-    margin-bottom: 0.6rem;
-  }
-
-  .stat-highlights {
-    justify-content: flex-start;
-    gap: 0.8rem;
-    margin-bottom: 0.6rem;
-  }
-
-  .stat-highlight {
-    align-items: flex-start;
-  }
-
-  .stat-highlight-value {
-    font-size: 0.8rem;
-  }
-
-  .stat-highlight-label {
-    font-size: 0.45rem;
-  }
-
-  .stat-info-list {
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
-
-  .stat-info-item {
-    font-size: 0.55rem;
-  }
-
-  .stat-geo {
-    gap: 0.8rem;
-    margin-top: 0.5rem;
-  }
-
-  .stat-geo-heading {
-    font-size: 0.45rem;
-    text-align: left;
-  }
-
-  .stat-geo-row {
-    justify-content: flex-start;
-  }
-
-  .stat-geo-rank {
-    font-size: 0.42rem;
-    text-align: left;
-  }
-
-  .stat-geo-name {
+  .stat-marquee-label {
+    font-family: var(--font-body);
     font-size: 0.5rem;
-    text-align: left;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .stat-geo-count {
-    font-size: 0.45rem;
+  .stat-marquee-stat {
+    font-family: var(--font-body);
+    font-size: 0.55rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.55);
+    letter-spacing: 0.02em;
   }
 
   .album-sticky::after {

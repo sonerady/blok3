@@ -419,6 +419,68 @@ export default function StatisticSection({ containerRef }) {
           </AnimatePresence>
         </div>
 
+        {/* Mobile marquee — scrolling stats (2 rows) */}
+        <div className="stat-marquee">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.id + '-marquee'}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Strip 1: Title + highlight numbers — skewed left, scrolls left */}
+              <div className="stat-marquee-strip strip-1">
+                <div className="stat-marquee-track stat-marquee-row1">
+                  {[0, 1].map((copy) => (
+                    <div key={copy} className="stat-marquee-copy">
+                      <span className="stat-marquee-title" style={{ color: current.color }}>{current.name.toUpperCase()}</span>
+                      <span className="stat-marquee-dot" style={{ background: current.color }} />
+                      {current.highlights.map((h) => (
+                        <span key={h.label} className="stat-marquee-item">
+                          <span className="stat-marquee-value" style={{ color: current.color }}>{h.value.toLocaleString('tr-TR')}{h.suffix}</span>
+                          <span className="stat-marquee-label">{h.label}</span>
+                        </span>
+                      ))}
+                      <span className="stat-marquee-dot" style={{ background: current.color }} />
+                      <span className="stat-marquee-title">{current.title}</span>
+                      <span className="stat-marquee-dot" style={{ background: current.color }} />
+                      {current.topCities && current.topCities.map((c) => (
+                        <span key={c.name} className="stat-marquee-item">
+                          <span className="stat-marquee-value" style={{ color: current.color }}>{c.name}</span>
+                          <span className="stat-marquee-label">{c.count}</span>
+                        </span>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Strip 2: Description + stats — skewed right, scrolls right */}
+              <div className="stat-marquee-strip strip-2">
+                <div className="stat-marquee-track stat-marquee-row2">
+                  {[0, 1].map((copy) => (
+                    <div key={copy} className="stat-marquee-copy">
+                      <span className="stat-marquee-stat">{current.desc}</span>
+                      <span className="stat-marquee-dot" style={{ background: current.color }} />
+                      {current.stats.map((stat) => (
+                        <span key={stat} className="stat-marquee-stat">{stat}</span>
+                      ))}
+                      <span className="stat-marquee-dot" style={{ background: current.color }} />
+                      {current.topCountries && current.topCountries.map((c) => (
+                        <span key={c.name} className="stat-marquee-item">
+                          <span className="stat-marquee-value" style={{ color: current.color }}>{c.name}</span>
+                          <span className="stat-marquee-label">{c.count}</span>
+                        </span>
+                      ))}
+                      <span className="stat-marquee-dot" style={{ background: current.color }} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
         {/* Floating numbers — left side */}
         <div className="stat-floating-numbers">
           <AnimatePresence mode="wait">
