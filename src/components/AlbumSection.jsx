@@ -69,7 +69,7 @@ export default function AlbumSection({ containerRef }) {
   const { imagesRef: i6, loaded: l6 } = useFrames(f6Srcs)
   const { imagesRef: i3, loaded: l3 } = useFrames(f3Srcs)
 
-  const draw = useCallback((ref, imgs, idx) => {
+  const draw = useCallback((ref, imgs, idx, bgColor = '#fff', offsetY = 0) => {
     const canvas = ref.current
     const images = imgs.current
     if (!canvas || !images.length) return
@@ -78,7 +78,6 @@ export default function AlbumSection({ containerRef }) {
     if (!img) return
 
     if (isMobile) {
-      // Mobile: fit image to viewport, shifted slightly left
       const vw = window.innerWidth
       const vh = window.innerHeight
       canvas.width = vw
@@ -87,8 +86,8 @@ export default function AlbumSection({ containerRef }) {
       const dw = img.naturalWidth * scale
       const dh = img.naturalHeight * scale
       const dx = (vw - dw) / 2
-      const dy = (vh - dh) / 2 + vh * 0.05
-      ctx.fillStyle = '#fff'
+      const dy = (vh - dh) / 2 + offsetY
+      ctx.fillStyle = bgColor
       ctx.fillRect(0, 0, vw, vh)
       ctx.drawImage(img, dx, dy, dw, dh)
     } else {
@@ -102,7 +101,7 @@ export default function AlbumSection({ containerRef }) {
   }, [])
 
   useEffect(() => { if (l1) draw(c1, i1, 0) }, [l1, draw, i1])
-  useEffect(() => { if (l2) draw(c2, i2, 0) }, [l2, draw, i2])
+  useEffect(() => { if (l2) draw(c2, i2, 0, '#000', -40) }, [l2, draw, i2])
   useEffect(() => { if (l6) draw(c6, i6, 0) }, [l6, draw, i6])
   useEffect(() => { if (l3) draw(c3, i3, 0) }, [l3, draw, i3])
 
@@ -151,7 +150,7 @@ export default function AlbumSection({ containerRef }) {
   const s3Y = useTransform(scrollYProgress, [0.76, 0.82], [30, 0])
 
   useMotionValueEvent(idx1, 'change', (v) => { if (l1) draw(c1, i1, Math.round(v)) })
-  useMotionValueEvent(idx2, 'change', (v) => { if (l2) draw(c2, i2, Math.max(0, Math.round(v))) })
+  useMotionValueEvent(idx2, 'change', (v) => { if (l2) draw(c2, i2, Math.max(0, Math.round(v)), '#000', -40) })
   useMotionValueEvent(idx6, 'change', (v) => { if (l6) draw(c6, i6, Math.max(0, Math.round(v))) })
   useMotionValueEvent(idx3, 'change', (v) => { if (l3) draw(c3, i3, Math.max(0, Math.round(v))) })
 
