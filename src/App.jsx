@@ -15,7 +15,6 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [version, setVersion] = useState('v1')
   const [isDarkAlbum, setIsDarkAlbum] = useState(false)
 
   useEffect(() => {
@@ -106,34 +105,13 @@ function App() {
             <span>3</span>
             <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span>
           </span>
-          {activeStep === 0 && (
-            <div className="version-toggle">
-              <button className={`version-btn${version === 'v1' ? ' active' : ''}`} onClick={() => setVersion('v1')}>V1</button>
-              <button className={`version-btn${version === 'v2' ? ' active' : ''}`} onClick={() => setVersion('v2')}>V2</button>
-              <button className={`version-btn${version === 'v3' ? ' active' : ''}`} onClick={() => setVersion('v3')}>V3</button>
-            </div>
-          )}
         </div>
         <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen((v) => !v)} aria-label="Menü">
           <span /><span /><span />
         </button>
         {menuOpen && <div className="menu-overlay" onClick={() => setMenuOpen(false)} />}
         <div className={`global-nav-right${menuOpen ? ' open' : ''}`}>
-          {/* Desktop — flat links */}
-          <div className="menu-desktop-links">
-            <a className="hero-nav-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer">SPOTIFY</a>
-            <span className="hero-nav-divider">/</span>
-            <a className="hero-nav-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer">ITUNES</a>
-            <span className="hero-nav-divider">/</span>
-            <a className="hero-nav-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer">DEEZER</a>
-            <span className="hero-nav-divider">/</span>
-            <a className="hero-nav-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer">BUBILET</a>
-            <span className="hero-nav-divider">/</span>
-            <a className="hero-nav-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer">BILETINIAL</a>
-          </div>
-
-          {/* Mobile — sectioned menu */}
-          <div className="menu-mobile-sections">
+          <div className="menu-sections">
             <div className="menu-section">
               <span className="menu-section-title">Müzik Platformlarımız</span>
               <a className="menu-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Spotify</a>
@@ -141,11 +119,11 @@ function App() {
               <a className="menu-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Deezer</a>
             </div>
 
-            <div className="menu-section">
+            {/* <div className="menu-section">
               <span className="menu-section-title">Biletlerimiz</span>
               <a className="menu-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Bubilet</a>
               <a className="menu-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Biletinial</a>
-            </div>
+            </div> */}
 
             <div className="menu-section">
               <span className="menu-section-title">Yaklaşan Etkinlikler</span>
@@ -165,7 +143,7 @@ function App() {
         </div>
       </nav>
       <StepNav activeStep={activeStep} light={isLight} hideOnMobile={activeStep >= 4} />
-      <LandingSection containerRef={containerRef} audioRef={audioRef} version={version} />
+      <LandingSection containerRef={containerRef} audioRef={audioRef} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />
       <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} />

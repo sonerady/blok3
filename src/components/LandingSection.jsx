@@ -1,63 +1,144 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate, useScroll, AnimatePresence } from 'framer-motion'
-import landingBgV2 from '../assets/first_background.jpg'
-import landingFrontV2 from '../assets/first_front.png'
-import landingBgV1Video from '../assets/section_v1_background_video_v4.mp4'
-import landingBgV3Video from '../assets/section_v1_background_video_v3.mp4'
-import landingFrontV1 from '../assets/section_v1_front.png'
-import landingFrontV1Mobile from '../assets/section_v1_front_mobile.png'
-import secondVideo from '../assets/second_video.mp4'
-import secondFrontDesktop from '../assets/second_front.png'
-import secondFrontMobile from '../assets/second_front_mobile.png'
+import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useMotionTemplate,
+  useScroll,
+  AnimatePresence,
+} from "framer-motion";
+import landingBgVideo from "../assets/section_v1_background_video_v4.mp4";
+import landingFront from "../assets/section_v1_front.png";
+import landingFrontMobile from "../assets/section_v1_front_mobile.png";
+import secondVideo from "../assets/second_video.mp4";
+import secondFrontDesktop from "../assets/second_front.png";
+import secondFrontMobile from "../assets/second_front_mobile.png";
 
-const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
+const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
 
 const cities = [
-  'Adana','Adıyaman','Afyonkarahisar','Ağrı','Aksaray','Amasya','Ankara','Antalya','Ardahan','Artvin',
-  'Aydın','Balıkesir','Bartın','Batman','Bayburt','Bilecik','Bingöl','Bitlis','Bolu','Burdur',
-  'Bursa','Çanakkale','Çankırı','Çorum','Denizli','Diyarbakır','Düzce','Edirne','Elazığ','Erzincan',
-  'Erzurum','Eskişehir','Gaziantep','Giresun','Gümüşhane','Hakkari','Hatay','Iğdır','Isparta','İstanbul',
-  'İzmir','Kahramanmaraş','Karabük','Karaman','Kars','Kastamonu','Kayseri','Kilis','Kırıkkale','Kırklareli',
-  'Kırşehir','Kocaeli','Konya','Kütahya','Malatya','Manisa','Mardin','Mersin','Muğla','Muş',
-  'Nevşehir','Niğde','Ordu','Osmaniye','Rize','Sakarya','Samsun','Şanlıurfa','Siirt','Sinop',
-  'Sivas','Şırnak','Tekirdağ','Tokat','Trabzon','Tunceli','Uşak','Van','Yalova','Yozgat','Zonguldak',
-]
+  "Adana",
+  "Adıyaman",
+  "Afyonkarahisar",
+  "Ağrı",
+  "Aksaray",
+  "Amasya",
+  "Ankara",
+  "Antalya",
+  "Ardahan",
+  "Artvin",
+  "Aydın",
+  "Balıkesir",
+  "Bartın",
+  "Batman",
+  "Bayburt",
+  "Bilecik",
+  "Bingöl",
+  "Bitlis",
+  "Bolu",
+  "Burdur",
+  "Bursa",
+  "Çanakkale",
+  "Çankırı",
+  "Çorum",
+  "Denizli",
+  "Diyarbakır",
+  "Düzce",
+  "Edirne",
+  "Elazığ",
+  "Erzincan",
+  "Erzurum",
+  "Eskişehir",
+  "Gaziantep",
+  "Giresun",
+  "Gümüşhane",
+  "Hakkari",
+  "Hatay",
+  "Iğdır",
+  "Isparta",
+  "İstanbul",
+  "İzmir",
+  "Kahramanmaraş",
+  "Karabük",
+  "Karaman",
+  "Kars",
+  "Kastamonu",
+  "Kayseri",
+  "Kilis",
+  "Kırıkkale",
+  "Kırklareli",
+  "Kırşehir",
+  "Kocaeli",
+  "Konya",
+  "Kütahya",
+  "Malatya",
+  "Manisa",
+  "Mardin",
+  "Mersin",
+  "Muğla",
+  "Muş",
+  "Nevşehir",
+  "Niğde",
+  "Ordu",
+  "Osmaniye",
+  "Rize",
+  "Sakarya",
+  "Samsun",
+  "Şanlıurfa",
+  "Siirt",
+  "Sinop",
+  "Sivas",
+  "Şırnak",
+  "Tekirdağ",
+  "Tokat",
+  "Trabzon",
+  "Tunceli",
+  "Uşak",
+  "Van",
+  "Yalova",
+  "Yozgat",
+  "Zonguldak",
+];
 
-const bioText = 'BLOK3 (Hakan Aydın), 15 Ağustos 2002 tarihinde Kocaeli\'nin Gebze ilçesinde doğmuş, Türkiye rap sahnesinin yeni nesil ve en etkili isimlerinden biridir. Müziğe erken yaşlarda ilgi duyan sanatçı, sokak kültüründen beslenen güçlü anlatımı ve enerjik vokaliyle kısa sürede geniş bir dinleyici kitlesine ulaşmıştır.'
+const bioText =
+  "BLOK3 (Hakan Aydın), 15 Ağustos 2002 tarihinde Kocaeli'nin Gebze ilçesinde doğdu, Türkiye rap sahnesinin yeni nesil ve en etkili isimlerinden biridir. Müziğe erken yaşlarda ilgi duyan sanatçı, sokak kültüründen beslenen güçlü anlatımı ve enerjik vokaliyle kısa sürede geniş bir dinleyici kitlesine ulaşmıştır.";
 
 function TypewriterText({ text, delay = 0, speed = 18 }) {
-  const [charCount, setCharCount] = useState(0)
-  const [started, setStarted] = useState(false)
+  const [charCount, setCharCount] = useState(0);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => setStarted(true), delay * 1000)
-    return () => clearTimeout(timeout)
-  }, [delay])
+    const timeout = setTimeout(() => setStarted(true), delay * 1000);
+    return () => clearTimeout(timeout);
+  }, [delay]);
 
   useEffect(() => {
-    if (!started) return
-    if (charCount >= text.length) return
+    if (!started) return;
+    if (charCount >= text.length) return;
     const timer = setTimeout(() => {
-      setCharCount((c) => c + 1)
-    }, speed)
-    return () => clearTimeout(timer)
-  }, [started, charCount, text, speed])
+      setCharCount((c) => c + 1);
+    }, speed);
+    return () => clearTimeout(timer);
+  }, [started, charCount, text, speed]);
 
   return (
     <span>
       {text.slice(0, charCount)}
-      {charCount < text.length && started && <span className="typewriter-cursor">|</span>}
+      {charCount < text.length && started && (
+        <span className="typewriter-cursor">|</span>
+      )}
     </span>
-  )
+  );
 }
 
 const phrases = [
-  'KUSURA BAKMA',
-  '100M+ DİNLENME',
-  '#1 TÜRKİYE',
-  'REKOR HİT',
-  'VİRAL FENOMEN',
-]
+  "KUSURA BAKMA",
+  "100M+ DİNLENME",
+  "#1 TÜRKİYE",
+  "REKOR HİT",
+  "VİRAL FENOMEN",
+];
 
 const phraseVariants = {
   hidden: {},
@@ -70,194 +151,215 @@ const phraseVariants = {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: 'easeIn',
+      ease: "easeIn",
     },
   },
-}
+};
 
 const charVariants = {
-  hidden: { opacity: 0, display: 'none' },
+  hidden: { opacity: 0, display: "none" },
   visible: {
     opacity: 1,
-    display: 'inline',
+    display: "inline",
     transition: { duration: 0.01 },
   },
-}
+};
 
-export default function LandingSection({ containerRef, audioRef, version = 'v1' }) {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+export default function LandingSection({ containerRef, audioRef }) {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth <= 768)
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-  const isVideoVersion = version === 'v1' || version === 'v3'
-  const landingFront = isVideoVersion
-    ? (isMobile ? landingFrontV1Mobile : landingFrontV1)
-    : landingFrontV2
-  const activeVideo = version === 'v1' ? landingBgV1Video : landingBgV3Video
-  const secondFront = isMobile ? secondFrontMobile : secondFrontDesktop
-  const sectionRef = useRef(null)
-  const secondVideoRef = useRef(null)
-  const v1BgVideoRef = useRef(null)
-  const [entered, setEntered] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', phone: '', city: '' })
-  const [key, setKey] = useState(0)
-  const [titleKey, setTitleKey] = useState(0)
-  const [v1VideoEnded, setV1VideoEnded] = useState(false)
-  const [frontGlitching, setFrontGlitching] = useState(false)
+  const activeFront = isMobile ? landingFrontMobile : landingFront;
+  const secondFront = isMobile ? secondFrontMobile : secondFrontDesktop;
+  const sectionRef = useRef(null);
+  const secondVideoRef = useRef(null);
+  const bgVideoRef = useRef(null);
+  const [entered, setEntered] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    city: "",
+  });
+  const [key, setKey] = useState(0);
+  const [titleKey, setTitleKey] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [frontGlitching, setFrontGlitching] = useState(false);
 
-  // Glitch effect on V1 front image every 3s
+  // Glitch effect on front image every 3s
   useEffect(() => {
-    if (version !== 'v1') return
     const interval = setInterval(() => {
-      setFrontGlitching(true)
-      setTimeout(() => setFrontGlitching(false), 300)
-    }, 3000)
-    return () => clearInterval(interval)
-  }, [version])
-  const showFirstContent = entered && (!isVideoVersion || v1VideoEnded)
-
-  // Reset and replay video when switching versions
-  useEffect(() => {
-    setV1VideoEnded(false)
-    const video = v1BgVideoRef.current
-    if (video && (version === 'v1' || version === 'v3')) {
-      video.currentTime = 0
-      video.play()
-    }
-  }, [version])
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
+      setFrontGlitching(true);
+      setTimeout(() => setFrontGlitching(false), 300);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+  const showFirstContent = entered && videoEnded;
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
   // Spotlight
-  const spotRawX = useMotionValue(-200)
-  const spotRawY = useMotionValue(-200)
-  const spotX = useSpring(spotRawX, { damping: 20, stiffness: 150, mass: 0.3 })
-  const spotY = useSpring(spotRawY, { damping: 20, stiffness: 150, mass: 0.3 })
-  const maskImage = useMotionTemplate`radial-gradient(circle 180px at ${spotX}px ${spotY}px, transparent 0px, black 180px)`
+  const spotRawX = useMotionValue(-200);
+  const spotRawY = useMotionValue(-200);
+  const spotX = useSpring(spotRawX, { damping: 20, stiffness: 150, mass: 0.3 });
+  const spotY = useSpring(spotRawY, { damping: 20, stiffness: 150, mass: 0.3 });
+  const maskImage = useMotionTemplate`radial-gradient(circle 180px at ${spotX}px ${spotY}px, transparent 0px, black 180px)`;
 
   // Scroll-driven crossfade
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     container: containerRef,
-    offset: ['start start', 'end start'],
-  })
+    offset: ["start start", "end start"],
+  });
 
   // First layer fades out quickly on first scroll
-  const bgOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
-  const firstFrontOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
+  const bgOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+  const firstFrontOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
   // Second front fades in immediately
-  const secondFrontOpacity = useTransform(scrollYProgress, [0.02, 0.1], [0, 1])
+  const secondFrontOpacity = useTransform(scrollYProgress, [0.02, 0.1], [0, 1]);
 
   // Hide cursor only on first screen + track if in landing section
-  const [isFirstScreen, setIsFirstScreen] = useState(true)
+  const [isFirstScreen, setIsFirstScreen] = useState(true);
   useEffect(() => {
-    const unsubscribe = scrollYProgress.on('change', (v) => {
-      setIsFirstScreen(v < 0.05)
-    })
-    return unsubscribe
-  }, [scrollYProgress])
+    const unsubscribe = scrollYProgress.on("change", (v) => {
+      setIsFirstScreen(v < 0.05);
+    });
+    return unsubscribe;
+  }, [scrollYProgress]);
 
   // Pause/resume music when leaving/entering first screen
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio || !entered) return
+    const audio = audioRef.current;
+    if (!audio || !entered) return;
     if (isFirstScreen) {
-      audio.play()
+      audio.play();
     } else {
-      audio.pause()
+      audio.pause();
     }
-  }, [isFirstScreen, entered])
+  }, [isFirstScreen, entered]);
 
   // Enter site — start music and video
   const handleEnter = () => {
-    const audio = audioRef.current
+    const audio = audioRef.current;
     if (audio) {
-      audio.volume = 0.4
-      audio.play()
+      audio.volume = 0.4;
+      audio.play();
     }
-    setEntered(true)
-  }
+    setEntered(true);
+  };
 
   // Play videos after entry (refs are available after render)
   useEffect(() => {
-    if (!entered) return
-    if (secondVideoRef.current) secondVideoRef.current.play()
-    if (v1BgVideoRef.current) v1BgVideoRef.current.play()
-  }, [entered])
+    if (!entered) return;
+    if (secondVideoRef.current) secondVideoRef.current.play();
+    if (bgVideoRef.current) bgVideoRef.current.play();
+  }, [entered]);
 
   const handleSubscribe = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
-      await fetch('https://wearup-server.onrender.com/api/blok3/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("https://wearup-server.onrender.com/api/blok3/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
     } catch (err) {
       // sessizce devam et
     }
-    setLoading(false)
-    handleEnter()
-  }
+    setLoading(false);
+    handleEnter();
+  };
 
   const handleSkip = (e) => {
-    e.stopPropagation()
-    handleEnter()
-  }
+    e.stopPropagation();
+    handleEnter();
+  };
 
   // Rotating phrase loop
   useEffect(() => {
     const interval = setInterval(() => {
-      setKey((k) => k + 1)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+      setKey((k) => k + 1);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   // BLOK3 title animation loop every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setTitleKey((k) => k + 1)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+      setTitleKey((k) => k + 1);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Parallax
-  const frontX = useSpring(useTransform(mouseX, (v) => v * -40), springConfig)
-  const secondFrontX = useSpring(useTransform(mouseX, (v) => v * -40), springConfig)
-  const titleX = useSpring(useTransform(mouseX, (v) => v * 25), springConfig)
-  const titleY = useSpring(useTransform(mouseY, (v) => v * 25), springConfig)
+  const frontX = useSpring(
+    useTransform(mouseX, (v) => v * -40),
+    springConfig,
+  );
+  const secondFrontX = useSpring(
+    useTransform(mouseX, (v) => v * -40),
+    springConfig,
+  );
+  const titleX = useSpring(
+    useTransform(mouseX, (v) => v * 25),
+    springConfig,
+  );
+  const titleY = useSpring(
+    useTransform(mouseY, (v) => v * 25),
+    springConfig,
+  );
 
   const handleMouseMove = (e) => {
-    const centerX = window.innerWidth / 2
-    const centerY = window.innerHeight / 2
-    mouseX.set((e.clientX - centerX) / centerX)
-    mouseY.set((e.clientY - centerY) / centerY)
-    spotRawX.set(e.clientX)
-    spotRawY.set(e.clientY)
-  }
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    mouseX.set((e.clientX - centerX) / centerX);
+    mouseY.set((e.clientY - centerY) / centerY);
+    spotRawX.set(e.clientX);
+    spotRawY.set(e.clientY);
+  };
 
   return (
-    <section ref={sectionRef} className="landing-section" onMouseMove={handleMouseMove} style={{ cursor: isFirstScreen && entered ? 'none' : 'auto' }}>
+    <section
+      ref={sectionRef}
+      className="landing-section"
+      onMouseMove={handleMouseMove}
+      style={{ cursor: isFirstScreen && entered ? "none" : "auto" }}
+    >
       {/* Entry overlay with subscribe form */}
       <AnimatePresence>
         {!entered && (
           <motion.div
             className="entry-overlay"
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
           >
             <motion.div
               className="entry-logo"
               animate={{ rotate: [0, 360, 360, 0, 0] }}
-              transition={{ duration: 3, repeat: Infinity, times: [0, 0.4, 0.5, 0.9, 1], ease: 'easeInOut' }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                times: [0, 0.4, 0.5, 0.9, 1],
+                ease: "easeInOut",
+              }}
             >
               <span>3</span>
-              <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.05em' }}>3</span>
+              <span
+                style={{
+                  display: "inline-block",
+                  transform: "scaleX(-1)",
+                  marginLeft: "0.05em",
+                }}
+              >
+                3
+              </span>
             </motion.div>
 
             <motion.p
@@ -266,7 +368,8 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              Konserler, özel içerikler ve erken erişim fırsatları için abone ol.
+              Konserler, özel içerikler ve erken erişim fırsatları için abone
+              ol.
             </motion.p>
 
             <motion.form
@@ -282,7 +385,9 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
                   type="text"
                   placeholder="Ad"
                   value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   required
                 />
                 <input
@@ -290,7 +395,9 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
                   type="text"
                   placeholder="Soyad"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -299,7 +406,9 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
                 type="email"
                 placeholder="E-posta"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
               />
               <div className="entry-phone-row">
@@ -309,21 +418,35 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
                   type="tel"
                   placeholder="Telefon (opsiyonel)"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                 />
               </div>
               <select
                 className="entry-input entry-select"
                 value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, city: e.target.value })
+                }
                 required
               >
-                <option value="" disabled>Şehir seç</option>
-                {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+                <option value="" disabled>
+                  Şehir seç
+                </option>
+                {cities.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
 
               <button type="submit" className="entry-btn" disabled={loading}>
-                {loading ? <span className="entry-btn-spinner" /> : 'ABONE OL VE SITEYE GİR'}
+                {loading ? (
+                  <span className="entry-btn-spinner" />
+                ) : (
+                  "ABONE OL VE SITEYE GİR"
+                )}
               </button>
             </motion.form>
 
@@ -336,14 +459,18 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
             >
               Abone olmadan devam et
             </motion.button>
-
           </motion.div>
         )}
       </AnimatePresence>
 
       <div className="landing-sticky">
         {/* TREND label */}
-        <motion.span className="hero-nav-logo landing-trend-label" style={{ opacity: secondFrontOpacity }}>TREND</motion.span>
+        <motion.span
+          className="hero-nav-logo landing-trend-label"
+          style={{ opacity: secondFrontOpacity }}
+        >
+          TREND
+        </motion.span>
 
         {/* Video — always behind */}
         <video
@@ -360,69 +487,62 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
           className="landing-front landing-second-front"
           src={secondFront}
           alt=""
-          style={{ opacity: secondFrontOpacity, x: isMobile ? 0 : secondFrontX }}
+          style={{
+            opacity: secondFrontOpacity,
+            x: isMobile ? 0 : secondFrontX,
+          }}
         />
 
         {/* Background with spotlight — only after entry */}
         {entered && (
           <>
             <motion.div className="landing-bg-wrapper">
-              {isVideoVersion ? (
+              <motion.video
+                ref={bgVideoRef}
+                className={`landing-bg${videoEnded ? " video-ended-pulse" : ""}`}
+                src={landingBgVideo}
+                muted
+                playsInline
+                onEnded={() => setVideoEnded(true)}
+                style={{
+                  opacity: bgOpacity,
+                  WebkitMaskImage: maskImage,
+                  maskImage: maskImage,
+                }}
+              />
+              {isFirstScreen && (
                 <>
-                  <motion.video
-                    ref={v1BgVideoRef}
-                    className={`landing-bg${v1VideoEnded ? ' video-ended-pulse' : ''}`}
-                    src={activeVideo}
-                    muted
-                    playsInline
-                    onEnded={() => setV1VideoEnded(true)}
-                    style={{
-                      opacity: bgOpacity,
-                      WebkitMaskImage: maskImage,
-                      maskImage: maskImage,
-                    }}
-                  />
-                  {isFirstScreen && (
-                    <>
-                      <div className="concert-spotlights">
-                        <div className="spotlight spotlight-1" />
-                        <div className="spotlight spotlight-2" />
-                        <div className="spotlight spotlight-3" />
-                        <div className="spotlight spotlight-4" />
-                      </div>
-                      <div className="smoke-overlay">
-                        <div className="smoke-layer smoke-layer-1" />
-                        <div className="smoke-layer smoke-layer-2" />
-                        <div className="smoke-layer smoke-layer-3" />
-                      </div>
-                    </>
-                  )}
-                  {isFirstScreen && v1VideoEnded && <div className="video-ended-glow" />}
+                  <div className="concert-spotlights">
+                    <div className="spotlight spotlight-1" />
+                    <div className="spotlight spotlight-2" />
+                    <div className="spotlight spotlight-3" />
+                    <div className="spotlight spotlight-4" />
+                  </div>
+                  <div className="smoke-overlay">
+                    <div className="smoke-layer smoke-layer-1" />
+                    <div className="smoke-layer smoke-layer-2" />
+                    <div className="smoke-layer smoke-layer-3" />
+                  </div>
                 </>
-              ) : (
-                <motion.img
-                  className="landing-bg"
-                  src={landingBgV2}
-                  alt=""
-                  style={{
-                    opacity: bgOpacity,
-                    WebkitMaskImage: maskImage,
-                    maskImage: maskImage,
-                  }}
-                />
+              )}
+              {isFirstScreen && videoEnded && (
+                <div className="video-ended-glow" />
               )}
             </motion.div>
 
             {/* First front */}
             <motion.img
-              className={`landing-front${frontGlitching && isVideoVersion ? ' front-glitch' : ''}`}
-              src={landingFront}
+              className={`landing-front${frontGlitching ? " front-glitch" : ""}`}
+              src={activeFront}
               alt=""
               style={{ x: isMobile ? 0 : frontX, opacity: firstFrontOpacity }}
             />
 
             {/* Bottom gradient */}
-            <motion.div className="landing-bottom-gradient" style={{ opacity: bgOpacity }} />
+            <motion.div
+              className="landing-bottom-gradient"
+              style={{ opacity: bgOpacity }}
+            />
           </>
         )}
 
@@ -439,28 +559,50 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
               className="landing-bio-num"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >15</motion.span>
+              transition={{
+                delay: 0.2,
+                duration: 0.6,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+            >
+              15
+            </motion.span>
             <span className="landing-bio-sep">—</span>
             <motion.span
               className="landing-bio-num"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >08</motion.span>
+              transition={{
+                delay: 0.35,
+                duration: 0.6,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+            >
+              08
+            </motion.span>
             <span className="landing-bio-sep">—</span>
             <motion.span
               className="landing-bio-num"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >2002</motion.span>
+              transition={{
+                delay: 0.5,
+                duration: 0.6,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+            >
+              2002
+            </motion.span>
           </div>
           <motion.p
             className="landing-bio-text"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{
+              delay: 0.7,
+              duration: 0.8,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
           >
             <TypewriterText text={bioText} delay={0.9} speed={18} />
           </motion.p>
@@ -478,17 +620,17 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
                 className="landing-title"
                 style={{ x: titleX, y: titleY, opacity: bgOpacity }}
               >
-                {'BLOK3'.split('').map((char, i) => (
+                {"BLOK3".split("").map((char, i) => (
                   <motion.span
                     key={`${titleKey}-${i}`}
-                    initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     transition={{
                       delay: i * 0.12,
                       duration: 0.5,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
-                    style={{ display: 'inline-block' }}
+                    style={{ display: "inline-block" }}
                   >
                     {char}
                   </motion.span>
@@ -513,21 +655,35 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
               exit="exit"
             >
               {(() => {
-                const phrase = phrases[key % phrases.length]
-                const words = phrase.split(' ')
-                const orderedWords = isMobile && phrase === '#1 TÜRKİYE' ? [...words].reverse() : words
+                const phrase = phrases[key % phrases.length];
+                const words = phrase.split(" ");
+                const orderedWords =
+                  isMobile && phrase === "#1 TÜRKİYE"
+                    ? [...words].reverse()
+                    : words;
                 return orderedWords.map((word, wi) => {
-                  const isRekorHit = phrase === 'REKOR HİT' && wi === 1
+                  const isRekorHit = phrase === "REKOR HİT" && wi === 1;
                   return (
-                    <span key={wi} style={{ display: 'block', alignSelf: 'flex-start', marginLeft: isRekorHit && !isMobile ? '45%' : '0' }}>
-                      {word.split('').map((char, ci) => (
-                        <motion.span key={ci} variants={charVariants} style={{ display: 'inline' }}>
+                    <span
+                      key={wi}
+                      style={{
+                        display: "block",
+                        alignSelf: "flex-start",
+                        marginLeft: isRekorHit && !isMobile ? "45%" : "0",
+                      }}
+                    >
+                      {word.split("").map((char, ci) => (
+                        <motion.span
+                          key={ci}
+                          variants={charVariants}
+                          style={{ display: "inline" }}
+                        >
                           {char}
                         </motion.span>
                       ))}
                     </span>
-                  )
-                })
+                  );
+                });
               })()}
             </motion.span>
           </AnimatePresence>
@@ -546,7 +702,9 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
             <span className="landing-yt-badge-text">Official Music Video</span>
           </div>
           <h2 className="landing-yt-title">KUSURA BAKMA</h2>
-          <p className="landing-yt-meta">100 Mn görüntülenme &bull; 2 ay önce</p>
+          <p className="landing-yt-meta">
+            100 Mn görüntülenme &bull; 2 ay önce
+          </p>
           <div className="landing-yt-channel">
             <div className="landing-yt-avatar">B3</div>
             <div className="landing-yt-channel-info">
@@ -555,8 +713,7 @@ export default function LandingSection({ containerRef, audioRef, version = 'v1' 
             </div>
           </div>
         </motion.div>
-
       </div>
     </section>
-  )
+  );
 }
