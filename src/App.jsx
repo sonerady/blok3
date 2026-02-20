@@ -117,6 +117,7 @@ function App() {
         <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen((v) => !v)} aria-label="Menü">
           <span /><span /><span />
         </button>
+        {menuOpen && <div className="menu-overlay" onClick={() => setMenuOpen(false)} />}
         <div className={`global-nav-right${menuOpen ? ' open' : ''}`}>
           <a className="hero-nav-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>SPOTIFY</a>
           <span className="hero-nav-divider">/</span>
