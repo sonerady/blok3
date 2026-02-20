@@ -1641,7 +1641,7 @@
 
 .global-nav.dark-album::before {
   height: 280px;
-  background: linear-gradient(to bottom, #000 0%, #000 15%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.3) 50%, transparent 70%);
+  background: linear-gradient(to bottom, #000 0%, #000 15%, rgba(0, 0, 0, 0.6) 35%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.08) 65%, transparent 100%);
 }
 
 .global-nav > * {
@@ -3126,7 +3126,8 @@
   }
 
   .album-sticky-dark::after {
-    background: linear-gradient(to top, #000 0%, #000 30%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.5) 65%, rgba(0, 0, 0, 0.25) 80%, rgba(0, 0, 0, 0.1) 90%, transparent 100%) !important;
+    height: 40% !important;
+    background: linear-gradient(to top, #000 0%, #000 35%, rgba(0, 0, 0, 0.85) 50%, rgba(0, 0, 0, 0.6) 65%, rgba(0, 0, 0, 0.3) 80%, rgba(0, 0, 0, 0.08) 92%, transparent 100%) !important;
   }
 
   .album-sticky-dark .album-canvas {

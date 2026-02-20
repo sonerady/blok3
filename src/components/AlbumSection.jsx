@@ -102,8 +102,8 @@ export default function AlbumSection({ containerRef, onDarkChange }) {
 
   useEffect(() => { if (l1) draw(c1, i1, 0) }, [l1, draw, i1])
   useEffect(() => { if (l2) draw(c2, i2, 0, '#000', -40) }, [l2, draw, i2])
-  useEffect(() => { if (l6) draw(c6, i6, 0) }, [l6, draw, i6])
-  useEffect(() => { if (l3) draw(c3, i3, 0) }, [l3, draw, i3])
+  useEffect(() => { if (l6) draw(c6, i6, 0, '#000', -40) }, [l6, draw, i6])
+  useEffect(() => { if (l3) draw(c3, i3, 0, '#fff', -40) }, [l3, draw, i3])
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -151,13 +151,13 @@ export default function AlbumSection({ containerRef, onDarkChange }) {
 
   useMotionValueEvent(idx1, 'change', (v) => { if (l1) draw(c1, i1, Math.round(v)) })
   useMotionValueEvent(idx2, 'change', (v) => { if (l2) draw(c2, i2, Math.max(0, Math.round(v)), '#000', -40) })
-  useMotionValueEvent(idx6, 'change', (v) => { if (l6) draw(c6, i6, Math.max(0, Math.round(v))) })
-  useMotionValueEvent(idx3, 'change', (v) => { if (l3) draw(c3, i3, Math.max(0, Math.round(v))) })
+  useMotionValueEvent(idx6, 'change', (v) => { if (l6) draw(c6, i6, Math.max(0, Math.round(v)), '#000', -40) })
+  useMotionValueEvent(idx3, 'change', (v) => { if (l3) draw(c3, i3, Math.max(0, Math.round(v)), '#fff', -40) })
 
   // Track when frames_2 is active (dark background) and notify parent
   const [isDark, setIsDark] = useState(false)
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    const dark = v >= 0.20 && v < 0.50
+    const dark = (v >= 0.20 && v < 0.50) || (v >= 0.45 && v < 0.75)
     setIsDark(dark)
     if (onDarkChange) onDarkChange(dark)
   })
