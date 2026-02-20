@@ -1642,13 +1642,28 @@
 }
 
 .global-nav.light::before {
-  height: 80px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 40%, transparent 100%);
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .global-nav.light::before {
+    display: block;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 40%, transparent 100%);
+  }
 }
 
 .global-nav.dark-album::before {
-  height: 280px;
-  background: linear-gradient(to bottom, #000 0%, #000 15%, rgba(0, 0, 0, 0.6) 35%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.08) 65%, transparent 100%);
+  display: block;
+  height: 25px;
+  background: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.7) 40%, transparent 100%);
+}
+
+@media (max-width: 768px) {
+  .global-nav.dark-album::before {
+    height: 280px;
+    background: linear-gradient(to bottom, #000 0%, #000 15%, rgba(0, 0, 0, 0.6) 35%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.08) 65%, transparent 100%);
+  }
 }
 
 .global-nav > * {
