@@ -3271,9 +3271,9 @@
   }
 
   .stat-platform-step {
-    height: 1.2rem;
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;
+    height: 2.4rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     margin-left: 14px;
   }
 
@@ -3609,7 +3609,9 @@
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .global-nav.light .global-nav-right {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
   }
   .global-nav-right.open {
     transform: translateX(0);
