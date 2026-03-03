@@ -195,6 +195,7 @@
     <button class="tab-btn" onclick="switchTab('press')">Basin</button>
     <button class="tab-btn" onclick="switchTab('links')">Linkler</button>
     <button class="tab-btn" onclick="switchTab('platformStats')">Platform İstatistik</button>
+    <button class="tab-btn" onclick="switchTab('concertStats')">Konser İstatistik</button>
   </div>
 
   <!-- ═══════ EVENTS TAB ═══════ -->
@@ -469,6 +470,44 @@
     </div>
   </div>
 
+  <!-- ═══════ CONCERT STATS TAB ═══════ -->
+  <div class="tab-content" id="tab-concertStats">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="cstats-total">—</div>
+        <div class="stat-label">Konser İstatistik</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-outline" onclick="loadConcertStats()">Yenile</button>
+    </div>
+
+    <div class="card"><table>
+      <thead><tr><th>Bölge</th><th>Anahtar</th><th>Değer</th><th>Ek</th><th>Etiket</th><th>Sıra</th><th></th></tr></thead>
+      <tbody id="cstats-tbody"><tr><td colspan="7" class="empty">Yükleniyor...</td></tr></tbody>
+    </table></div>
+
+    <div class="form-card" id="cstat-form" style="display:none;">
+      <div class="form-row">
+        <div class="form-group"><label>Bölge</label><input type="text" id="cstat-region" disabled></div>
+        <div class="form-group"><label>Anahtar</label><input type="text" id="cstat-key" disabled></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Değer (sayı)</label><input type="number" id="cstat-value" placeholder="50"></div>
+        <div class="form-group" style="max-width:100px;"><label>Ek</label><input type="text" id="cstat-suffix" placeholder="+"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Etiket</label><input type="text" id="cstat-label" placeholder="ŞEHİR"></div>
+        <div class="form-group" style="max-width:120px;"><label>Sıra</label><input type="number" id="cstat-sort" value="0" min="0"></div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+        <button class="btn" onclick="saveConcertStat()">Kaydet</button>
+        <button class="btn btn-outline" onclick="hideCstatForm()">İptal</button>
+      </div>
+      <input type="hidden" id="cstat-edit-id">
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -616,6 +655,7 @@
     if (name === 'press') loadPress()
     if (name === 'links') loadLinks()
     if (name === 'platformStats') loadPlatformStats()
+    if (name === 'concertStats') loadConcertStats()
   }
 
   function formatDate(d) {
@@ -1213,6 +1253,60 @@
       toast('Platform istatistigi guncellendi')
       hidePstatForm()
       loadPlatformStats()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  CONCERT STATS
+  // ═══════════════════════════════
+  async function loadConcertStats() {
+    try {
+      const res = await fetch(API + '/concert-stats')
+      const data = await res.json()
+      document.getElementById('cstats-total').textContent = data.length
+      const tbody = document.getElementById('cstats-tbody')
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">Kayıt yok</td></tr>'; return }
+      tbody.innerHTML = data.map(s => `<tr>
+        <td><strong>${s.region}</strong></td>
+        <td>${s.stat_key}</td>
+        <td>${Number(s.value).toLocaleString('tr-TR')}</td>
+        <td>${s.suffix || ''}</td>
+        <td>${s.label}</td>
+        <td>${s.sort_order}</td>
+        <td><button class="btn-sm" onclick="editConcertStat('${s.id}','${s.region}','${s.stat_key}',${s.value},\`${s.suffix || ''}\`,\`${s.label}\`,${s.sort_order})">Düzenle</button></td>
+      </tr>`).join('')
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  function editConcertStat(id, region, key, value, suffix, label, sort) {
+    document.getElementById('cstat-edit-id').value = id
+    document.getElementById('cstat-region').value = region
+    document.getElementById('cstat-key').value = key
+    document.getElementById('cstat-value').value = value
+    document.getElementById('cstat-suffix').value = suffix
+    document.getElementById('cstat-label').value = label
+    document.getElementById('cstat-sort').value = sort
+    document.getElementById('cstat-form').style.display = 'block'
+  }
+
+  function hideCstatForm() {
+    document.getElementById('cstat-form').style.display = 'none'
+  }
+
+  async function saveConcertStat() {
+    const id = document.getElementById('cstat-edit-id').value
+    if (!id) return
+    const body = {
+      value: parseInt(document.getElementById('cstat-value').value) || 0,
+      suffix: document.getElementById('cstat-suffix').value,
+      label: document.getElementById('cstat-label').value,
+      sort_order: parseInt(document.getElementById('cstat-sort').value) || 0
+    }
+    try {
+      await authFetch(API + '/concert-stats/' + id, { method: 'PUT', body: JSON.stringify(body) })
+      toast('Konser istatistiği güncellendi')
+      hideCstatForm()
+      loadConcertStats()
     } catch (err) { toast('Hata: ' + err.message) }
   }
 
