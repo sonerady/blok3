@@ -4118,6 +4118,24 @@
   color: rgba(255, 255, 255, 0.2);
 }
 
+.contact-phone-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-phone-prefix {
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.contact-phone-row input {
+  flex: 1;
+}
+
 .contact-field input:focus,
 .contact-field select:focus,
 .contact-field textarea:focus {

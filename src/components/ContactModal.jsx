@@ -135,7 +135,10 @@ export default function ContactModal({ isOpen, onClose }) {
                   <div className="contact-form-row">
                     <div className="contact-field">
                       <label htmlFor="cm-phone">Telefon <span className="contact-optional">(Opsiyonel)</span></label>
-                      <input id="cm-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="+90 5XX XXX XX XX" />
+                      <div className="contact-phone-row">
+                        <span className="contact-phone-prefix">+90</span>
+                        <input id="cm-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="5XX XXX XX XX" />
+                      </div>
                     </div>
                     <div className="contact-field">
                       <label htmlFor="cm-subject">Konu</label>
