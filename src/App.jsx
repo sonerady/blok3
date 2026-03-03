@@ -81,7 +81,7 @@ function App() {
         setHideStepNav(false)
       } else {
         setActiveStep(4) // İLETİŞİM
-        setHideStepNav(false)
+        setHideStepNav(true)
       }
     }
 
