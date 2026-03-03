@@ -194,6 +194,7 @@
     <button class="tab-btn" onclick="switchTab('subscribers')">Aboneler</button>
     <button class="tab-btn" onclick="switchTab('press')">Basin</button>
     <button class="tab-btn" onclick="switchTab('links')">Linkler</button>
+    <button class="tab-btn" onclick="switchTab('platformStats')">Platform İstatistik</button>
   </div>
 
   <!-- ═══════ EVENTS TAB ═══════ -->
@@ -431,6 +432,43 @@
     </table></div>
   </div>
 
+  <!-- ═══════ PLATFORM STATS TAB ═══════ -->
+  <div class="tab-content" id="tab-platformStats">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="pstats-total">—</div>
+        <div class="stat-label">Platform</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-outline" onclick="loadPlatformStats()">Yenile</button>
+    </div>
+
+    <div class="card"><table>
+      <thead><tr><th>Platform</th><th>Rakam</th><th>Etiket</th><th>Aciklama</th><th>Sira</th><th></th></tr></thead>
+      <tbody id="pstats-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
+    </table></div>
+
+    <div class="form-card" id="pstat-form" style="display:none;">
+      <div class="form-row">
+        <div class="form-group"><label>Platform</label><input type="text" id="pstat-platform" disabled></div>
+        <div class="form-group"><label>Rakam</label><input type="text" id="pstat-number" placeholder="2.9 MİLYAR+"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Etiket</label><input type="text" id="pstat-label" placeholder="Toplam Stream"></div>
+        <div class="form-group" style="max-width:120px;"><label>Sira</label><input type="number" id="pstat-sort" value="0" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Aciklama</label><input type="text" id="pstat-desc" placeholder="Kisa aciklama..."></div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+        <button class="btn" onclick="savePlatformStat()">Kaydet</button>
+        <button class="btn btn-outline" onclick="hidePstatForm()">Iptal</button>
+      </div>
+      <input type="hidden" id="pstat-edit-id">
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -577,6 +615,7 @@
     if (name === 'subscribers') loadSubscribers()
     if (name === 'press') loadPress()
     if (name === 'links') loadLinks()
+    if (name === 'platformStats') loadPlatformStats()
   }
 
   function formatDate(d) {
@@ -1122,6 +1161,58 @@
       await authFetch(API + '/links/' + id, { method: 'DELETE' })
       toast('Link silindi')
       loadLinks()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  PLATFORM STATS
+  // ═══════════════════════════════
+  async function loadPlatformStats() {
+    try {
+      const res = await fetch(API + '/platform-stats')
+      const data = await res.json()
+      document.getElementById('pstats-total').textContent = data.length
+      const tbody = document.getElementById('pstats-tbody')
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Kayit yok</td></tr>'; return }
+      tbody.innerHTML = data.map(s => `<tr>
+        <td><strong>${s.platform}</strong></td>
+        <td>${s.number}</td>
+        <td>${s.label}</td>
+        <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.description || ''}</td>
+        <td>${s.sort_order}</td>
+        <td><button class="btn-sm" onclick="editPlatformStat('${s.id}','${s.platform}',\`${s.number}\`,\`${s.label}\`,\`${s.description || ''}\`,${s.sort_order})">Duzenle</button></td>
+      </tr>`).join('')
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  function editPlatformStat(id, platform, number, label, desc, sort) {
+    document.getElementById('pstat-edit-id').value = id
+    document.getElementById('pstat-platform').value = platform
+    document.getElementById('pstat-number').value = number
+    document.getElementById('pstat-label').value = label
+    document.getElementById('pstat-desc').value = desc
+    document.getElementById('pstat-sort').value = sort
+    document.getElementById('pstat-form').style.display = 'block'
+  }
+
+  function hidePstatForm() {
+    document.getElementById('pstat-form').style.display = 'none'
+  }
+
+  async function savePlatformStat() {
+    const id = document.getElementById('pstat-edit-id').value
+    if (!id) return
+    const body = {
+      number: document.getElementById('pstat-number').value,
+      label: document.getElementById('pstat-label').value,
+      description: document.getElementById('pstat-desc').value,
+      sort_order: parseInt(document.getElementById('pstat-sort').value) || 0
+    }
+    try {
+      await authFetch(API + '/platform-stats/' + id, { method: 'PUT', body: JSON.stringify(body) })
+      toast('Platform istatistigi guncellendi')
+      hidePstatForm()
+      loadPlatformStats()
     } catch (err) { toast('Hata: ' + err.message) }
   }
 

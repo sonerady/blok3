@@ -27,11 +27,16 @@ function App() {
   const [pressOpen, setPressOpen] = useState(false)
   const [hideStepNav, setHideStepNav] = useState(false)
   const [links, setLinks] = useState([])
+  const [platformStats, setPlatformStats] = useState([])
 
   useEffect(() => {
     fetch('/api/blok3/links')
       .then((res) => res.json())
       .then((data) => setLinks(data))
+      .catch(() => {})
+    fetch('/api/blok3/platform-stats')
+      .then((res) => res.json())
+      .then((data) => setPlatformStats(data))
       .catch(() => {})
   }, [])
 
@@ -178,7 +183,7 @@ function App() {
       <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} />
       <TurneSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} />
       {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
-      <PlatformShowcase containerRef={containerRef} links={links} />
+      <PlatformShowcase containerRef={containerRef} links={links} platformStats={platformStats} />
       <ContactSection socialLinks={socialLinks} />
       <EventsModal isOpen={eventsOpen} onClose={() => setEventsOpen(false)} />
       <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />

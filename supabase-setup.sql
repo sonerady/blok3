@@ -144,6 +144,28 @@ CREATE TABLE IF NOT EXISTS blok3_links (
 
 ALTER TABLE blok3_links DISABLE ROW LEVEL SECURITY;
 
+-- ============================================
+-- TABLE: blok3_platform_stats
+-- ============================================
+CREATE TABLE IF NOT EXISTS blok3_platform_stats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  platform TEXT NOT NULL UNIQUE,
+  number TEXT NOT NULL,
+  label TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE blok3_platform_stats DISABLE ROW LEVEL SECURITY;
+
+INSERT INTO blok3_platform_stats (platform, number, label, description, sort_order) VALUES
+  ('spotify', '2.9 MİLYAR+', 'Toplam Stream', 'Türkiye''de aylık 10M+ dinleyiciye ulaşan ilk sanatçı', 1),
+  ('youtube', '111 MİLYON+', 'Görüntülenme', 'Resmi klipler kısa sürede milyonlarca izlenmeye ulaştı', 2),
+  ('tiktok', '2 MİLYAR+', 'Görüntülenme', 'En viral Türkçe ses — organik erişim rekoru', 3),
+  ('instagram', '486 MİLYON+', 'Reels İzlenme', 'Sosyal medyada yüksek etkileşim ve viral yayılım', 4);
+
 INSERT INTO blok3_links (category, platform, label, url, sort_order) VALUES
   ('social', 'instagram', 'Instagram', 'https://www.instagram.com/blok3.real/', 1),
   ('social', 'x', 'X', 'https://x.com/realblok3', 2),

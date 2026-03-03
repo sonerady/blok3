@@ -90,11 +90,16 @@ function PlatformIcon({ id, size = 22, color }) {
   }
 }
 
-export default function PlatformShowcase({ containerRef, links = [] }) {
-  // Override hardcoded URLs with dynamic ones from API
+export default function PlatformShowcase({ containerRef, links = [], platformStats = [] }) {
+  // Override hardcoded data with dynamic ones from API
   const dynamicPlatforms = platforms.map((p) => {
-    const match = links.find((l) => l.platform === p.id)
-    return match ? { ...p, url: match.url } : p
+    const linkMatch = links.find((l) => l.platform === p.id)
+    const statMatch = platformStats.find((s) => s.platform === p.id)
+    return {
+      ...p,
+      ...(linkMatch ? { url: linkMatch.url } : {}),
+      ...(statMatch ? { number: statMatch.number, label: statMatch.label, desc: statMatch.description } : {}),
+    }
   })
   const [activeIndex, setActiveIndex] = useState(0)
   const [isGlitching, setIsGlitching] = useState(false)
