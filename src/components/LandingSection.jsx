@@ -2,20 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import {
   motion,
   useMotionValue,
-  useSpring,
-  useTransform,
-  useMotionTemplate,
   useScroll,
   AnimatePresence,
 } from "framer-motion";
 import landingBgVideo from "../assets/section_v1_background_video_v4.mp4";
 import landingFront from "../assets/section_v1_front.png";
 import landingFrontMobile from "../assets/section_v1_front_mobile.png";
-import secondVideo from "../assets/second_video.mp4";
-import secondFrontDesktop from "../assets/second_front.png";
-import secondFrontMobile from "../assets/second_front_mobile.png";
+// import secondVideo from "../assets/second_video.mp4";
+// import secondFrontDesktop from "../assets/second_front.png";
+// import secondFrontMobile from "../assets/second_front_mobile.png";
 
-const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+// const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
 
 const cities = [
   "Adana",
@@ -174,9 +171,9 @@ export default function LandingSection({ containerRef, audioRef }) {
   }, []);
 
   const activeFront = isMobile ? landingFrontMobile : landingFront;
-  const secondFront = isMobile ? secondFrontMobile : secondFrontDesktop;
+  // const secondFront = isMobile ? secondFrontMobile : secondFrontDesktop;
   const sectionRef = useRef(null);
-  const secondVideoRef = useRef(null);
+  // const secondVideoRef = useRef(null);
   const bgVideoRef = useRef(null);
   const [entered, setEntered] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -201,15 +198,6 @@ export default function LandingSection({ containerRef, audioRef }) {
     return () => clearInterval(interval);
   }, []);
   const showFirstContent = entered && videoEnded;
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  // Spotlight
-  const spotRawX = useMotionValue(-200);
-  const spotRawY = useMotionValue(-200);
-  const spotX = useSpring(spotRawX, { damping: 20, stiffness: 150, mass: 0.3 });
-  const spotY = useSpring(spotRawY, { damping: 20, stiffness: 150, mass: 0.3 });
-  const maskImage = useMotionTemplate`radial-gradient(circle 180px at ${spotX}px ${spotY}px, transparent 0px, black 180px)`;
 
   // Scroll-driven crossfade
   const { scrollYProgress } = useScroll({
@@ -218,11 +206,11 @@ export default function LandingSection({ containerRef, audioRef }) {
     offset: ["start start", "end start"],
   });
 
-  // First layer fades out quickly on first scroll
-  const bgOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const firstFrontOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  // Second front fades in immediately
-  const secondFrontOpacity = useTransform(scrollYProgress, [0.02, 0.1], [0, 1]);
+  // First layer — keep visible (no trend crossfade)
+  const bgOpacity = useMotionValue(1);
+  const firstFrontOpacity = useMotionValue(1);
+  // Second front — disabled (trend commented out)
+  // const secondFrontOpacity = useTransform(scrollYProgress, [0.02, 0.1], [0, 1]);
 
   // Hide cursor only on first screen + track if in landing section
   const [isFirstScreen, setIsFirstScreen] = useState(true);
@@ -257,7 +245,7 @@ export default function LandingSection({ containerRef, audioRef }) {
   // Play videos after entry (refs are available after render)
   useEffect(() => {
     if (!entered) return;
-    if (secondVideoRef.current) secondVideoRef.current.play();
+    // if (secondVideoRef.current) secondVideoRef.current.play();
     if (bgVideoRef.current) bgVideoRef.current.play();
   }, [entered]);
 
@@ -298,39 +286,11 @@ export default function LandingSection({ containerRef, audioRef }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Parallax
-  const frontX = useSpring(
-    useTransform(mouseX, (v) => v * -40),
-    springConfig,
-  );
-  const secondFrontX = useSpring(
-    useTransform(mouseX, (v) => v * -40),
-    springConfig,
-  );
-  const titleX = useSpring(
-    useTransform(mouseX, (v) => v * 25),
-    springConfig,
-  );
-  const titleY = useSpring(
-    useTransform(mouseY, (v) => v * 25),
-    springConfig,
-  );
-
-  const handleMouseMove = (e) => {
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    mouseX.set((e.clientX - centerX) / centerX);
-    mouseY.set((e.clientY - centerY) / centerY);
-    spotRawX.set(e.clientX);
-    spotRawY.set(e.clientY);
-  };
 
   return (
     <section
       ref={sectionRef}
       className="landing-section"
-      onMouseMove={handleMouseMove}
-      style={{ cursor: isFirstScreen && entered ? "none" : "auto" }}
     >
       {/* Entry overlay with subscribe form */}
       <AnimatePresence>
@@ -464,7 +424,7 @@ export default function LandingSection({ containerRef, audioRef }) {
       </AnimatePresence>
 
       <div className="landing-sticky">
-        {/* TREND label */}
+        {/* TREND label — commented out
         <motion.span
           className="hero-nav-logo landing-trend-label"
           style={{ opacity: secondFrontOpacity }}
@@ -472,7 +432,6 @@ export default function LandingSection({ containerRef, audioRef }) {
           TREND
         </motion.span>
 
-        {/* Video — always behind */}
         <video
           ref={secondVideoRef}
           className="landing-video"
@@ -482,7 +441,6 @@ export default function LandingSection({ containerRef, audioRef }) {
           playsInline
         />
 
-        {/* Second front — fades in */}
         <motion.img
           className="landing-front landing-second-front"
           src={secondFront}
@@ -492,6 +450,7 @@ export default function LandingSection({ containerRef, audioRef }) {
             x: isMobile ? 0 : secondFrontX,
           }}
         />
+        */}
 
         {/* Background with spotlight — only after entry */}
         {entered && (
@@ -506,8 +465,6 @@ export default function LandingSection({ containerRef, audioRef }) {
                 onEnded={() => setVideoEnded(true)}
                 style={{
                   opacity: bgOpacity,
-                  WebkitMaskImage: maskImage,
-                  maskImage: maskImage,
                 }}
               />
               {isFirstScreen && (
@@ -535,7 +492,7 @@ export default function LandingSection({ containerRef, audioRef }) {
               className={`landing-front${frontGlitching ? " front-glitch" : ""}`}
               src={activeFront}
               alt=""
-              style={{ x: isMobile ? 0 : frontX, opacity: firstFrontOpacity }}
+              style={{ opacity: firstFrontOpacity }}
             />
 
             {/* Bottom gradient */}
@@ -554,57 +511,17 @@ export default function LandingSection({ containerRef, audioRef }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="landing-bio-date">
-            <motion.span
-              className="landing-bio-num"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 0.2,
-                duration: 0.6,
-                ease: [0.25, 0.46, 0.45, 0.94],
-              }}
-            >
-              15
-            </motion.span>
-            <span className="landing-bio-sep">—</span>
-            <motion.span
-              className="landing-bio-num"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 0.35,
-                duration: 0.6,
-                ease: [0.25, 0.46, 0.45, 0.94],
-              }}
-            >
-              08
-            </motion.span>
-            <span className="landing-bio-sep">—</span>
-            <motion.span
-              className="landing-bio-num"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: 0.5,
-                duration: 0.6,
-                ease: [0.25, 0.46, 0.45, 0.94],
-              }}
-            >
-              2002
-            </motion.span>
-          </div>
           <motion.p
             className="landing-bio-text"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              delay: 0.7,
+              delay: 0.4,
               duration: 0.8,
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
           >
-            <TypewriterText text={bioText} delay={0.9} speed={18} />
+            <TypewriterText text={bioText} delay={0.5} speed={18} />
           </motion.p>
         </motion.div>
 
@@ -618,7 +535,7 @@ export default function LandingSection({ containerRef, audioRef }) {
             >
               <motion.h1
                 className="landing-title"
-                style={{ x: titleX, y: titleY, opacity: bgOpacity }}
+                style={{ opacity: bgOpacity }}
               >
                 {"BLOK3".split("").map((char, i) => (
                   <motion.span
@@ -640,7 +557,7 @@ export default function LandingSection({ containerRef, audioRef }) {
           )}
         </AnimatePresence>
 
-        {/* Rotating praise phrases — second screen only */}
+        {/* Rotating praise phrases — trend screen commented out
         <motion.h1
           className="landing-title landing-title-second"
           style={{ opacity: secondFrontOpacity }}
@@ -688,8 +605,9 @@ export default function LandingSection({ containerRef, audioRef }) {
             </motion.span>
           </AnimatePresence>
         </motion.h1>
+        */}
 
-        {/* YouTube video info — fades in on second screen */}
+        {/* YouTube video info — trend screen commented out
         <motion.div
           className="landing-yt-info"
           style={{ opacity: secondFrontOpacity }}
@@ -713,6 +631,7 @@ export default function LandingSection({ containerRef, audioRef }) {
             </div>
           </div>
         </motion.div>
+        */}
       </div>
     </section>
   );

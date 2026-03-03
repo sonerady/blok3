@@ -2,17 +2,15 @@ import { motion } from 'framer-motion'
 
 const steps = [
   { label: 'BİYOGRAFİ', hasProgress: true },
-  { label: 'TREND' },
   { label: '2025 KONSER PERFORMANSLARI' },
   { label: '2026 TURNE PLANLAMASI' },
-  { label: 'ÖNE ÇIKAN PARÇALAR' },
-  { label: 'İSTATİSTİKLER' },
+  { label: 'PLATFORMLAR' },
 ]
 
-export default function StepNav({ activeStep = 0, videoProgress = 0, light = false, hideOnMobile = false }) {
+export default function StepNav({ activeStep = 0, videoProgress = 0, light = false, hideOnMobile = false, hideOnContact = false }) {
   return (
     <motion.nav
-      className={`step-nav${light ? ' light' : ''}${hideOnMobile ? ' hide-mobile' : ''}`}
+      className={`step-nav${light ? ' light' : ''}${hideOnMobile ? ' hide-mobile' : ''}${hideOnContact ? ' hide-on-contact' : ''}`}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 1, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}

@@ -1,10 +1,13 @@
 import { useRef, useState, useEffect } from 'react'
 import './App.css'
 import LandingSection from './components/LandingSection'
-import StatisticSection from './components/StatisticSection'
+import PlatformShowcase from './components/PlatformShowcase'
 import CTASection from './components/CTASection'
 import TurneSection from './components/TurneSection'
-import AlbumSection from './components/AlbumSection'
+// import AlbumSection from './components/AlbumSection'
+import ContactSection from './components/ContactSection'
+import EventsModal from './components/EventsSection'
+import ContactModal from './components/ContactModal'
 import StepNav from './components/StepNav'
 import gitMusic from './assets/musics/git.mp3'
 
@@ -15,7 +18,10 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [isDarkAlbum, setIsDarkAlbum] = useState(false)
+  // const [isDarkAlbum, setIsDarkAlbum] = useState(false)
+  const [eventsOpen, setEventsOpen] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
+  const [hideStepNav, setHideStepNav] = useState(false)
 
   useEffect(() => {
     const audio = audioRef.current
@@ -48,29 +54,30 @@ function App() {
       const scrollTop = container.scrollTop
       const viewportHeight = container.clientHeight
 
-      const landingMid = viewportHeight * 0.15
-      const landingEnd = viewportHeight * 2
-      // CTASection (100vh) after landing (200vh)
+      // LandingSection (100vh — trend removed)
+      const landingEnd = viewportHeight
+      // CTASection (100vh) after landing
       const ctaEnd = landingEnd + viewportHeight
-      // TurneSection (200vh) after CTA — includes cinematic transition
+      // TurneSection (200vh) after CTA
       const turneEnd = ctaEnd + viewportHeight * 2
-      // AlbumSection (700vh) after Turne — 4 albums in one section
-      const albumEnd = turneEnd + viewportHeight * 7
-      // StatisticSection is 600vh, starts after Album
-      const statEnd = albumEnd + viewportHeight * 6
+      // PlatformShowcase (100vh) after Turne
+      const showcaseEnd = turneEnd + viewportHeight
 
-      if (scrollTop < landingMid) {
+      if (scrollTop < landingEnd) {
         setActiveStep(0) // BİYOGRAFİ
-      } else if (scrollTop < landingEnd) {
-        setActiveStep(1) // TREND
+        setHideStepNav(false)
       } else if (scrollTop < ctaEnd) {
-        setActiveStep(2) // 2025 KONSER PERFORMANSLARI
+        setActiveStep(1) // 2025 KONSER PERFORMANSLARI
+        setHideStepNav(false)
       } else if (scrollTop < turneEnd) {
-        setActiveStep(3) // 2026 TURNE PLANLAMASI
-      } else if (scrollTop < albumEnd) {
-        setActiveStep(4) // ÖNE ÇIKAN PARÇALAR
+        setActiveStep(2) // 2026 TURNE PLANLAMASI
+        setHideStepNav(false)
+      } else if (scrollTop < showcaseEnd) {
+        setActiveStep(3) // PLATFORMLAR
+        setHideStepNav(false)
       } else {
-        setActiveStep(5) // İSTATİSTİKLER
+        setActiveStep(3)
+        setHideStepNav(true)
       }
     }
 
@@ -78,7 +85,7 @@ function App() {
     return () => container.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const isLight = activeStep === 4 || activeStep === 5
+  const isLight = false
 
   return (
     <div className="app" ref={containerRef}>
@@ -99,7 +106,7 @@ function App() {
         </button>
       )}
 
-      <nav className={`global-nav${isLight ? ' light' : ''}${isDarkAlbum ? ' dark-album' : ''}`}>
+      <nav className={`global-nav${isLight ? ' light' : ''}`}>
         <div className="global-nav-left">
           <span className="hero-nav-logo">
             <span>3</span>
@@ -127,7 +134,11 @@ function App() {
 
             <div className="menu-section">
               <span className="menu-section-title">Yaklaşan Etkinlikler</span>
-              <a className="menu-link" href="#events" onClick={() => setMenuOpen(false)}>Konser Takvimi</a>
+              <a className="menu-link" href="#" onClick={(e) => {
+                e.preventDefault()
+                setMenuOpen(false)
+                setEventsOpen(true)
+              }}>Konser Takvimi</a>
             </div>
 
             <div className="menu-section">
@@ -137,17 +148,24 @@ function App() {
 
             <div className="menu-section">
               <span className="menu-section-title">İletişim</span>
-              <a className="menu-link" href="mailto:info@blok3team.com" onClick={() => setMenuOpen(false)}>info@blok3team.com</a>
+              <a className="menu-link" href="#" onClick={(e) => {
+                e.preventDefault()
+                setMenuOpen(false)
+                setContactOpen(true)
+              }}>Bize Yazın</a>
             </div>
           </div>
         </div>
       </nav>
-      <StepNav activeStep={activeStep} light={isLight} hideOnMobile={activeStep >= 4} />
+      <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} />
       <LandingSection containerRef={containerRef} audioRef={audioRef} />
       <CTASection containerRef={containerRef} />
       <TurneSection containerRef={containerRef} />
-      <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} />
-      <StatisticSection containerRef={containerRef} />
+      {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
+      <PlatformShowcase containerRef={containerRef} />
+      <ContactSection />
+      <EventsModal isOpen={eventsOpen} onClose={() => setEventsOpen(false)} />
+      <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
   )
 }
