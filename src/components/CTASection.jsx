@@ -82,7 +82,35 @@ const numberPop = {
   show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
 }
 
-export default function CTASection({ containerRef, onGalleryOpen }) {
+/* ── Hardcoded fallback stats ── */
+const defaultStats = {
+  turkiye: [
+    { stat_key: 'sehir', value: 50, suffix: '', label: 'ŞEHİR' },
+    { stat_key: 'konser', value: 90, suffix: '', label: 'KONSER' },
+    { stat_key: 'izleyici', value: 300000, suffix: '+', label: 'BİLETLİ İZLEYİCİ' },
+  ],
+  avrupa: [
+    { stat_key: 'ulke', value: 8, suffix: '', label: 'ÜLKE' },
+    { stat_key: 'sehir', value: 20, suffix: '', label: 'ŞEHİR' },
+    { stat_key: 'konser', value: 45, suffix: '', label: 'KONSER' },
+    { stat_key: 'misafir', value: 125000, suffix: '+', label: 'BİLETLİ MİSAFİR' },
+  ],
+  toplam: [
+    { stat_key: 'izleyici', value: 425000, suffix: '+', label: 'TOPLAM BİLETLİ İZLEYİCİ' },
+  ],
+}
+
+export default function CTASection({ containerRef, onGalleryOpen, concertStats = [] }) {
+  // Merge API data with fallbacks
+  const getRegion = (region) => {
+    const apiItems = concertStats.filter((s) => s.region === region)
+    if (apiItems.length > 0) return apiItems
+    return defaultStats[region] || []
+  }
+  const trStats = getRegion('turkiye')
+  const euStats = getRegion('avrupa')
+  const totalStats = getRegion('toplam')
+
   const sectionRef = useRef(null)
   const mouseX = useMotionValue(0)
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 })
@@ -189,51 +217,37 @@ export default function CTASection({ containerRef, onGalleryOpen }) {
           <motion.div className="cta-stat-block" variants={slideRight}>
             <span className="cta-tag">TÜRKİYE</span>
             <div className="cta-stat-row">
-              <motion.div className="cta-stat" variants={numberPop}>
-                <span className="cta-num"><AnimatedCounter target={50} active={countersActive} /></span>
-                <span className="cta-label">ŞEHİR</span>
-              </motion.div>
-              <motion.div className="cta-stat" variants={numberPop}>
-                <span className="cta-num"><AnimatedCounter target={90} active={countersActive} /></span>
-                <span className="cta-label">KONSER</span>
-              </motion.div>
-              <motion.div className="cta-stat cta-stat-highlight" variants={numberPop}>
-                <span className="cta-num"><AnimatedCounter target={300000} suffix="+" active={countersActive} /></span>
-                <span className="cta-label">BİLETLİ İZLEYİCİ</span>
-              </motion.div>
+              {trStats.map((s, i) => (
+                <motion.div key={s.stat_key || i} className={`cta-stat${i === trStats.length - 1 ? ' cta-stat-highlight' : ''}`} variants={numberPop}>
+                  <span className="cta-num"><AnimatedCounter target={s.value} suffix={s.suffix} active={countersActive} /></span>
+                  <span className="cta-label">{s.label}</span>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
           {/* Europe */}
           <motion.div className="cta-stat-block" variants={slideRight}>
             <span className="cta-tag">AVRUPA</span>
-            <div className="cta-stat-row cta-stat-row-4">
-              <motion.div className="cta-stat" variants={numberPop}>
-                <span className="cta-num"><AnimatedCounter target={8} active={countersActive} /></span>
-                <span className="cta-label">ÜLKE</span>
-              </motion.div>
-              <motion.div className="cta-stat" variants={numberPop}>
-                <span className="cta-num"><AnimatedCounter target={20} active={countersActive} /></span>
-                <span className="cta-label">ŞEHİR</span>
-              </motion.div>
-              <motion.div className="cta-stat" variants={numberPop}>
-                <span className="cta-num"><AnimatedCounter target={45} active={countersActive} /></span>
-                <span className="cta-label">KONSER</span>
-              </motion.div>
-              <motion.div className="cta-stat cta-stat-highlight" variants={numberPop}>
-                <span className="cta-num"><AnimatedCounter target={125000} suffix="+" active={countersActive} /></span>
-                <span className="cta-label">BİLETLİ MİSAFİR</span>
-              </motion.div>
+            <div className={`cta-stat-row${euStats.length >= 4 ? ' cta-stat-row-4' : ''}`}>
+              {euStats.map((s, i) => (
+                <motion.div key={s.stat_key || i} className={`cta-stat${i === euStats.length - 1 ? ' cta-stat-highlight' : ''}`} variants={numberPop}>
+                  <span className="cta-num"><AnimatedCounter target={s.value} suffix={s.suffix} active={countersActive} /></span>
+                  <span className="cta-label">{s.label}</span>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
           {/* Total */}
-          <motion.div className="cta-total-row" variants={fadeUp}>
-            <span className="cta-bottom-num">
-              <AnimatedCounter target={425000} suffix="+" active={countersActive} />
-            </span>
-            <span className="cta-bottom-label">TOPLAM BİLETLİ İZLEYİCİ</span>
-          </motion.div>
+          {totalStats.map((s, i) => (
+            <motion.div key={s.stat_key || i} className="cta-total-row" variants={fadeUp}>
+              <span className="cta-bottom-num">
+                <AnimatedCounter target={s.value} suffix={s.suffix} active={countersActive} />
+              </span>
+              <span className="cta-bottom-label">{s.label}</span>
+            </motion.div>
+          ))}
         </motion.div>
       </motion.div>
     </section>

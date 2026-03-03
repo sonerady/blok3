@@ -28,6 +28,7 @@ function App() {
   const [hideStepNav, setHideStepNav] = useState(false)
   const [links, setLinks] = useState([])
   const [platformStats, setPlatformStats] = useState([])
+  const [concertStats, setConcertStats] = useState([])
 
   useEffect(() => {
     fetch('/api/blok3/links')
@@ -37,6 +38,10 @@ function App() {
     fetch('/api/blok3/platform-stats')
       .then((res) => res.json())
       .then((data) => setPlatformStats(data))
+      .catch(() => {})
+    fetch('/api/blok3/concert-stats')
+      .then((res) => res.json())
+      .then((data) => setConcertStats(data))
       .catch(() => {})
   }, [])
 
@@ -180,7 +185,7 @@ function App() {
       </nav>
       <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} />
       <LandingSection containerRef={containerRef} audioRef={audioRef} />
-      <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} />
+      <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} concertStats={concertStats} />
       <TurneSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} />
       {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
       <PlatformShowcase containerRef={containerRef} links={links} platformStats={platformStats} />
