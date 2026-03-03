@@ -8,6 +8,8 @@ import TurneSection from './components/TurneSection'
 import ContactSection from './components/ContactSection'
 import EventsModal from './components/EventsSection'
 import ContactModal from './components/ContactModal'
+import GalleryModal from './components/GalleryModal'
+import PressModal from './components/PressModal'
 import StepNav from './components/StepNav'
 import gitMusic from './assets/musics/git.mp3'
 
@@ -21,6 +23,8 @@ function App() {
   // const [isDarkAlbum, setIsDarkAlbum] = useState(false)
   const [eventsOpen, setEventsOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState(false)
+  const [pressOpen, setPressOpen] = useState(false)
   const [hideStepNav, setHideStepNav] = useState(false)
 
   useEffect(() => {
@@ -52,7 +56,7 @@ function App() {
 
     const handleScroll = () => {
       const scrollTop = container.scrollTop
-      const viewportHeight = container.clientHeight
+      const viewportHeight = window.innerHeight
 
       // LandingSection (100vh — trend removed)
       const landingEnd = viewportHeight
@@ -76,11 +80,12 @@ function App() {
         setActiveStep(3) // PLATFORMLAR
         setHideStepNav(false)
       } else {
-        setActiveStep(3)
-        setHideStepNav(true)
+        setActiveStep(4) // İLETİŞİM
+        setHideStepNav(false)
       }
     }
 
+    handleScroll()
     container.addEventListener('scroll', handleScroll)
     return () => container.removeEventListener('scroll', handleScroll)
   }, [])
@@ -143,7 +148,11 @@ function App() {
 
             <div className="menu-section">
               <span className="menu-section-title">Basında Biz</span>
-              <a className="menu-link" href="#press" onClick={() => setMenuOpen(false)}>Basında Biz</a>
+              <a className="menu-link" href="#" onClick={(e) => {
+                e.preventDefault()
+                setMenuOpen(false)
+                setPressOpen(true)
+              }}>Basında Biz</a>
             </div>
 
             <div className="menu-section">
@@ -159,13 +168,15 @@ function App() {
       </nav>
       <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} />
       <LandingSection containerRef={containerRef} audioRef={audioRef} />
-      <CTASection containerRef={containerRef} />
-      <TurneSection containerRef={containerRef} />
+      <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} />
+      <TurneSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} />
       {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
       <PlatformShowcase containerRef={containerRef} />
       <ContactSection />
       <EventsModal isOpen={eventsOpen} onClose={() => setEventsOpen(false)} />
       <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
+      <GalleryModal isOpen={galleryOpen} onClose={() => setGalleryOpen(false)} />
+      <PressModal isOpen={pressOpen} onClose={() => setPressOpen(false)} />
     </div>
   )
 }

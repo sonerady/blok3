@@ -3,175 +3,996 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BLOK3 — Aboneler</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>BLOK3 — Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', -apple-system, sans-serif; background: #f8f8f8; color: #1a1a1a; min-height: 100vh; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; }
 
-    .container { max-width: 960px; margin: 0 auto; padding: 3rem 2rem; }
+    /* ─── LOGIN SCREEN ─── */
+    .login-overlay { position: fixed; inset: 0; background: #0a0a0a; display: flex; align-items: center; justify-content: center; z-index: 10000; }
+    .login-overlay.hidden { display: none; }
+    .login-card { background: #111; border: 1px solid #222; border-radius: 8px; padding: 2.5rem 2rem; width: 100%; max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .login-logo { font-size: 1.4rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: #fff; text-align: center; margin-bottom: 0.3rem; }
+    .login-sub { font-size: 0.7rem; color: #555; text-align: center; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2rem; }
+    .login-field { margin-bottom: 1rem; }
+    .login-field label { display: block; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #666; margin-bottom: 0.4rem; }
+    .login-field input { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.85rem; padding: 0.65rem 0.8rem;
+      background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #fff; outline: none; transition: border 0.2s; }
+    .login-field input:focus { border-color: #fff; }
+    .login-field input::placeholder { color: #444; }
+    .login-btn { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em;
+      padding: 0.7rem; background: #fff; color: #0a0a0a; border: none; border-radius: 4px; cursor: pointer;
+      margin-top: 0.5rem; transition: opacity 0.2s; text-transform: uppercase; }
+    .login-btn:hover { opacity: 0.9; }
+    .login-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .login-error { color: #e74c3c; font-size: 0.72rem; text-align: center; margin-top: 0.8rem; min-height: 1rem; }
+    .login-session { font-size: 0.6rem; color: #333; text-align: center; margin-top: 1.2rem; }
 
-    .header { margin-bottom: 2.5rem; }
-    .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.3rem; }
-    .logo { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #1a1a1a; }
-    .subtitle { font-size: 0.8rem; color: #999; margin-top: 0.2rem; }
-    .divider { height: 1px; background: #e0e0e0; margin-top: 1rem; }
+    /* ─── ADMIN PANEL ─── */
+    .admin-wrap { display: none; }
+    .admin-wrap.visible { display: block; }
 
-    .stats { display: flex; gap: 2rem; margin-bottom: 2rem; }
-    .stat-box { }
-    .stat-num { font-size: 1.8rem; font-weight: 600; color: #1a1a1a; line-height: 1; }
-    .stat-label { font-size: 0.7rem; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.3rem; }
+    .container { max-width: 1060px; margin: 0 auto; padding: 2rem; }
 
-    .toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; }
-    .refresh-btn { background: #1a1a1a; color: #fff; border: none; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.55rem 1.2rem; cursor: pointer; transition: background 0.2s; }
-    .refresh-btn:hover { background: #333; }
+    .header { margin-bottom: 1.5rem; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+    .subtitle { font-size: 0.72rem; color: #999; margin-top: 0.15rem; }
+    .divider { height: 1px; background: #e0e0e0; margin-top: 0.8rem; }
+    .logout-btn { background: none; border: 1px solid #ddd; font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.06em; color: #999; padding: 0.4rem 0.8rem; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+    .logout-btn:hover { color: #c0392b; border-color: #c0392b; }
 
-    .card { background: #fff; border: 1px solid #eaeaea; overflow: hidden; }
+    /* Tabs */
+    .tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 2px solid #e0e0e0; }
+    .tab-btn { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase; color: #999; padding: 0.7rem 1.2rem; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+    .tab-btn:hover { color: #555; }
+    .tab-btn.active { color: #1a1a1a; border-bottom-color: #1a1a1a; font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Shared */
+    .card { background: #fff; border: 1px solid #eaeaea; overflow: hidden; border-radius: 4px; }
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #999; padding: 0.75rem 1.2rem; border-bottom: 1px solid #eaeaea; background: #fafafa; }
-    td { font-size: 0.82rem; padding: 0.8rem 1.2rem; border-bottom: 1px solid #f0f0f0; color: #444; }
-    td:first-child { color: #ccc; font-size: 0.75rem; }
+    th { text-align: left; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #999; padding: 0.7rem 1rem; border-bottom: 1px solid #eaeaea; background: #fafafa; }
+    td { font-size: 0.8rem; padding: 0.7rem 1rem; border-bottom: 1px solid #f0f0f0; color: #444; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #fafafa; }
 
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 0.5rem; }
+    .btn { background: #1a1a1a; color: #fff; border: none; font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 500;
+      letter-spacing: 0.06em; padding: 0.5rem 1rem; cursor: pointer; border-radius: 3px; transition: background 0.2s; }
+    .btn:hover { background: #333; }
+    .btn-danger { background: #c0392b; }
+    .btn-danger:hover { background: #e74c3c; }
+    .btn-sm { font-size: 0.65rem; padding: 0.35rem 0.7rem; }
+    .btn-outline { background: transparent; color: #1a1a1a; border: 1px solid #ddd; }
+    .btn-outline:hover { background: #f0f0f0; }
+
+    .empty { text-align: center; padding: 2.5rem; color: #bbb; font-size: 0.82rem; }
     .name { font-weight: 500; color: #1a1a1a; }
-    .tag { display: inline-block; background: #f0f0f0; padding: 0.15rem 0.55rem; font-size: 0.72rem; color: #555; }
-    .date { color: #aaa; font-size: 0.75rem; }
+    .tag { display: inline-block; background: #f0f0f0; padding: 0.12rem 0.5rem; font-size: 0.7rem; color: #555; border-radius: 2px; }
+    .date { color: #aaa; font-size: 0.72rem; }
     .phone { color: #777; }
+    .badge { display: inline-block; padding: 0.1rem 0.5rem; font-size: 0.65rem; border-radius: 2px; font-weight: 500; }
+    .badge-new { background: #e8f5e9; color: #2e7d32; }
+    .badge-read { background: #f0f0f0; color: #999; }
 
-    .empty { text-align: center; padding: 3rem; color: #bbb; font-size: 0.85rem; }
-    .loading { text-align: center; padding: 3rem; color: #bbb; font-size: 0.85rem; }
+    /* Form */
+    .form-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+    .form-group { flex: 1; min-width: 160px; }
+    .form-group label { display: block; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #999; margin-bottom: 0.3rem; }
+    .form-group input, .form-group textarea { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.8rem; padding: 0.5rem 0.7rem;
+      border: 1px solid #ddd; border-radius: 3px; background: #fff; color: #1a1a1a; outline: none; transition: border 0.2s; }
+    .form-group input:focus, .form-group textarea:focus { border-color: #1a1a1a; }
+    .form-card { background: #fff; border: 1px solid #eaeaea; padding: 1.2rem; border-radius: 4px; margin-bottom: 1rem; }
 
-    .pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
-    .page-btn { background: #1a1a1a; color: #fff; border: none; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.5rem 1rem; cursor: pointer; transition: background 0.2s; }
-    .page-btn:hover { background: #333; }
-    .page-btn:disabled { background: #ccc; cursor: not-allowed; }
-    .page-info { font-size: 0.75rem; color: #999; letter-spacing: 0.04em; }
+    /* Gallery grid */
+    .gallery-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.8rem; }
+    .gallery-admin-item { position: relative; border-radius: 4px; overflow: hidden; border: 1px solid #eaeaea; background: #fff; }
+    .gallery-admin-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
+    .gallery-admin-item .caption-edit { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.72rem; padding: 0.35rem 0.5rem;
+      border: 1px solid #ddd; border-radius: 2px; margin: 0.4rem 0.5rem; box-sizing: border-box; width: calc(100% - 1rem); outline: none; }
+    .gallery-admin-item .caption-edit:focus { border-color: #1a1a1a; }
+    .gallery-admin-item .actions { display: flex; gap: 0.3rem; padding: 0 0.5rem 0.5rem; flex-wrap: wrap; }
+    .gallery-admin-item .img-overlay { position: absolute; top: 0; left: 0; right: 0; height: 140px; background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center; cursor: pointer; }
+    .gallery-admin-item:hover .img-overlay { display: flex; }
+    .gallery-admin-item .img-overlay span { color: #fff; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; }
 
-    @media print {
-      body { background: #fff; }
-      .toolbar, .pagination { display: none; }
-      .card { border: 1px solid #ddd; }
-    }
+    /* Pagination */
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.2rem; }
+    .page-info { font-size: 0.72rem; color: #999; }
+
+    /* Message expand */
+    .msg-body { display: none; padding: 0.8rem 1rem; background: #fafafa; font-size: 0.8rem; color: #555; line-height: 1.6; border-top: 1px solid #f0f0f0; }
+    .msg-body.open { display: block; }
+
+    /* Upload area */
+    .upload-area { border: 2px dashed #ddd; border-radius: 4px; padding: 1.5rem; text-align: center; margin-bottom: 1rem; cursor: pointer; transition: border-color 0.2s; }
+    .upload-area:hover { border-color: #999; }
+    .upload-area input[type="file"] { display: none; }
+    .upload-area p { font-size: 0.8rem; color: #999; }
+
+    .stat-row { display: flex; gap: 2rem; margin-bottom: 1.2rem; }
+    .stat-box .stat-num { font-size: 1.6rem; font-weight: 600; line-height: 1; }
+    .stat-box .stat-label { font-size: 0.65rem; color: #999; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.2rem; }
+
+    /* Subscribers bottom bar */
+    .subs-bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #eaeaea;
+      padding: 0.6rem 2rem; display: none; align-items: center; justify-content: space-between; z-index: 100;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.06); }
+    .subs-bottom-bar.visible { display: flex; }
+    .subs-bottom-stats { display: flex; gap: 1.5rem; }
+    .subs-bottom-stats .sbs-item { font-size: 0.72rem; color: #777; }
+    .subs-bottom-stats .sbs-item strong { color: #1a1a1a; font-weight: 600; }
+    .subs-filters { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+    .subs-filters input, .subs-filters select { font-family: 'Inter', sans-serif; font-size: 0.75rem; padding: 0.4rem 0.6rem;
+      border: 1px solid #ddd; border-radius: 3px; outline: none; background: #fff; color: #1a1a1a; }
+    .subs-filters input:focus, .subs-filters select:focus { border-color: #1a1a1a; }
+    .subs-filters input { width: 160px; }
+    .btn-success { background: #27ae60; }
+    .btn-success:hover { background: #2ecc71; }
+
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: #1a1a1a; color: #fff; padding: 0.7rem 1.2rem;
+      font-size: 0.78rem; border-radius: 4px; z-index: 9999; opacity: 0; transform: translateY(10px);
+      transition: all 0.3s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
-      <div class="header-top">
-        <div>
-          <div class="logo">BLOK3 Abonelik Kayitlari</div>
-          <div class="subtitle">blok3_subscribers</div>
-        </div>
-      </div>
-      <div class="divider"></div>
-    </div>
+<!-- ═══════════════════════════════ -->
+<!--  LOGIN SCREEN                  -->
+<!-- ═══════════════════════════════ -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">BLOK3</div>
+    <div class="login-sub">Admin Panel</div>
 
-    <div class="stats">
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="login-field">
+        <label>Kullanici Adi</label>
+        <input type="text" id="login-username" placeholder="admin" autocomplete="username" required>
+      </div>
+      <div class="login-field">
+        <label>Sifre</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="login-btn" id="login-submit">Giris Yap</button>
+    </form>
+
+    <div class="login-error" id="login-error"></div>
+    <div class="login-session">Oturum 8 saat gecerlidir</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!--  ADMIN PANEL                   -->
+<!-- ═══════════════════════════════ -->
+<div class="admin-wrap" id="admin-wrap">
+<div class="container">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="logo">BLOK3 Admin Panel</div>
+        <div class="subtitle">Etkinlik, galeri ve iletisim yonetimi</div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Cikis Yap</button>
+    </div>
+    <div class="divider"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('events')">Etkinlikler</button>
+    <button class="tab-btn" onclick="switchTab('messages')">Mesajlar</button>
+    <button class="tab-btn" onclick="switchTab('gallery')">Galeri</button>
+    <button class="tab-btn" onclick="switchTab('subscribers')">Aboneler</button>
+    <button class="tab-btn" onclick="switchTab('press')">Basin</button>
+  </div>
+
+  <!-- ═══════ EVENTS TAB ═══════ -->
+  <div class="tab-content active" id="tab-events">
+    <div class="stat-row">
       <div class="stat-box">
-        <div class="stat-num" id="total">—</div>
-        <div class="stat-label">Toplam Abone</div>
+        <div class="stat-num" id="events-total">—</div>
+        <div class="stat-label">Toplam Etkinlik</div>
       </div>
     </div>
-
     <div class="toolbar">
-      <button class="refresh-btn" onclick="loadData()">Yenile</button>
+      <button class="btn" onclick="showEventForm()">+ Etkinlik Ekle</button>
+      <button class="btn btn-outline" onclick="loadEvents()">Yenile</button>
+    </div>
+
+    <div class="form-card" id="event-form" style="display:none;">
+      <div class="form-row">
+        <div class="form-group"><label>Tarih</label><input type="date" id="ev-date"></div>
+        <div class="form-group"><label>Sehir</label><input type="text" id="ev-city" placeholder="Berlin"></div>
+        <div class="form-group"><label>Ulke</label><input type="text" id="ev-country" placeholder="Almanya"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Mekan</label><input type="text" id="ev-venue" placeholder="Columbiahalle"></div>
+        <div class="form-group"><label>Bilet URL</label><input type="text" id="ev-ticket" placeholder="https://..."></div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+        <button class="btn" onclick="saveEvent()">Kaydet</button>
+        <button class="btn btn-outline" onclick="hideEventForm()">Iptal</button>
+      </div>
+      <input type="hidden" id="ev-edit-id">
     </div>
 
     <div class="card">
       <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Ad Soyad</th>
-            <th>E-posta</th>
-            <th>Telefon</th>
-            <th>Sehir</th>
-            <th>Tarih</th>
-          </tr>
-        </thead>
-        <tbody id="tbody">
-          <tr><td colspan="6" class="loading">Yukleniyor...</td></tr>
-        </tbody>
+        <thead><tr><th>Tarih</th><th>Sehir</th><th>Ulke</th><th>Mekan</th><th>Bilet</th><th></th></tr></thead>
+        <tbody id="events-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
       </table>
-    </div>
-
-    <div class="pagination" id="pagination" style="display:none;">
-      <button class="page-btn" id="prevBtn" onclick="prevPage()">← Onceki</button>
-      <span class="page-info" id="pageInfo"></span>
-      <button class="page-btn" id="nextBtn" onclick="nextPage()">Sonraki →</button>
     </div>
   </div>
 
-  <script>
-    const API_URL = 'https://wearup-server.onrender.com/api/blok3/subscribers'
-    const LIMIT = 50
-    let currentPage = 1
-    let totalCount = 0
-    let totalPages = 1
+  <!-- ═══════ MESSAGES TAB ═══════ -->
+  <div class="tab-content" id="tab-messages">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="messages-total">—</div>
+        <div class="stat-label">Toplam Mesaj</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div></div>
+      <button class="btn btn-outline" onclick="loadMessages()">Yenile</button>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Ad</th><th>E-posta</th><th>Konu</th><th>Durum</th><th>Tarih</th><th></th></tr></thead>
+        <tbody id="messages-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="msg-pagination" style="display:none;">
+      <button class="btn btn-sm btn-outline" id="msg-prev" onclick="loadMessages(msgPage-1)">Onceki</button>
+      <span class="page-info" id="msg-page-info"></span>
+      <button class="btn btn-sm btn-outline" id="msg-next" onclick="loadMessages(msgPage+1)">Sonraki</button>
+    </div>
+  </div>
 
-    async function loadData(page = 1) {
-      const tbody = document.getElementById('tbody')
-      const total = document.getElementById('total')
-      const pagination = document.getElementById('pagination')
-      currentPage = page
+  <!-- ═══════ GALLERY TAB ═══════ -->
+  <div class="tab-content" id="tab-gallery">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="gallery-total">—</div>
+        <div class="stat-label">Toplam Gorsel</div>
+      </div>
+    </div>
 
-      try {
-        const res = await fetch(`${API_URL}?page=${page}&limit=${LIMIT}`)
-        const json = await res.json()
+    <div class="form-card">
+      <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin-bottom:0.8rem;">Gorsel Yukle</div>
+      <div class="upload-area" id="upload-area" onclick="document.getElementById('gallery-file').click()">
+        <input type="file" id="gallery-file" accept="image/*" onchange="handleFileSelect(this)">
+        <p id="upload-text">Gorsel secmek icin tiklayin</p>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Aciklama</label><input type="text" id="gallery-caption" placeholder="Istanbul — Volkswagen Arena"></div>
+      </div>
+      <button class="btn" onclick="uploadGallery()" id="upload-btn">Yukle</button>
+    </div>
 
-        // Support both paginated and non-paginated response
-        const data = json.data || json
-        totalCount = json.total != null ? json.total : data.length
-        totalPages = json.totalPages || Math.ceil(totalCount / LIMIT)
+    <div class="gallery-admin-grid" id="gallery-grid"></div>
+  </div>
 
-        total.textContent = totalCount
+  <!-- ═══════ SUBSCRIBERS TAB ═══════ -->
+  <div class="tab-content" id="tab-subscribers" style="padding-bottom: 4rem;">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="subs-total">—</div>
+        <div class="stat-label">Toplam Abone</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="subs-today">—</div>
+        <div class="stat-label">Bugun</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="subs-week">—</div>
+        <div class="stat-label">Bu Hafta</div>
+      </div>
+    </div>
 
-        if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" class="empty">Henuz abone yok</td></tr>'
-          pagination.style.display = 'none'
-          return
-        }
+    <div class="toolbar">
+      <div class="subs-filters">
+        <input type="text" id="subs-search" placeholder="Ad, e-posta ara..." oninput="filterSubscribers()">
+        <select id="subs-city-filter" onchange="filterSubscribers()">
+          <option value="">Tum Sehirler</option>
+        </select>
+        <select id="subs-date-filter" onchange="filterSubscribers()">
+          <option value="">Tum Tarihler</option>
+          <option value="today">Bugun</option>
+          <option value="week">Bu Hafta</option>
+          <option value="month">Bu Ay</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn btn-success" onclick="downloadExcel()">Excel Indir</button>
+        <button class="btn btn-outline" onclick="loadSubscribers()">Yenile</button>
+      </div>
+    </div>
 
-        const offset = (currentPage - 1) * LIMIT
-        tbody.innerHTML = data.map((row, i) => {
-          const date = new Date(row.created_at).toLocaleDateString('tr-TR', {
-            day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-          })
-          return `<tr>
-            <td>${offset + i + 1}</td>
-            <td class="name">${row.first_name} ${row.last_name}</td>
-            <td>${row.email}</td>
-            <td class="phone">${row.phone ? '+90 ' + row.phone : '\u2014'}</td>
-            <td><span class="tag">${row.city}</span></td>
-            <td class="date">${date}</td>
-          </tr>`
-        }).join('')
+    <div class="card">
+      <table>
+        <thead><tr><th>#</th><th>Ad Soyad</th><th>E-posta</th><th>Telefon</th><th>Sehir</th><th>Tarih</th></tr></thead>
+        <tbody id="subs-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="subs-pagination" style="display:none;">
+      <button class="btn btn-sm btn-outline" id="subs-prev" onclick="loadSubscribers(subsPage-1)">Onceki</button>
+      <span class="page-info" id="subs-page-info"></span>
+      <button class="btn btn-sm btn-outline" id="subs-next" onclick="loadSubscribers(subsPage+1)">Sonraki</button>
+    </div>
+  </div>
 
-        // Pagination controls
-        if (totalPages > 1) {
-          pagination.style.display = 'flex'
-          document.getElementById('pageInfo').textContent = `Sayfa ${currentPage} / ${totalPages}`
-          document.getElementById('prevBtn').disabled = currentPage <= 1
-          document.getElementById('nextBtn').disabled = currentPage >= totalPages
-        } else {
-          pagination.style.display = 'none'
-        }
-      } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty">Hata: ' + err.message + '</td></tr>'
+  <!-- ═══════ PRESS TAB ═══════ -->
+  <div class="tab-content" id="tab-press">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="press-total">—</div>
+        <div class="stat-label">Toplam Haber</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" onclick="showPressForm()">+ Haber Ekle</button>
+      <button class="btn btn-outline" onclick="loadPress()">Yenile</button>
+    </div>
+
+    <div class="form-card" id="press-form" style="display:none;">
+      <div class="form-row">
+        <div class="form-group"><label>Baslik</label><input type="text" id="pr-title" placeholder="BLOK3 Avrupa Turnesinde Rekor Kirdi"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Gorsel URL</label><input type="text" id="pr-image" placeholder="https://images.unsplash.com/..."></div>
+        <div class="form-group"><label>Haber Linki</label><input type="text" id="pr-link" placeholder="https://www.hurriyet.com.tr/..."></div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+        <button class="btn" onclick="savePress()">Kaydet</button>
+        <button class="btn btn-outline" onclick="hidePressForm()">Iptal</button>
+      </div>
+      <input type="hidden" id="pr-edit-id">
+    </div>
+
+    <div class="card">
+      <table>
+        <thead><tr><th style="width:60px;">Gorsel</th><th>Baslik</th><th>Link</th><th>Tarih</th><th></th></tr></thead>
+        <tbody id="press-tbody"><tr><td colspan="5" class="empty">Yukleniyor...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Subscribers bottom bar -->
+<div class="subs-bottom-bar" id="subs-bottom-bar">
+  <div class="subs-bottom-stats">
+    <div class="sbs-item">Toplam: <strong id="sbs-total">0</strong></div>
+    <div class="sbs-item">Gosterilen: <strong id="sbs-shown">0</strong></div>
+    <div class="sbs-item">Son kayit: <strong id="sbs-last-date">—</strong></div>
+  </div>
+  <div style="font-size:0.65rem;color:#bbb;letter-spacing:0.06em;">BLOK3 ADMIN v1.0</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = 'http://localhost:3001/api/blok3'
+
+  // ═══════════════════════════════
+  //  AUTH
+  // ═══════════════════════════════
+  function getToken() {
+    return localStorage.getItem('blok3_token')
+  }
+
+  function setToken(token) {
+    localStorage.setItem('blok3_token', token)
+    localStorage.setItem('blok3_token_time', Date.now().toString())
+  }
+
+  function clearToken() {
+    localStorage.removeItem('blok3_token')
+    localStorage.removeItem('blok3_token_time')
+  }
+
+  function isTokenExpired() {
+    const time = localStorage.getItem('blok3_token_time')
+    if (!time) return true
+    // 8 hours
+    return (Date.now() - parseInt(time)) > 8 * 60 * 60 * 1000
+  }
+
+  function authHeaders() {
+    return { 'Authorization': 'Bearer ' + getToken() }
+  }
+
+  // Wrapper for authenticated fetch
+  async function authFetch(url, options = {}) {
+    const token = getToken()
+    if (!token || isTokenExpired()) {
+      clearToken()
+      showLogin()
+      throw new Error('Oturum suresi doldu, tekrar giris yapin')
+    }
+
+    options.headers = { ...options.headers, 'Authorization': 'Bearer ' + token }
+    const res = await fetch(url, options)
+
+    if (res.status === 401) {
+      clearToken()
+      showLogin()
+      throw new Error('Yetkisiz erisim, tekrar giris yapin')
+    }
+
+    return res
+  }
+
+  function showLogin() {
+    document.getElementById('login-overlay').classList.remove('hidden')
+    document.getElementById('admin-wrap').classList.remove('visible')
+    document.getElementById('subs-bottom-bar').classList.remove('visible')
+  }
+
+  function showAdmin() {
+    document.getElementById('login-overlay').classList.add('hidden')
+    document.getElementById('admin-wrap').classList.add('visible')
+    loadEvents()
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault()
+    const btn = document.getElementById('login-submit')
+    const errEl = document.getElementById('login-error')
+    const username = document.getElementById('login-username').value.trim()
+    const password = document.getElementById('login-password').value
+
+    if (!username || !password) { errEl.textContent = 'Tum alanlar zorunludur'; return }
+
+    btn.disabled = true
+    btn.textContent = 'Giris yapiliyor...'
+    errEl.textContent = ''
+
+    try {
+      const res = await fetch(API + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      const json = await res.json()
+
+      if (!res.ok || !json.success) {
+        errEl.textContent = json.message || 'Gecersiz kullanici adi veya sifre'
+        return
       }
+
+      setToken(json.token)
+      showAdmin()
+    } catch (err) {
+      errEl.textContent = 'Sunucuya baglanilamadi'
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Giris Yap'
+    }
+  }
+
+  function logout() {
+    if (!confirm('Cikis yapmak istediginize emin misiniz?')) return
+    clearToken()
+    showLogin()
+    toast('Cikis yapildi')
+  }
+
+  // ─── Toast ───
+  function toast(msg) {
+    const el = document.getElementById('toast')
+    el.textContent = msg
+    el.classList.add('show')
+    setTimeout(() => el.classList.remove('show'), 2500)
+  }
+
+  // ─── Tabs ───
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'))
+    document.getElementById('tab-' + name).classList.add('active')
+    event.target.classList.add('active')
+
+    const bar = document.getElementById('subs-bottom-bar')
+    if (name === 'subscribers') { bar.classList.add('visible') } else { bar.classList.remove('visible') }
+
+    if (name === 'events') loadEvents()
+    if (name === 'messages') loadMessages()
+    if (name === 'gallery') loadGallery()
+    if (name === 'subscribers') loadSubscribers()
+    if (name === 'press') loadPress()
+  }
+
+  function formatDate(d) {
+    return new Date(d).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })
+  }
+
+  // ═══════════════════════════════
+  //  EVENTS
+  // ═══════════════════════════════
+  async function loadEvents() {
+    const tbody = document.getElementById('events-tbody')
+    try {
+      const res = await fetch(API + '/events')
+      const data = await res.json()
+      document.getElementById('events-total').textContent = data.length
+
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Henuz etkinlik yok</td></tr>'; return }
+
+      tbody.innerHTML = data.map(e => `<tr>
+        <td>${formatDate(e.date)}</td>
+        <td class="name">${e.city}</td>
+        <td><span class="tag">${e.country}</span></td>
+        <td>${e.venue}</td>
+        <td>${e.ticket_url ? '<a href="'+e.ticket_url+'" target="_blank" style="color:#2196F3;font-size:0.72rem;">Link</a>' : '—'}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-sm btn-outline" onclick="editEvent('${e.id}')">Duzenle</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteEvent('${e.id}')">Sil</button>
+        </td>
+      </tr>`).join('')
+    } catch (err) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Hata: '+err.message+'</td></tr>' }
+  }
+
+  let eventsCache = []
+  function showEventForm(id) {
+    document.getElementById('event-form').style.display = 'block'
+    if (id) {
+      const e = eventsCache.find(x => x.id === id)
+      if (e) {
+        document.getElementById('ev-date').value = e.date
+        document.getElementById('ev-city').value = e.city
+        document.getElementById('ev-country').value = e.country
+        document.getElementById('ev-venue').value = e.venue
+        document.getElementById('ev-ticket').value = e.ticket_url || ''
+        document.getElementById('ev-edit-id').value = id
+      }
+    } else {
+      document.getElementById('ev-date').value = ''
+      document.getElementById('ev-city').value = ''
+      document.getElementById('ev-country').value = ''
+      document.getElementById('ev-venue').value = ''
+      document.getElementById('ev-ticket').value = ''
+      document.getElementById('ev-edit-id').value = ''
+    }
+  }
+  function hideEventForm() { document.getElementById('event-form').style.display = 'none' }
+
+  async function saveEvent() {
+    const id = document.getElementById('ev-edit-id').value
+    const body = {
+      date: document.getElementById('ev-date').value,
+      city: document.getElementById('ev-city').value,
+      country: document.getElementById('ev-country').value,
+      venue: document.getElementById('ev-venue').value,
+      ticket_url: document.getElementById('ev-ticket').value
+    }
+    if (!body.date || !body.city || !body.country || !body.venue) { toast('Tum alanlar zorunludur'); return }
+
+    try {
+      const method = id ? 'PUT' : 'POST'
+      const url = id ? API + '/events/' + id : API + '/events'
+      await authFetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      toast(id ? 'Etkinlik guncellendi' : 'Etkinlik eklendi')
+      hideEventForm()
+      loadEvents()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  async function editEvent(id) {
+    try {
+      const res = await fetch(API + '/events')
+      eventsCache = await res.json()
+      showEventForm(id)
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  async function deleteEvent(id) {
+    if (!confirm('Bu etkinligi silmek istediginize emin misiniz?')) return
+    try {
+      await authFetch(API + '/events/' + id, { method: 'DELETE' })
+      toast('Etkinlik silindi')
+      loadEvents()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  MESSAGES
+  // ═══════════════════════════════
+  let msgPage = 1
+  async function loadMessages(page = 1) {
+    msgPage = page
+    const tbody = document.getElementById('messages-tbody')
+    try {
+      const res = await authFetch(API + '/contacts?page=' + page + '&limit=50')
+      const json = await res.json()
+      const data = json.data || []
+      document.getElementById('messages-total').textContent = json.total || 0
+
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Henuz mesaj yok</td></tr>'; return }
+
+      tbody.innerHTML = data.map(m => `<tr onclick="toggleMsg('${m.id}')" style="cursor:pointer;">
+        <td class="name">${m.name}</td>
+        <td>${m.email}</td>
+        <td>${m.subject}</td>
+        <td><span class="badge ${m.is_read ? 'badge-read' : 'badge-new'}">${m.is_read ? 'Okundu' : 'Yeni'}</span></td>
+        <td class="date">${formatDate(m.created_at)}</td>
+        <td>
+          <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteMessage('${m.id}')">Sil</button>
+        </td>
+      </tr>
+      <tr id="msg-${m.id}" style="display:none;">
+        <td colspan="6" class="msg-body open">
+          ${m.phone ? '<strong>Tel:</strong> ' + m.phone + '<br>' : ''}
+          <strong>Mesaj:</strong><br>${m.message.replace(/\n/g, '<br>')}
+        </td>
+      </tr>`).join('')
+
+      const pg = document.getElementById('msg-pagination')
+      if (json.totalPages > 1) {
+        pg.style.display = 'flex'
+        document.getElementById('msg-page-info').textContent = 'Sayfa ' + msgPage + ' / ' + json.totalPages
+        document.getElementById('msg-prev').disabled = msgPage <= 1
+        document.getElementById('msg-next').disabled = msgPage >= json.totalPages
+      } else { pg.style.display = 'none' }
+    } catch (err) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Hata: '+err.message+'</td></tr>' }
+  }
+
+  async function toggleMsg(id) {
+    const row = document.getElementById('msg-' + id)
+    if (row.style.display === 'none') {
+      row.style.display = ''
+      try { await authFetch(API + '/contacts/' + id + '/read', { method: 'PATCH' }) } catch {}
+    } else {
+      row.style.display = 'none'
+    }
+  }
+
+  async function deleteMessage(id) {
+    if (!confirm('Bu mesaji silmek istediginize emin misiniz?')) return
+    try {
+      await authFetch(API + '/contacts/' + id, { method: 'DELETE' })
+      toast('Mesaj silindi')
+      loadMessages(msgPage)
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  GALLERY
+  // ═══════════════════════════════
+  let selectedFile = null
+
+  function handleFileSelect(input) {
+    if (input.files.length) {
+      selectedFile = input.files[0]
+      document.getElementById('upload-text').textContent = selectedFile.name
+    }
+  }
+
+  async function loadGallery() {
+    const grid = document.getElementById('gallery-grid')
+    try {
+      const res = await fetch(API + '/gallery')
+      const data = await res.json()
+      document.getElementById('gallery-total').textContent = data.length
+
+      if (!data.length) { grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">Henuz gorsel yok</div>'; return }
+
+      grid.innerHTML = data.map(g => `<div class="gallery-admin-item" id="gi-${g.id}">
+        <div style="position:relative;">
+          <img src="${g.src}" alt="${g.caption}" loading="lazy" id="gimg-${g.id}">
+          <div class="img-overlay" onclick="changeImage('${g.id}')">
+            <span>Gorseli Degistir</span>
+          </div>
+          <input type="file" id="gfile-${g.id}" accept="image/*" style="display:none;" onchange="uploadNewImage('${g.id}', this)">
+        </div>
+        <input class="caption-edit" value="${(g.caption || '').replace(/"/g, '&quot;')}" onchange="updateCaption('${g.id}', this.value)" placeholder="Aciklama...">
+        <div class="actions">
+          <button class="btn btn-sm btn-danger" onclick="deleteGallery('${g.id}')">Sil</button>
+        </div>
+      </div>`).join('')
+    } catch (err) { grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">Hata: '+err.message+'</div>' }
+  }
+
+  async function uploadGallery() {
+    if (!selectedFile) { toast('Lutfen bir gorsel secin'); return }
+    const caption = document.getElementById('gallery-caption').value
+    const btn = document.getElementById('upload-btn')
+    btn.textContent = 'Yukleniyor...'
+    btn.disabled = true
+
+    try {
+      const fd = new FormData()
+      fd.append('file', selectedFile)
+      fd.append('caption', caption)
+      await authFetch(API + '/gallery', { method: 'POST', body: fd })
+      toast('Gorsel yuklendi')
+      selectedFile = null
+      document.getElementById('gallery-file').value = ''
+      document.getElementById('gallery-caption').value = ''
+      document.getElementById('upload-text').textContent = 'Gorsel secmek icin tiklayin'
+      loadGallery()
+    } catch (err) { toast('Hata: ' + err.message) }
+    btn.textContent = 'Yukle'
+    btn.disabled = false
+  }
+
+  async function updateCaption(id, caption) {
+    try {
+      await authFetch(API + '/gallery/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caption })
+      })
+      toast('Aciklama guncellendi')
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  function changeImage(id) {
+    document.getElementById('gfile-' + id).click()
+  }
+
+  async function uploadNewImage(id, input) {
+    if (!input.files.length) return
+    const file = input.files[0]
+
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('caption', 'temp')
+      const res = await authFetch(API + '/gallery', { method: 'POST', body: fd })
+      const json = await res.json()
+      const newSrc = json.data.src
+      const tempId = json.data.id
+
+      await authFetch(API + '/gallery/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ src: newSrc })
+      })
+
+      await authFetch(API + '/gallery/' + tempId, { method: 'DELETE' })
+
+      toast('Gorsel guncellendi')
+      loadGallery()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  async function deleteGallery(id) {
+    if (!confirm('Bu gorseli silmek istediginize emin misiniz?')) return
+    try {
+      await authFetch(API + '/gallery/' + id, { method: 'DELETE' })
+      toast('Gorsel silindi')
+      loadGallery()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  SUBSCRIBERS
+  // ═══════════════════════════════
+  let subsPage = 1
+  let allSubscribers = []
+  let filteredSubscribers = []
+
+  async function loadSubscribers(page = 1) {
+    subsPage = page
+    const tbody = document.getElementById('subs-tbody')
+    try {
+      const res = await authFetch(API + '/subscribers?page=' + page + '&limit=500')
+      const json = await res.json()
+      allSubscribers = json.data || []
+      document.getElementById('subs-total').textContent = json.total || 0
+
+      const now = new Date()
+      const todayStr = now.toISOString().slice(0, 10)
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+      const todayCount = allSubscribers.filter(r => r.created_at && r.created_at.slice(0, 10) === todayStr).length
+      const weekCount = allSubscribers.filter(r => r.created_at && new Date(r.created_at) >= weekAgo).length
+      document.getElementById('subs-today').textContent = todayCount
+      document.getElementById('subs-week').textContent = weekCount
+
+      const cities = [...new Set(allSubscribers.map(r => r.city).filter(Boolean))].sort()
+      const citySelect = document.getElementById('subs-city-filter')
+      const currentCity = citySelect.value
+      citySelect.innerHTML = '<option value="">Tum Sehirler</option>' + cities.map(c => `<option value="${c}">${c}</option>`).join('')
+      citySelect.value = currentCity
+
+      const bar = document.getElementById('subs-bottom-bar')
+      bar.classList.add('visible')
+      document.getElementById('sbs-total').textContent = json.total || 0
+      if (allSubscribers.length) {
+        const lastDate = new Date(allSubscribers[0].created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        document.getElementById('sbs-last-date').textContent = lastDate
+      }
+
+      filterSubscribers()
+    } catch (err) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Hata: '+err.message+'</td></tr>' }
+  }
+
+  function filterSubscribers() {
+    const search = (document.getElementById('subs-search').value || '').toLowerCase().trim()
+    const city = document.getElementById('subs-city-filter').value
+    const dateFilter = document.getElementById('subs-date-filter').value
+
+    const now = new Date()
+    const todayStr = now.toISOString().slice(0, 10)
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+
+    filteredSubscribers = allSubscribers.filter(row => {
+      const fullName = ((row.first_name || '') + ' ' + (row.last_name || '')).toLowerCase()
+      const email = (row.email || '').toLowerCase()
+
+      if (search && !fullName.includes(search) && !email.includes(search)) return false
+      if (city && row.city !== city) return false
+      if (dateFilter === 'today' && (!row.created_at || row.created_at.slice(0, 10) !== todayStr)) return false
+      if (dateFilter === 'week' && (!row.created_at || new Date(row.created_at) < weekAgo)) return false
+      if (dateFilter === 'month' && (!row.created_at || new Date(row.created_at) < monthAgo)) return false
+
+      return true
+    })
+
+    renderSubscribers()
+  }
+
+  function renderSubscribers() {
+    const tbody = document.getElementById('subs-tbody')
+
+    if (!filteredSubscribers.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Sonuc bulunamadi</td></tr>'
+      document.getElementById('sbs-shown').textContent = 0
+      return
     }
 
-    function prevPage() {
-      if (currentPage > 1) loadData(currentPage - 1)
+    document.getElementById('sbs-shown').textContent = filteredSubscribers.length
+
+    tbody.innerHTML = filteredSubscribers.map((row, i) => {
+      const date = new Date(row.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+      return `<tr>
+        <td>${i + 1}</td>
+        <td class="name">${row.first_name || ''} ${row.last_name || ''}</td>
+        <td>${row.email}</td>
+        <td class="phone">${row.phone ? '+90 ' + row.phone : '\u2014'}</td>
+        <td><span class="tag">${row.city || '—'}</span></td>
+        <td class="date">${date}</td>
+      </tr>`
+    }).join('')
+
+    document.getElementById('subs-pagination').style.display = 'none'
+  }
+
+  async function downloadExcel() {
+    try {
+      toast('Excel hazirlaniyor...')
+      const res = await authFetch(API + '/subscribers/export')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'blok3-aboneler-' + new Date().toISOString().slice(0, 10) + '.csv'
+      a.click()
+      URL.revokeObjectURL(url)
+      toast('Excel indirildi')
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  PRESS
+  // ═══════════════════════════════
+  let pressCache = []
+
+  async function loadPress() {
+    const tbody = document.getElementById('press-tbody')
+    try {
+      const res = await fetch(API + '/press')
+      const data = await res.json()
+      pressCache = data
+      document.getElementById('press-total').textContent = data.length
+
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" class="empty">Henuz basin haberi yok</td></tr>'; return }
+
+      tbody.innerHTML = data.map(p => `<tr>
+        <td><img src="${p.image_url}" alt="" style="width:50px;height:34px;object-fit:cover;border-radius:2px;"></td>
+        <td class="name">${p.title}</td>
+        <td><a href="${p.link}" target="_blank" style="color:#2196F3;font-size:0.72rem;">Habere Git</a></td>
+        <td class="date">${formatDate(p.created_at)}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-sm btn-outline" onclick="editPress('${p.id}')">Duzenle</button>
+          <button class="btn btn-sm btn-danger" onclick="deletePress('${p.id}')">Sil</button>
+        </td>
+      </tr>`).join('')
+    } catch (err) { tbody.innerHTML = '<tr><td colspan="5" class="empty">Hata: '+err.message+'</td></tr>' }
+  }
+
+  function showPressForm(id) {
+    document.getElementById('press-form').style.display = 'block'
+    if (id) {
+      const p = pressCache.find(x => x.id === id)
+      if (p) {
+        document.getElementById('pr-title').value = p.title
+        document.getElementById('pr-image').value = p.image_url
+        document.getElementById('pr-link').value = p.link
+        document.getElementById('pr-edit-id').value = id
+      }
+    } else {
+      document.getElementById('pr-title').value = ''
+      document.getElementById('pr-image').value = ''
+      document.getElementById('pr-link').value = ''
+      document.getElementById('pr-edit-id').value = ''
+    }
+  }
+
+  function hidePressForm() { document.getElementById('press-form').style.display = 'none' }
+
+  async function savePress() {
+    const id = document.getElementById('pr-edit-id').value
+    const body = {
+      title: document.getElementById('pr-title').value,
+      image_url: document.getElementById('pr-image').value,
+      link: document.getElementById('pr-link').value
+    }
+    if (!body.title || !body.image_url || !body.link) { toast('Tum alanlar zorunludur'); return }
+
+    try {
+      const method = id ? 'PUT' : 'POST'
+      const url = id ? API + '/press/' + id : API + '/press'
+      await authFetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      toast(id ? 'Haber guncellendi' : 'Haber eklendi')
+      hidePressForm()
+      loadPress()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  function editPress(id) {
+    showPressForm(id)
+  }
+
+  async function deletePress(id) {
+    if (!confirm('Bu haberi silmek istediginize emin misiniz?')) return
+    try {
+      await authFetch(API + '/press/' + id, { method: 'DELETE' })
+      toast('Haber silindi')
+      loadPress()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  INIT — Check existing session
+  // ═══════════════════════════════
+  ;(async function init() {
+    const token = getToken()
+    if (!token || isTokenExpired()) {
+      clearToken()
+      showLogin()
+      return
     }
 
-    function nextPage() {
-      if (currentPage < totalPages) loadData(currentPage + 1)
+    // Verify token is still valid on server
+    try {
+      const res = await fetch(API + '/auth/verify', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      if (res.ok) {
+        showAdmin()
+      } else {
+        clearToken()
+        showLogin()
+      }
+    } catch {
+      clearToken()
+      showLogin()
     }
-
-    loadData()
-  </script>
+  })()
+</script>
 </body>
 </html>

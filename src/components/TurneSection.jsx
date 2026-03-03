@@ -17,7 +17,7 @@ import turneFront2Goat from '../assets/2026_concer_section_front_2_goat.png'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
-export default function TurneSection({ containerRef }) {
+export default function TurneSection({ containerRef, onEventsOpen }) {
   const sectionRef = useRef(null)
   const [bgIndex, setBgIndex] = useState(0)
   const [frontAlt, setFrontAlt] = useState(false)
@@ -150,6 +150,18 @@ export default function TurneSection({ containerRef }) {
 
         {/* Overlay */}
         <motion.div className="turne-overlay" style={{ opacity: elementsOp }} />
+
+        {/* Konser Takvimi button */}
+        <motion.button
+          className="turne-events-btn"
+          style={{ opacity: elementsOp }}
+          onClick={onEventsOpen}
+        >
+          Konser Takvimi
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
+          </svg>
+        </motion.button>
 
         {/* Bottom description */}
         <motion.p className="turne-desc" style={{ opacity: elementsOp }}>

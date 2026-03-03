@@ -83,7 +83,7 @@ const numberPop = {
   show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
 }
 
-export default function CTASection({ containerRef }) {
+export default function CTASection({ containerRef, onGalleryOpen }) {
   const sectionRef = useRef(null)
   const mouseX = useMotionValue(0)
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 })
@@ -176,6 +176,12 @@ export default function CTASection({ containerRef }) {
           <motion.p className="cta-lead" variants={slideLeft}>
             Sahnenin enerjisi, rakamların ötesinde.
           </motion.p>
+          <motion.button className="cta-gallery-btn" variants={slideLeft} onClick={onGalleryOpen}>
+            Galeriyi Keşfet
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
+            </svg>
+          </motion.button>
         </div>
 
         {/* Bottom-right — stats */}

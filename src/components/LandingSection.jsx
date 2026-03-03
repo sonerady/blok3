@@ -253,7 +253,7 @@ export default function LandingSection({ containerRef, audioRef }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await fetch("https://wearup-server.onrender.com/api/blok3/subscribe", {
+      await fetch("/api/blok3/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -26,7 +26,7 @@ export default function ContactModal({ isOpen, onClose }) {
     e.preventDefault()
     setStatus('sending')
     try {
-      await fetch('https://wearup-server.onrender.com/api/blok3/contact', {
+      await fetch('/api/blok3/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

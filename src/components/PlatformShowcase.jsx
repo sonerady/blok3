@@ -20,6 +20,7 @@ const platforms = [
     number: '2.9 MİLYAR+',
     label: 'Toplam Stream',
     desc: "Türkiye'de aylık 10M+ dinleyiciye ulaşan ilk sanatçı",
+    url: 'https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6',
   },
   {
     id: 'youtube',
@@ -30,6 +31,7 @@ const platforms = [
     number: '111 MİLYON+',
     label: 'Görüntülenme',
     desc: 'Resmi klipler kısa sürede milyonlarca izlenmeye ulaştı',
+    url: 'https://www.youtube.com/@blok3real',
   },
   {
     id: 'tiktok',
@@ -40,6 +42,7 @@ const platforms = [
     number: '2 MİLYAR+',
     label: 'Görüntülenme',
     desc: 'En viral Türkçe ses — organik erişim rekoru',
+    url: 'https://www.tiktok.com/@blok3',
   },
   {
     id: 'instagram',
@@ -50,6 +53,7 @@ const platforms = [
     number: '486 MİLYON+',
     label: 'Reels İzlenme',
     desc: 'Sosyal medyada yüksek etkileşim ve viral yayılım',
+    url: 'https://www.instagram.com/blok3.real/',
   },
 ]
 
@@ -89,15 +93,7 @@ function PlatformIcon({ id, size = 22, color }) {
 export default function PlatformShowcase({ containerRef }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isGlitching, setIsGlitching] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
   const intervalRef = useRef(null)
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
 
   const goTo = useCallback((nextIndex) => {
     if (isGlitching) return
@@ -175,7 +171,7 @@ export default function PlatformShowcase({ containerRef }) {
         {/* Scanline effect */}
         <div className="platform-showcase-scanlines" />
 
-        {/* Info — bottom left */}
+        {/* Info — bottom right */}
         <div className="platform-showcase-info">
           <AnimatePresence mode="wait">
             <motion.div
@@ -191,23 +187,20 @@ export default function PlatformShowcase({ containerRef }) {
               <h2 className="platform-showcase-number">{current.number}</h2>
               <span className="platform-showcase-label">{current.label}</span>
               <p className="platform-showcase-desc">{current.desc}</p>
+              <a
+                className="platform-showcase-btn"
+                href={current.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{ borderColor: current.color, color: current.color }}
+              >
+                {current.name}&rsquo;da Dinle
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 17L17 7" /><path d="M7 7h10v10" />
+                </svg>
+              </a>
             </motion.div>
           </AnimatePresence>
-        </div>
-
-        {/* Platform nav — bottom right */}
-        <div className="platform-showcase-nav">
-          {platforms.map((p, i) => (
-            <button
-              key={p.id}
-              className={`platform-showcase-dot${i === activeIndex ? ' active' : ''}`}
-              style={i === activeIndex ? { borderColor: p.color, color: p.color } : {}}
-              onClick={() => handleDotClick(i)}
-              aria-label={p.name}
-            >
-              <PlatformIcon id={p.id} size={20} color={i === activeIndex ? p.color : 'rgba(255,255,255,0.4)'} />
-            </button>
-          ))}
         </div>
 
         {/* Progress bar */}
@@ -218,10 +211,10 @@ export default function PlatformShowcase({ containerRef }) {
                 <motion.div
                   className="platform-progress-fill"
                   style={{ background: p.color }}
-                  initial={isMobile ? { scaleY: 0 } : { scaleX: 0 }}
-                  animate={isMobile ? { scaleY: 1 } : { scaleX: 1 }}
+                  initial={{ scaleY: 0 }}
+                  animate={{ scaleY: 1 }}
                   transition={{ duration: 4, ease: 'linear' }}
-                  key={`${p.id}-${activeIndex}-${isMobile}`}
+                  key={`${p.id}-${activeIndex}`}
                 />
               )}
             </div>

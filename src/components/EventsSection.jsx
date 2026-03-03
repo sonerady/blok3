@@ -1,20 +1,5 @@
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const events = [
-  { date: '2026-01-09', city: 'Berlin', country: 'Almanya', venue: 'Columbiahalle', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-01-10', city: 'Ludwigsburg', country: 'Almanya', venue: 'MHP Arena', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-01-11', city: 'Münih', country: 'Almanya', venue: 'TonHalle', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-01-17', city: 'Düsseldorf', country: 'Almanya', venue: 'Mitsubishi Electric HALLE', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-01-18', city: 'Hamburg', country: 'Almanya', venue: 'Grosse Freiheit 36', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-01-24', city: 'Hohenems', country: 'Avusturya', venue: 'Tennis.Event.Center', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-01-30', city: 'Mannheim', country: 'Almanya', venue: 'Maimarkthalle', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-01-31', city: 'Utrecht', country: 'Hollanda', venue: 'Gietijzer', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-02-01', city: 'Frankfurt', country: 'Almanya', venue: 'Zoom', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-02-07', city: 'Londra', country: 'İngiltere', venue: 'indigo at The O2', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-02-14', city: 'Bakü', country: 'Azerbaycan', venue: 'Jolly Joker Baku', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-02-15', city: 'Bursa', country: 'Türkiye', venue: 'Club Inferno', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-  { date: '2026-03-27', city: 'Hannover', country: 'Almanya', venue: 'Swiss Life Hall', ticketUrl: 'https://www.bubilet.com.tr/sanatci/blok3-' },
-]
 
 const months = {
   '01': 'OCA', '02': 'ŞUB', '03': 'MAR', '04': 'NİS',
@@ -48,6 +33,21 @@ function getCountryFlag(country) {
 }
 
 export default function EventsModal({ isOpen, onClose }) {
+  const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!isOpen) return
+    setLoading(true)
+    fetch('/api/blok3/events')
+      .then((res) => res.json())
+      .then((data) => {
+        setEvents(data.map((e) => ({ ...e, ticketUrl: e.ticket_url })))
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [isOpen])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -83,7 +83,8 @@ export default function EventsModal({ isOpen, onClose }) {
               </div>
 
               <div className="events-list">
-                {events.map((event, i) => {
+                {loading && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '2rem' }}>Yükleniyor...</p>}
+                {!loading && events.map((event, i) => {
                   const d = parseDate(event.date)
                   const isPast = new Date(event.date) < new Date()
                   return (

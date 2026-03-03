@@ -5,6 +5,7 @@ const steps = [
   { label: '2025 KONSER PERFORMANSLARI' },
   { label: '2026 TURNE PLANLAMASI' },
   { label: 'PLATFORMLAR' },
+  { label: 'İLETİŞİM' },
 ]
 
 export default function StepNav({ activeStep = 0, videoProgress = 0, light = false, hideOnMobile = false, hideOnContact = false }) {
