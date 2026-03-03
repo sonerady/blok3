@@ -127,3 +127,30 @@ INSERT INTO blok3_press (title, image_url, link) VALUES
   ('Almanya Turnesi Tum Biletler Tukendi', 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800&q=80', 'https://www.milliyet.com.tr/'),
   ('BLOK3 O2 Arena Londra Konserinden Kareler', 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80', 'https://www.sozcu.com.tr/'),
   ('2026 Yilinin En Cok Dinlenen Rap Grubu: BLOK3', 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80', 'https://www.rollingstone.com.tr/');
+
+-- ============================================
+-- TABLE: blok3_links
+-- ============================================
+CREATE TABLE IF NOT EXISTS blok3_links (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  category TEXT NOT NULL,
+  platform TEXT NOT NULL,
+  label TEXT NOT NULL,
+  url TEXT NOT NULL,
+  sort_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE blok3_links DISABLE ROW LEVEL SECURITY;
+
+INSERT INTO blok3_links (category, platform, label, url, sort_order) VALUES
+  ('social', 'instagram', 'Instagram', 'https://www.instagram.com/blok3.real/', 1),
+  ('social', 'x', 'X', 'https://x.com/realblok3', 2),
+  ('social', 'youtube', 'YouTube', 'https://www.youtube.com/@blok3real', 3),
+  ('social', 'tiktok', 'TikTok', 'https://www.tiktok.com/@blok3', 4),
+  ('music', 'spotify', 'Spotify', 'https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6', 1),
+  ('music', 'apple_music', 'Apple Music', 'https://music.apple.com/artist/blok3/1633245914', 2),
+  ('music', 'deezer', 'Deezer', 'https://www.deezer.com/artist/117259882', 3),
+  ('ticket', 'bubilet', 'Bubilet', 'https://www.bubilet.com.tr/sanatci/blok3-', 1),
+  ('ticket', 'biletinial', 'Biletinial', 'https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri', 2);

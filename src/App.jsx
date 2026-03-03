@@ -26,6 +26,18 @@ function App() {
   const [galleryOpen, setGalleryOpen] = useState(false)
   const [pressOpen, setPressOpen] = useState(false)
   const [hideStepNav, setHideStepNav] = useState(false)
+  const [links, setLinks] = useState([])
+
+  useEffect(() => {
+    fetch('/api/blok3/links')
+      .then((res) => res.json())
+      .then((data) => setLinks(data))
+      .catch(() => {})
+  }, [])
+
+  const musicLinks = links.filter((l) => l.category === 'music')
+  const ticketLinks = links.filter((l) => l.category === 'ticket')
+  const socialLinks = links.filter((l) => l.category === 'social')
 
   useEffect(() => {
     const audio = audioRef.current
@@ -124,18 +136,23 @@ function App() {
         {menuOpen && <div className="menu-overlay" onClick={() => setMenuOpen(false)} />}
         <div className={`global-nav-right${menuOpen ? ' open' : ''}`}>
           <div className="menu-sections">
-            <div className="menu-section">
-              <span className="menu-section-title">Müzik Platformlarımız</span>
-              <a className="menu-link" href="https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Spotify</a>
-              <a className="menu-link" href="https://music.apple.com/artist/blok3/1633245914" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Apple Music</a>
-              <a className="menu-link" href="https://www.deezer.com/artist/117259882" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Deezer</a>
-            </div>
+            {musicLinks.length > 0 && (
+              <div className="menu-section">
+                <span className="menu-section-title">Müzik Platformlarımız</span>
+                {musicLinks.map((link) => (
+                  <a key={link.id} className="menu-link" href={link.url} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>{link.label}</a>
+                ))}
+              </div>
+            )}
 
-            {/* <div className="menu-section">
-              <span className="menu-section-title">Biletlerimiz</span>
-              <a className="menu-link" href="https://www.bubilet.com.tr/sanatci/blok3-" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Bubilet</a>
-              <a className="menu-link" href="https://biletinial.com/tr-tr/muzik/blok3-konseri-biletleri" target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>Biletinial</a>
-            </div> */}
+            {ticketLinks.length > 0 && (
+              <div className="menu-section">
+                <span className="menu-section-title">Biletlerimiz</span>
+                {ticketLinks.map((link) => (
+                  <a key={link.id} className="menu-link" href={link.url} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>{link.label}</a>
+                ))}
+              </div>
+            )}
 
             <div className="menu-section">
               <span className="menu-section-title">Yaklaşan Etkinlikler</span>
@@ -171,8 +188,8 @@ function App() {
       <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} />
       <TurneSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} />
       {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
-      <PlatformShowcase containerRef={containerRef} />
-      <ContactSection />
+      <PlatformShowcase containerRef={containerRef} links={links} />
+      <ContactSection socialLinks={socialLinks} />
       <EventsModal isOpen={eventsOpen} onClose={() => setEventsOpen(false)} />
       <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
       <GalleryModal isOpen={galleryOpen} onClose={() => setGalleryOpen(false)} />

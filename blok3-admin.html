@@ -193,6 +193,7 @@
     <button class="tab-btn" onclick="switchTab('gallery')">Galeri</button>
     <button class="tab-btn" onclick="switchTab('subscribers')">Aboneler</button>
     <button class="tab-btn" onclick="switchTab('press')">Basin</button>
+    <button class="tab-btn" onclick="switchTab('links')">Linkler</button>
   </div>
 
   <!-- ═══════ EVENTS TAB ═══════ -->
@@ -366,6 +367,70 @@
       </table>
     </div>
   </div>
+
+  <!-- ═══════ LINKS TAB ═══════ -->
+  <div class="tab-content" id="tab-links">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="links-total">—</div>
+        <div class="stat-label">Toplam Link</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" onclick="showLinkForm()">+ Link Ekle</button>
+      <button class="btn btn-outline" onclick="loadLinks()">Yenile</button>
+    </div>
+
+    <div class="form-card" id="link-form" style="display:none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="lnk-category">
+            <option value="social">Sosyal Medya</option>
+            <option value="music">Muzik Platformu</option>
+            <option value="ticket">Bilet Platformu</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Platform ID</label><input type="text" id="lnk-platform" placeholder="instagram, spotify, bubilet..."></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Gorunen Ad</label><input type="text" id="lnk-label" placeholder="Instagram"></div>
+        <div class="form-group"><label>URL</label><input type="text" id="lnk-url" placeholder="https://..."></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="max-width:120px;"><label>Sira</label><input type="number" id="lnk-sort" value="0" min="0"></div>
+        <div class="form-group" style="max-width:120px;display:flex;align-items:flex-end;gap:0.4rem;">
+          <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
+            <input type="checkbox" id="lnk-active" checked> Aktif
+          </label>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+        <button class="btn" onclick="saveLink()">Kaydet</button>
+        <button class="btn btn-outline" onclick="hideLinkForm()">Iptal</button>
+      </div>
+      <input type="hidden" id="lnk-edit-id">
+    </div>
+
+    <h3 style="font-size:0.8rem;margin:1rem 0 0.5rem;color:#888;">Sosyal Medya</h3>
+    <div class="card"><table>
+      <thead><tr><th>Platform</th><th>Ad</th><th>URL</th><th>Sira</th><th>Aktif</th><th></th></tr></thead>
+      <tbody id="links-social-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
+    </table></div>
+
+    <h3 style="font-size:0.8rem;margin:1rem 0 0.5rem;color:#888;">Muzik Platformlari</h3>
+    <div class="card"><table>
+      <thead><tr><th>Platform</th><th>Ad</th><th>URL</th><th>Sira</th><th>Aktif</th><th></th></tr></thead>
+      <tbody id="links-music-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
+    </table></div>
+
+    <h3 style="font-size:0.8rem;margin:1rem 0 0.5rem;color:#888;">Bilet Platformlari</h3>
+    <div class="card"><table>
+      <thead><tr><th>Platform</th><th>Ad</th><th>URL</th><th>Sira</th><th>Aktif</th><th></th></tr></thead>
+      <tbody id="links-ticket-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
+    </table></div>
+  </div>
+
 </div>
 </div>
 
@@ -511,6 +576,7 @@
     if (name === 'gallery') loadGallery()
     if (name === 'subscribers') loadSubscribers()
     if (name === 'press') loadPress()
+    if (name === 'links') loadLinks()
   }
 
   function formatDate(d) {
@@ -963,6 +1029,99 @@
       await authFetch(API + '/press/' + id, { method: 'DELETE' })
       toast('Haber silindi')
       loadPress()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  // ═══════════════════════════════
+  //  LINKS
+  // ═══════════════════════════════
+  let linksCache = []
+
+  async function loadLinks() {
+    try {
+      const res = await authFetch(API + '/links?all=true')
+      const data = await res.json()
+      linksCache = data
+      document.getElementById('links-total').textContent = data.length
+
+      const categories = { social: 'links-social-tbody', music: 'links-music-tbody', ticket: 'links-ticket-tbody' }
+      Object.entries(categories).forEach(([cat, tbodyId]) => {
+        const tbody = document.getElementById(tbodyId)
+        const items = data.filter(l => l.category === cat)
+        if (!items.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Henuz link yok</td></tr>'; return }
+        tbody.innerHTML = items.map(l => `<tr>
+          <td><strong>${l.platform}</strong></td>
+          <td class="name">${l.label}</td>
+          <td><a href="${l.url}" target="_blank" style="color:#2196F3;font-size:0.72rem;word-break:break-all;">${l.url.length > 40 ? l.url.slice(0,40)+'...' : l.url}</a></td>
+          <td>${l.sort_order}</td>
+          <td>${l.is_active ? '<span style="color:#4caf50;">Aktif</span>' : '<span style="color:#999;">Pasif</span>'}</td>
+          <td style="white-space:nowrap;">
+            <button class="btn btn-sm btn-outline" onclick="editLink('${l.id}')">Duzenle</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteLink('${l.id}')">Sil</button>
+          </td>
+        </tr>`).join('')
+      })
+    } catch (err) {
+      document.getElementById('links-social-tbody').innerHTML = '<tr><td colspan="6" class="empty">Hata: '+err.message+'</td></tr>'
+    }
+  }
+
+  function showLinkForm(id) {
+    document.getElementById('link-form').style.display = 'block'
+    if (id) {
+      const l = linksCache.find(x => x.id === id)
+      if (l) {
+        document.getElementById('lnk-category').value = l.category
+        document.getElementById('lnk-platform').value = l.platform
+        document.getElementById('lnk-label').value = l.label
+        document.getElementById('lnk-url').value = l.url
+        document.getElementById('lnk-sort').value = l.sort_order
+        document.getElementById('lnk-active').checked = l.is_active
+        document.getElementById('lnk-edit-id').value = l.id
+      }
+    } else {
+      document.getElementById('lnk-category').value = 'social'
+      document.getElementById('lnk-platform').value = ''
+      document.getElementById('lnk-label').value = ''
+      document.getElementById('lnk-url').value = ''
+      document.getElementById('lnk-sort').value = '0'
+      document.getElementById('lnk-active').checked = true
+      document.getElementById('lnk-edit-id').value = ''
+    }
+  }
+
+  function hideLinkForm() { document.getElementById('link-form').style.display = 'none' }
+
+  async function saveLink() {
+    const id = document.getElementById('lnk-edit-id').value
+    const body = {
+      category: document.getElementById('lnk-category').value,
+      platform: document.getElementById('lnk-platform').value,
+      label: document.getElementById('lnk-label').value,
+      url: document.getElementById('lnk-url').value,
+      sort_order: parseInt(document.getElementById('lnk-sort').value) || 0,
+      is_active: document.getElementById('lnk-active').checked
+    }
+    if (!body.category || !body.platform || !body.label || !body.url) { toast('Tum alanlar zorunludur'); return }
+
+    try {
+      const method = id ? 'PUT' : 'POST'
+      const endpoint = id ? API + '/links/' + id : API + '/links'
+      await authFetch(endpoint, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      toast(id ? 'Link guncellendi' : 'Link eklendi')
+      hideLinkForm()
+      loadLinks()
+    } catch (err) { toast('Hata: ' + err.message) }
+  }
+
+  function editLink(id) { showLinkForm(id) }
+
+  async function deleteLink(id) {
+    if (!confirm('Bu linki silmek istediginize emin misiniz?')) return
+    try {
+      await authFetch(API + '/links/' + id, { method: 'DELETE' })
+      toast('Link silindi')
+      loadLinks()
     } catch (err) { toast('Hata: ' + err.message) }
   }
 

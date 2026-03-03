@@ -90,7 +90,12 @@ function PlatformIcon({ id, size = 22, color }) {
   }
 }
 
-export default function PlatformShowcase({ containerRef }) {
+export default function PlatformShowcase({ containerRef, links = [] }) {
+  // Override hardcoded URLs with dynamic ones from API
+  const dynamicPlatforms = platforms.map((p) => {
+    const match = links.find((l) => l.platform === p.id)
+    return match ? { ...p, url: match.url } : p
+  })
   const [activeIndex, setActiveIndex] = useState(0)
   const [isGlitching, setIsGlitching] = useState(false)
   const intervalRef = useRef(null)
@@ -110,7 +115,7 @@ export default function PlatformShowcase({ containerRef }) {
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setActiveIndex((prev) => {
-        const next = (prev + 1) % platforms.length
+        const next = (prev + 1) % dynamicPlatforms.length
         setIsGlitching(true)
         setTimeout(() => setIsGlitching(false), 300)
         return next
@@ -126,7 +131,7 @@ export default function PlatformShowcase({ containerRef }) {
     // Restart auto-cycle
     intervalRef.current = setInterval(() => {
       setActiveIndex((prev) => {
-        const next = (prev + 1) % platforms.length
+        const next = (prev + 1) % dynamicPlatforms.length
         setIsGlitching(true)
         setTimeout(() => setIsGlitching(false), 300)
         return next
@@ -134,12 +139,12 @@ export default function PlatformShowcase({ containerRef }) {
     }, 4000)
   }
 
-  const current = platforms[activeIndex]
+  const current = dynamicPlatforms[activeIndex]
 
   return (
     <section className="platform-showcase">
         {/* Background images — desktop */}
-        {platforms.map((p, i) => (
+        {dynamicPlatforms.map((p, i) => (
           <img
             key={p.id}
             className={`platform-showcase-bg desktop-only${i === activeIndex ? ' active' : ''}`}
@@ -148,7 +153,7 @@ export default function PlatformShowcase({ containerRef }) {
           />
         ))}
         {/* Background images — mobile */}
-        {platforms.map((p, i) => (
+        {dynamicPlatforms.map((p, i) => (
           <img
             key={`${p.id}-mobile`}
             className={`platform-showcase-bg mobile-only${i === activeIndex ? ' active' : ''}`}
@@ -205,7 +210,7 @@ export default function PlatformShowcase({ containerRef }) {
 
         {/* Progress bar */}
         <div className="platform-showcase-progress">
-          {platforms.map((p, i) => (
+          {dynamicPlatforms.map((p, i) => (
             <div key={p.id} className={`platform-progress-bar${i === activeIndex ? ' active' : ''}`}>
               {i === activeIndex && (
                 <motion.div

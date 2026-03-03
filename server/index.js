@@ -7,6 +7,7 @@ import contactRouter from './routes/contact.js'
 import galleryRouter from './routes/gallery.js'
 import subscribersRouter from './routes/subscribers.js'
 import pressRouter from './routes/press.js'
+import linksRouter from './routes/links.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -25,6 +26,7 @@ app.use('/api/blok3', contactRouter)
 app.use('/api/blok3', galleryRouter)
 app.use('/api/blok3', subscribersRouter)
 app.use('/api/blok3', pressRouter)
+app.use('/api/blok3', linksRouter)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
