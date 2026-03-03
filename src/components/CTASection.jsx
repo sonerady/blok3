@@ -24,7 +24,6 @@ import concerBg3 from '../assets/concer_section_3.jpg'
 import concerBg4 from '../assets/concer_section_4.jpg'
 import concerBg5 from '../assets/concer_section_5.jpg'
 import concerFront from '../assets/concer_section_front.png'
-import concerFrontMobile from '../assets/section_v1_front_mobile.png'
 
 const bgImages = [concerBg1, concerBg2, concerBg3, concerBg4, concerBg5]
 
@@ -157,7 +156,7 @@ export default function CTASection({ containerRef, onGalleryOpen }) {
           transition={{ duration: 1, ease: 'easeInOut' }}
         />
       </AnimatePresence>
-      <motion.img className={`cta-front${frontGlitching ? ' front-glitch' : ''}`} src={isMobile ? concerFrontMobile : concerFront} alt="" style={{ x: isMobile ? 0 : frontX }} />
+      <motion.img className={`cta-front${frontGlitching ? ' front-glitch' : ''}`} src={concerFront} alt="" style={{ x: isMobile ? 0 : frontX }} />
       <div className="cta-overlay" />
 
       {/* ── Editorial Layout ── */}
