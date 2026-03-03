@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   motion,
   useMotionValue,
+  useSpring,
   useScroll,
   AnimatePresence,
 } from "framer-motion";
@@ -98,36 +99,6 @@ const cities = [
   "Zonguldak",
 ];
 
-const bioText =
-  "BLOK3 (Hakan Aydın), 15 Ağustos 2002 tarihinde Kocaeli'nin Gebze ilçesinde doğdu, Türkiye rap sahnesinin yeni nesil ve en etkili isimlerinden biridir. Müziğe erken yaşlarda ilgi duyan sanatçı, sokak kültüründen beslenen güçlü anlatımı ve enerjik vokaliyle kısa sürede geniş bir dinleyici kitlesine ulaşmıştır.";
-
-function TypewriterText({ text, delay = 0, speed = 18 }) {
-  const [charCount, setCharCount] = useState(0);
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => setStarted(true), delay * 1000);
-    return () => clearTimeout(timeout);
-  }, [delay]);
-
-  useEffect(() => {
-    if (!started) return;
-    if (charCount >= text.length) return;
-    const timer = setTimeout(() => {
-      setCharCount((c) => c + 1);
-    }, speed);
-    return () => clearTimeout(timer);
-  }, [started, charCount, text, speed]);
-
-  return (
-    <span>
-      {text.slice(0, charCount)}
-      {charCount < text.length && started && (
-        <span className="typewriter-cursor">|</span>
-      )}
-    </span>
-  );
-}
 
 const phrases = [
   "KUSURA BAKMA",
@@ -188,6 +159,40 @@ export default function LandingSection({ containerRef, audioRef }) {
   const [titleKey, setTitleKey] = useState(0);
   const [videoEnded, setVideoEnded] = useState(false);
   const [frontGlitching, setFrontGlitching] = useState(false);
+
+  // Parallax — desktop: mouse (spring), mobile: auto-sway (direct)
+  const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+  const rawFrontX = useMotionValue(0);
+  const rawBgX = useMotionValue(0);
+  const springFrontX = useSpring(rawFrontX, springConfig);
+  const springBgX = useSpring(rawBgX, springConfig);
+  const frontX = isMobile ? rawFrontX : springFrontX;
+  const bgMoveX = isMobile ? rawBgX : springBgX;
+
+  const handleMouseMove = (e) => {
+    if (isMobile) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const nx = (e.clientX - centerX) / (rect.width / 2);
+    rawFrontX.set(nx * -30);
+    rawBgX.set(nx * 10);
+  };
+
+  // Mobile: smooth continuous sway (direct motionValue, no spring)
+  useEffect(() => {
+    if (!isMobile) return;
+    let raf;
+    const start = performance.now();
+    const tick = (now) => {
+      const elapsed = now - start;
+      const wave = Math.sin(elapsed * 0.0003);
+      rawFrontX.set(wave * -18);
+      rawBgX.set(wave * 7);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isMobile]);
 
   // Glitch effect on front image every 3s
   useEffect(() => {
@@ -291,6 +296,7 @@ export default function LandingSection({ containerRef, audioRef }) {
     <section
       ref={sectionRef}
       className="landing-section"
+      onMouseMove={handleMouseMove}
     >
       {/* Entry overlay with subscribe form */}
       <AnimatePresence>
@@ -455,7 +461,7 @@ export default function LandingSection({ containerRef, audioRef }) {
         {/* Background with spotlight — only after entry */}
         {entered && (
           <>
-            <motion.div className="landing-bg-wrapper">
+            <motion.div className="landing-bg-wrapper" style={{ x: bgMoveX }}>
               <motion.video
                 ref={bgVideoRef}
                 className={`landing-bg${videoEnded ? " video-ended-pulse" : ""}`}
@@ -492,7 +498,7 @@ export default function LandingSection({ containerRef, audioRef }) {
               className={`landing-front${frontGlitching ? " front-glitch" : ""}`}
               src={activeFront}
               alt=""
-              style={{ opacity: firstFrontOpacity }}
+              style={{ opacity: firstFrontOpacity, x: frontX }}
             />
 
             {/* Bottom gradient */}
@@ -521,7 +527,9 @@ export default function LandingSection({ containerRef, audioRef }) {
               ease: [0.25, 0.46, 0.45, 0.94],
             }}
           >
-            <TypewriterText text={bioText} delay={0.5} speed={18} />
+
+            <strong>BLOK3</strong>, Türkiye müzik sahnesinin <strong>en hızlı yükselen</strong> ve en çok dinlenen isimlerinden biri. Kendine özgü tarzı, enerjik <strong>sahne performansları</strong> ve <strong>milyarlarca streame</strong> ulaşan şarkılarıyla yeni nesil müziğin sınırlarını zorluyor. <strong>Avrupa turnelerinden</strong> sold-out konserlere, dijital platformlardan <strong>stadyumlara</strong> uzanan bir yolculuk.
+
           </motion.p>
         </motion.div>
 
