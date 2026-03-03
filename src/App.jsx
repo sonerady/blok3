@@ -36,7 +36,6 @@ function App() {
   }, [])
 
   const musicLinks = links.filter((l) => l.category === 'music')
-  const ticketLinks = links.filter((l) => l.category === 'ticket')
   const socialLinks = links.filter((l) => l.category === 'social')
 
   useEffect(() => {
@@ -140,15 +139,6 @@ function App() {
               <div className="menu-section">
                 <span className="menu-section-title">Müzik Platformlarımız</span>
                 {musicLinks.map((link) => (
-                  <a key={link.id} className="menu-link" href={link.url} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>{link.label}</a>
-                ))}
-              </div>
-            )}
-
-            {ticketLinks.length > 0 && (
-              <div className="menu-section">
-                <span className="menu-section-title">Biletlerimiz</span>
-                {ticketLinks.map((link) => (
                   <a key={link.id} className="menu-link" href={link.url} target="_blank" rel="noreferrer" onClick={() => setMenuOpen(false)}>{link.label}</a>
                 ))}
               </div>
