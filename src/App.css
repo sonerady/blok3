@@ -561,8 +561,8 @@
 
 .landing-bio-text {
   font-family: var(--font-body);
-  font-size: 1.15rem;
-  line-height: 1.7;
+  font-size: 0.95rem;
+  line-height: 1.65;
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.4);
   margin: 0;
@@ -578,6 +578,10 @@
   .landing-bio-text {
     font-size: 0.82rem;
     line-height: 1.6;
+  }
+  .landing-bio-text strong {
+    color: inherit;
+    font-weight: inherit;
   }
 }
 
@@ -2607,13 +2611,10 @@
 
 .turne-bg {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   z-index: 0;
   will-change: transform;
 }
@@ -2698,7 +2699,7 @@
 
 .turne-year-char {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(10rem, 20vw, 28rem);
+  font-size: clamp(12rem, 22vw, 32rem);
   font-weight: 700;
   color: #fff;
   line-height: 0.85;
@@ -2723,7 +2724,6 @@
 
 .turne-front-2 {
   z-index: 3;
-  margin-left: 5rem;
 }
 
 .turne-overlay {
@@ -3066,11 +3066,14 @@
 }
 
 /* ===== Music Toggle ===== */
+.global-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  pointer-events: auto;
+}
+
 .music-btn {
-  position: fixed;
-  bottom: 2rem;
-  right: 2.5rem;
-  z-index: 9000;
   background: none;
   border: none;
   cursor: pointer;
@@ -3079,6 +3082,7 @@
   justify-content: center;
   padding: 6px;
   transition: opacity 0.3s ease;
+  pointer-events: auto;
 }
 
 .music-btn:hover {
@@ -3622,25 +3626,23 @@
   .turne-front {
     left: 50% !important;
     right: auto !important;
-    transform: translateX(-50%) !important;
     margin: 0 !important;
-    max-height: 85%;
+    transform: translateX(-50%) !important;
+    max-height: 90%;
+    bottom: 5% !important;
   }
 
   .turne-front-1 {
-    max-height: 75%;
-  }
-
-  .turne-front-2 {
-    margin-left: 0;
+    max-height: 80%;
+    bottom: 9% !important;
   }
 
   .turne-year-char {
-    font-size: clamp(14rem, 32vw, 36rem);
+    font-size: clamp(11rem, 26vw, 28rem);
   }
 
   .turne-year {
-    top: 15%;
+    top: 12%;
   }
 
   .turne-events-btn {
@@ -3659,16 +3661,6 @@
   }
 
 
-
-  /* ── Music button — navbar center on mobile ── */
-  .music-btn {
-    position: fixed;
-    bottom: auto;
-    right: auto;
-    top: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-  }
 
 }
 

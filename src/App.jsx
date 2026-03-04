@@ -79,23 +79,23 @@ function App() {
       const scrollTop = container.scrollTop
       const viewportHeight = window.innerHeight
 
-      // LandingSection (100vh — trend removed)
-      const landingEnd = viewportHeight
-      // CTASection (100vh) after landing
-      const ctaEnd = landingEnd + viewportHeight
-      // TurneSection (200vh) after CTA
-      const turneEnd = ctaEnd + viewportHeight * 2
-      // PlatformShowcase (100vh) after Turne
-      const showcaseEnd = turneEnd + viewportHeight
+      // TurneSection (200vh)
+      const turneEnd = viewportHeight * 2
+      // CTASection (100vh) after Turne
+      const ctaEnd = turneEnd + viewportHeight
+      // LandingSection (100vh) after CTA
+      const landingEnd = ctaEnd + viewportHeight
+      // PlatformShowcase (100vh) after Landing
+      const showcaseEnd = landingEnd + viewportHeight
 
-      if (scrollTop < landingEnd) {
-        setActiveStep(0) // BİYOGRAFİ
+      if (scrollTop < turneEnd) {
+        setActiveStep(0) // 2026 TURNE PLANLAMASI
         setHideStepNav(false)
       } else if (scrollTop < ctaEnd) {
         setActiveStep(1) // 2025 KONSER PERFORMANSLARI
         setHideStepNav(false)
-      } else if (scrollTop < turneEnd) {
-        setActiveStep(2) // 2026 TURNE PLANLAMASI
+      } else if (scrollTop < landingEnd) {
+        setActiveStep(2) // BİYOGRAFİ
         setHideStepNav(false)
       } else if (scrollTop < showcaseEnd) {
         setActiveStep(3) // PLATFORMLAR
@@ -117,21 +117,6 @@ function App() {
     <div className="app" ref={containerRef}>
       <audio ref={audioRef} src={gitMusic} loop />
 
-      {hasStarted && activeStep === 0 && (
-        <button
-          className={`music-btn${isPlaying ? ' playing' : ''}`}
-          onClick={toggleMusic}
-          aria-label={isPlaying ? 'Müziği durdur' : 'Müziği çal'}
-        >
-          <div className="music-eq">
-            <span className="music-eq-bar" />
-            <span className="music-eq-bar" />
-            <span className="music-eq-bar" />
-            <span className="music-eq-bar" />
-          </div>
-        </button>
-      )}
-
       <nav className={`global-nav${isLight ? ' light' : ''}`}>
         <div className="global-nav-left">
           <span className="hero-nav-logo">
@@ -139,9 +124,23 @@ function App() {
             <span style={{ display: 'inline-block', transform: 'scaleX(-1)', marginLeft: '0.08em' }}>3</span>
           </span>
         </div>
-        <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen((v) => !v)} aria-label="Menü">
-          <span /><span /><span />
-        </button>
+        <div className="global-nav-actions">
+          <button
+            className={`music-btn${isPlaying ? ' playing' : ''}`}
+            onClick={toggleMusic}
+            aria-label={isPlaying ? 'Müziği durdur' : 'Müziği çal'}
+          >
+            <div className="music-eq">
+              <span className="music-eq-bar" />
+              <span className="music-eq-bar" />
+              <span className="music-eq-bar" />
+              <span className="music-eq-bar" />
+            </div>
+          </button>
+          <button className={`hamburger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen((v) => !v)} aria-label="Menü">
+            <span /><span /><span />
+          </button>
+        </div>
         {menuOpen && <div className="menu-overlay" onClick={() => setMenuOpen(false)} />}
         <div className={`global-nav-right${menuOpen ? ' open' : ''}`}>
           <div className="menu-sections">
@@ -184,9 +183,15 @@ function App() {
         </div>
       </nav>
       <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} />
-      <LandingSection containerRef={containerRef} audioRef={audioRef} />
+      <TurneSection containerRef={containerRef} />
       <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} concertStats={concertStats} />
-      <TurneSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} />
+      <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 2} onEnter={() => {
+        const audio = audioRef.current
+        if (audio) {
+          audio.volume = 0.4
+          audio.play()
+        }
+      }} />
       {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
       <PlatformShowcase containerRef={containerRef} links={links} platformStats={platformStats} />
       <ContactSection socialLinks={socialLinks} />

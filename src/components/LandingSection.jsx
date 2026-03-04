@@ -133,7 +133,7 @@ const charVariants = {
   },
 };
 
-export default function LandingSection({ containerRef, audioRef }) {
+export default function LandingSection({ containerRef, onEventsOpen, isActive, onEnter }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -226,33 +226,22 @@ export default function LandingSection({ containerRef, audioRef }) {
     return unsubscribe;
   }, [scrollYProgress]);
 
-  // Pause/resume music when leaving/entering first screen
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !entered) return;
-    if (isFirstScreen) {
-      audio.play();
-    } else {
-      audio.pause();
-    }
-  }, [isFirstScreen, entered]);
-
-  // Enter site — start music and video
+  // Enter site — start video + music
   const handleEnter = () => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.volume = 0.4;
-      audio.play();
-    }
     setEntered(true);
+    if (onEnter) onEnter();
   };
 
-  // Play videos after entry (refs are available after render)
+  // Play/pause video based on section visibility
   useEffect(() => {
-    if (!entered) return;
-    // if (secondVideoRef.current) secondVideoRef.current.play();
-    if (bgVideoRef.current) bgVideoRef.current.play();
-  }, [entered]);
+    const video = bgVideoRef.current;
+    if (!video || !entered) return;
+    if (isActive) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  }, [isActive, entered]);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -509,31 +498,23 @@ export default function LandingSection({ containerRef, audioRef }) {
           </>
         )}
 
-        {/* Bio info — always visible */}
-        <motion.div
-          className="landing-bio"
+        {/* Konser Takvimi button + description */}
+        <motion.button
+          className="turne-events-btn"
           style={{ opacity: bgOpacity }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
+          onClick={onEventsOpen}
         >
-          <motion.p
-            className="landing-bio-text"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.4,
-              duration: 0.8,
-              ease: [0.25, 0.46, 0.45, 0.94],
-            }}
-          >
+          Konser Takvimi
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
+          </svg>
+        </motion.button>
 
-            <strong>BLOK3</strong>, Türkiye müzik sahnesinin <strong>en hızlı yükselen</strong> ve en çok dinlenen isimlerinden biri. Kendine özgü tarzı, enerjik <strong>sahne performansları</strong> ve <strong>milyarlarca streame</strong> ulaşan şarkılarıyla yeni nesil müziğin sınırlarını zorluyor. <strong>Avrupa turnelerinden</strong> sold-out konserlere, dijital platformlardan <strong>stadyumlara</strong> uzanan bir yolculuk.
+        <motion.p className="turne-desc" style={{ opacity: bgOpacity }}>
+          BLOK3, 2026 konser planlamasına göre bu yıl içerisinde Türkiye içinde 34 Şehirde 62 Konser, Yurt dışında 10 Ülke, 25 Şehirde 50 Konser gerçekleştirmesi planlanmaktadır.
+        </motion.p>
 
-          </motion.p>
-        </motion.div>
-
-        {/* BLOK3 title — appears after V1 video ends, letter-by-letter loops every 4s */}
+        {/* 2026 title — appears after V1 video ends, letter-by-letter loops every 4s */}
         <AnimatePresence>
           {showFirstContent && (
             <motion.div
@@ -545,7 +526,7 @@ export default function LandingSection({ containerRef, audioRef }) {
                 className="landing-title"
                 style={{ opacity: bgOpacity }}
               >
-                {"BLOK3".split("").map((char, i) => (
+                {"2026".split("").map((char, i) => (
                   <motion.span
                     key={`${titleKey}-${i}`}
                     initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}

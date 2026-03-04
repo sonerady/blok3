@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import turneBg1 from '../assets/2026_concer_section_backgorund.jpg'
 import turneBg3 from '../assets/2026_concer_section_backgorund_3.jpg'
 import turneBg2 from '../assets/2026_concer_section_backgorund_2.jpg'
@@ -17,18 +17,25 @@ import turneFront2Goat from '../assets/2026_concer_section_front_2_goat.png'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
-export default function TurneSection({ containerRef, onEventsOpen }) {
+export default function TurneSection({ containerRef }) {
   const sectionRef = useRef(null)
   const [bgIndex, setBgIndex] = useState(0)
   const [frontAlt, setFrontAlt] = useState(false)
   const [glitching, setGlitching] = useState(false)
   const [frontGlitchKey, setFrontGlitchKey] = useState(0)
   const [frontGlitching, setFrontGlitching] = useState(false)
+  const [titleKey, setTitleKey] = useState(0)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768)
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // BLOK3 title animation loop every 3s
+  useEffect(() => {
+    const interval = setInterval(() => setTitleKey((k) => k + 1), 3000)
+    return () => clearInterval(interval)
   }, [])
 
   // Electric glitch swap — bg cycles 1→3→2, front2 toggles, every 3s
@@ -64,7 +71,7 @@ export default function TurneSection({ containerRef, onEventsOpen }) {
   })
 
   // Background parallax (first half only)
-  const bgY = useTransform(scrollYProgress, [0, 0.25, 0.5], ['10%', '0%', '-10%'])
+  const bgY = useTransform(scrollYProgress, [0, 0.25, 0.5], ['0%', '-5%', '-10%'])
 
   const front1X = useSpring(useMotionValue(0), springConfig)
   const front2X = useSpring(useMotionValue(0), springConfig)
@@ -125,10 +132,27 @@ export default function TurneSection({ containerRef, onEventsOpen }) {
             opacity: yearOp,
           }}
         >
-          <span className="turne-year-char" style={{ transform: 'translateY(-8%)' }}>2</span>
-          <span className="turne-year-char" style={{ transform: 'translateY(6%)' }}>0</span>
-          <span className="turne-year-char" style={{ transform: 'translateY(-12%)' }}>2</span>
-          <span className="turne-year-char" style={{ transform: 'translateY(4%)' }}>6</span>
+          <AnimatePresence mode="wait">
+            {['B', 'L', 'O', 'K', '3'].map((char, i) => {
+              const offsets = ['-10%', '6%', '-8%', '8%', '-12%']
+              return (
+                <motion.span
+                  key={`${titleKey}-${i}`}
+                  className="turne-year-char"
+                  style={{ translateY: offsets[i] }}
+                  initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{
+                    delay: i * 0.08,
+                    duration: 0.5,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                >
+                  {char}
+                </motion.span>
+              )
+            })}
+          </AnimatePresence>
         </motion.div>
 
         {/* Front 2 (behind front 1) — electric glitch swap */}
@@ -151,22 +175,12 @@ export default function TurneSection({ containerRef, onEventsOpen }) {
         {/* Overlay */}
         <motion.div className="turne-overlay" style={{ opacity: elementsOp }} />
 
-        {/* Konser Takvimi button */}
-        <motion.button
-          className="turne-events-btn"
-          style={{ opacity: elementsOp }}
-          onClick={onEventsOpen}
-        >
-          Konser Takvimi
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
-          </svg>
-        </motion.button>
-
-        {/* Bottom description */}
-        <motion.p className="turne-desc" style={{ opacity: elementsOp }}>
-          BLOK3, 2026 konser planlamasına göre bu yıl içerisinde Türkiye içinde 34 Şehirde 62 Konser, Yurt dışında 10 Ülke, 25 Şehirde 50 Konser gerçekleştirmesi planlanmaktadır.
-        </motion.p>
+        {/* Bio text */}
+        <motion.div className="landing-bio" style={{ opacity: elementsOp }}>
+          <p className="landing-bio-text">
+            <strong>BLOK3</strong>, Türkiye müzik sahnesinin <strong>en hızlı yükselen</strong> ve en çok dinlenen isimlerinden biri. Kendine özgü tarzı, enerjik <strong>sahne performansları</strong> ve <strong>milyarlarca streame</strong> ulaşan şarkılarıyla yeni nesil müziğin sınırlarını zorluyor. <strong>Avrupa turnelerinden</strong> sold-out konserlere, dijital platformlardan <strong>stadyumlara</strong> uzanan bir yolculuk.
+          </p>
+        </motion.div>
 
         {/* White overlay — fills screen at end of transition */}
         <motion.div className="turne-white-overlay" style={{ opacity: whiteOp }} />
