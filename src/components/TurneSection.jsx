@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
-import { motion, useMotionValue, useSpring, useScroll, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
 import turneBg1 from '../assets/2026_concer_section_backgorund.jpg'
 import turneBg3 from '../assets/2026_concer_section_backgorund_3.jpg'
 import turneBg2 from '../assets/2026_concer_section_backgorund_2.jpg'
@@ -24,18 +24,11 @@ export default function TurneSection({ containerRef }) {
   const [glitching, setGlitching] = useState(false)
   const [frontGlitchKey, setFrontGlitchKey] = useState(0)
   const [frontGlitching, setFrontGlitching] = useState(false)
-  const [titleKey, setTitleKey] = useState(0)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768)
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
-  }, [])
-
-  // BLOK3 title animation loop every 3s
-  useEffect(() => {
-    const interval = setInterval(() => setTitleKey((k) => k + 1), 3000)
-    return () => clearInterval(interval)
   }, [])
 
   // Electric glitch swap — bg cycles 1→3→2, front2 toggles, every 3s
@@ -132,12 +125,11 @@ export default function TurneSection({ containerRef }) {
             opacity: yearOp,
           }}
         >
-          <AnimatePresence mode="wait">
-            {['B', 'L', 'O', 'K', '3'].map((char, i) => {
+          {['B', 'L', 'O', 'K', '3'].map((char, i) => {
               const offsets = ['-10%', '6%', '-8%', '8%', '-12%']
               return (
                 <motion.span
-                  key={`${titleKey}-${i}`}
+                  key={i}
                   className="turne-year-char"
                   style={{ translateY: offsets[i] }}
                   initial={{ opacity: 0, y: 30, scale: 0.8 }}
@@ -152,7 +144,6 @@ export default function TurneSection({ containerRef }) {
                 </motion.span>
               )
             })}
-          </AnimatePresence>
         </motion.div>
 
         {/* Front 2 (behind front 1) — electric glitch swap */}
