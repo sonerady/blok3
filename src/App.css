@@ -2798,14 +2798,13 @@
 .lacatedral-text-bottom {
   position: absolute;
   bottom: 3rem;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 3vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 0.5rem;
   z-index: 6;
-  text-align: center;
+  text-align: right;
   white-space: nowrap;
 }
 
@@ -2825,6 +2824,29 @@
   letter-spacing: 0.3em;
   color: rgba(220, 50, 30, 0.7);
   text-transform: uppercase;
+}
+
+.lacatedral-logos {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.6rem;
+}
+
+.lacatedral-logo {
+  height: 22px;
+  width: auto;
+  opacity: 0.6;
+  filter: brightness(0) invert(1);
+  transition: opacity 0.3s ease;
+}
+
+.lacatedral-logo:hover {
+  opacity: 1;
+}
+
+.lacatedral-logo-bubilet {
+  height: 60px;
 }
 
 /* ── Particles ── */
@@ -2906,7 +2928,7 @@
     position: absolute;
     right: 1.2rem;
     top: auto;
-    bottom: 7rem;
+    bottom: 9rem;
     transform: none;
     align-items: flex-end;
   }
@@ -2952,6 +2974,20 @@
     font-size: 0.5rem;
     letter-spacing: 0.08em;
     color: rgba(220, 50, 30, 0.85);
+  }
+
+  .lacatedral-logos {
+    gap: 1.2rem;
+    margin-top: 0.5rem;
+  }
+
+  .lacatedral-logo {
+    height: 18px;
+    opacity: 0.7;
+  }
+
+  .lacatedral-logo-bubilet {
+    height: 45px;
   }
 }
 

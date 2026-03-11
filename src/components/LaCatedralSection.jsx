@@ -2,6 +2,8 @@ import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from 'framer-motion'
 import posterImg from '../assets/la_catedral.png'
 import posterMobileImg from '../assets/katedral_mobile.png'
+import passoLogo from '../assets/passo_logo.png'
+import bubiletLogo from '../assets/bubilet_logo.webp'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
@@ -167,7 +169,7 @@ export default function LaCatedralSection({ containerRef }) {
           <motion.span className="lacatedral-big-year" variants={slideRight}>2026</motion.span>
         </motion.div>
 
-        {/* Bottom — venue */}
+        {/* Bottom — venue + logos */}
         <motion.div className="lacatedral-text-bottom" variants={fadeUp}>
           <motion.span className="lacatedral-venue" variants={fadeUp}>
             BEŞİKTAŞ TÜPRAŞ STADYUMU / İSTANBUL
@@ -175,6 +177,10 @@ export default function LaCatedralSection({ containerRef }) {
           <motion.span className="lacatedral-senfoni" variants={fadeUp}>
             120 KİŞİLİK DEV SENFONİ
           </motion.span>
+          <motion.div className="lacatedral-logos" variants={fadeUp}>
+            <img src={bubiletLogo} alt="Bubilet" className="lacatedral-logo lacatedral-logo-bubilet" />
+            <img src={passoLogo} alt="Passo" className="lacatedral-logo" />
+          </motion.div>
         </motion.div>
       </motion.div>
 
