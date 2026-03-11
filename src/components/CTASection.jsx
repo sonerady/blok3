@@ -86,17 +86,17 @@ const numberPop = {
 const defaultStats = {
   turkiye: [
     { stat_key: 'sehir', value: 50, suffix: '', label: 'ŞEHİR' },
-    { stat_key: 'konser', value: 90, suffix: '', label: 'KONSER' },
-    { stat_key: 'izleyici', value: 300000, suffix: '+', label: 'BİLETLİ İZLEYİCİ' },
+    { stat_key: 'konser', value: 84, suffix: '', label: 'KONSER' },
+    { stat_key: 'izleyici', value: 375000, suffix: '+', label: 'BİLETLİ İZLEYİCİ' },
   ],
   avrupa: [
     { stat_key: 'ulke', value: 8, suffix: '', label: 'ÜLKE' },
     { stat_key: 'sehir', value: 20, suffix: '', label: 'ŞEHİR' },
-    { stat_key: 'konser', value: 45, suffix: '', label: 'KONSER' },
+    { stat_key: 'konser', value: 27, suffix: '', label: 'KONSER' },
     { stat_key: 'misafir', value: 125000, suffix: '+', label: 'BİLETLİ MİSAFİR' },
   ],
   toplam: [
-    { stat_key: 'izleyici', value: 425000, suffix: '+', label: 'TOPLAM BİLETLİ İZLEYİCİ' },
+    { stat_key: 'izleyici', value: 500000, suffix: '+', label: 'TOPLAM BİLETLİ İZLEYİCİ' },
   ],
 }
 

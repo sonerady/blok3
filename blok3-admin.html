@@ -479,18 +479,25 @@
       </div>
     </div>
     <div class="toolbar">
+      <button class="btn" onclick="showAddConcertStat()">+ Yeni Ekle</button>
       <button class="btn btn-outline" onclick="loadConcertStats()">Yenile</button>
     </div>
 
     <div class="card"><table>
-      <thead><tr><th>Bölge</th><th>Anahtar</th><th>Değer</th><th>Ek</th><th>Etiket</th><th>Sıra</th><th></th></tr></thead>
+      <thead><tr><th>Bölge</th><th>Anahtar</th><th>Değer</th><th>Ek</th><th>Etiket</th><th>Sıra</th><th colspan="2"></th></tr></thead>
       <tbody id="cstats-tbody"><tr><td colspan="7" class="empty">Yükleniyor...</td></tr></tbody>
     </table></div>
 
     <div class="form-card" id="cstat-form" style="display:none;">
       <div class="form-row">
-        <div class="form-group"><label>Bölge</label><input type="text" id="cstat-region" disabled></div>
-        <div class="form-group"><label>Anahtar</label><input type="text" id="cstat-key" disabled></div>
+        <div class="form-group"><label>Bölge</label>
+          <select id="cstat-region">
+            <option value="turkiye">Türkiye</option>
+            <option value="avrupa">Avrupa</option>
+            <option value="toplam">Toplam</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Anahtar</label><input type="text" id="cstat-key" placeholder="sehir"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Değer (sayı)</label><input type="number" id="cstat-value" placeholder="50"></div>
@@ -1274,6 +1281,7 @@
         <td>${s.label}</td>
         <td>${s.sort_order}</td>
         <td><button class="btn-sm" onclick="editConcertStat('${s.id}','${s.region}','${s.stat_key}',${s.value},\`${s.suffix || ''}\`,\`${s.label}\`,${s.sort_order})">Düzenle</button></td>
+        <td><button class="btn-sm" style="background:#e74c3c;color:#fff;" onclick="deleteConcertStat('${s.id}')">Sil</button></td>
       </tr>`).join('')
     } catch (err) { toast('Hata: ' + err.message) }
   }

@@ -166,6 +166,33 @@ INSERT INTO blok3_platform_stats (platform, number, label, description, sort_ord
   ('tiktok', '2 MİLYAR+', 'Görüntülenme', 'En viral Türkçe ses — organik erişim rekoru', 3),
   ('instagram', '486 MİLYON+', 'Reels İzlenme', 'Sosyal medyada yüksek etkileşim ve viral yayılım', 4);
 
+-- ============================================
+-- TABLE: blok3_concert_stats (2025 performansları)
+-- ============================================
+CREATE TABLE IF NOT EXISTS blok3_concert_stats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  region TEXT NOT NULL,
+  stat_key TEXT NOT NULL,
+  value INTEGER NOT NULL,
+  suffix TEXT DEFAULT '',
+  label TEXT NOT NULL,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE blok3_concert_stats DISABLE ROW LEVEL SECURITY;
+
+INSERT INTO blok3_concert_stats (region, stat_key, value, suffix, label, sort_order) VALUES
+  ('turkiye', 'sehir',    50,     '',  'ŞEHİR',            1),
+  ('turkiye', 'konser',   84,     '',  'KONSER',            2),
+  ('turkiye', 'izleyici', 375000, '+', 'BİLETLİ İZLEYİCİ', 3),
+  ('avrupa',  'ulke',     8,      '',  'ÜLKE',              4),
+  ('avrupa',  'sehir',    20,     '',  'ŞEHİR',             5),
+  ('avrupa',  'konser',   27,     '',  'KONSER',            6),
+  ('avrupa',  'misafir',  125000, '+', 'BİLETLİ MİSAFİR',  7),
+  ('toplam',  'izleyici', 500000, '+', 'TOPLAM BİLETLİ İZLEYİCİ', 8);
+
 INSERT INTO blok3_links (category, platform, label, url, sort_order) VALUES
   ('social', 'instagram', 'Instagram', 'https://www.instagram.com/blok3.real/', 1),
   ('social', 'x', 'X', 'https://x.com/realblok3', 2),
