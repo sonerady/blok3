@@ -44,4 +44,40 @@ router.put('/concert-stats/:id', requireAuth, async (req, res) => {
   }
 })
 
+// POST /api/blok3/concert-stats (ADMIN)
+router.post('/concert-stats', requireAuth, async (req, res) => {
+  try {
+    const { region, stat_key, value, suffix, label, sort_order } = req.body
+    if (!region || !stat_key) {
+      return res.status(400).json({ success: false, message: 'region ve stat_key zorunlu' })
+    }
+    const { data, error } = await supabase
+      .from('blok3_concert_stats')
+      .insert({ region, stat_key, value: value || 0, suffix: suffix || '', label: label || '', sort_order: sort_order || 0 })
+      .select()
+      .single()
+
+    if (error) throw error
+    res.json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// DELETE /api/blok3/concert-stats/:id (ADMIN)
+router.delete('/concert-stats/:id', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { error } = await supabase
+      .from('blok3_concert_stats')
+      .delete()
+      .eq('id', id)
+
+    if (error) throw error
+    res.json({ success: true })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
 export default router

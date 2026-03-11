@@ -195,9 +195,8 @@ INSERT INTO blok3_concert_stats (region, stat_key, value, suffix, label, sort_or
 
 INSERT INTO blok3_links (category, platform, label, url, sort_order) VALUES
   ('social', 'instagram', 'Instagram', 'https://www.instagram.com/blok3.real/', 1),
-  ('social', 'x', 'X', 'https://x.com/realblok3', 2),
-  ('social', 'youtube', 'YouTube', 'https://www.youtube.com/@blok3real', 3),
-  ('social', 'tiktok', 'TikTok', 'https://www.tiktok.com/@blok3', 4),
+  ('social', 'youtube', 'YouTube', 'https://www.youtube.com/@blok3real', 2),
+  ('social', 'tiktok', 'TikTok', 'https://www.tiktok.com/@blok3', 3),
   ('music', 'spotify', 'Spotify', 'https://open.spotify.com/artist/1GMwSpFzrLd12jUX15bHB6', 1),
   ('music', 'apple_music', 'Apple Music', 'https://music.apple.com/artist/blok3/1633245914', 2),
   ('music', 'deezer', 'Deezer', 'https://www.deezer.com/artist/117259882', 3),
