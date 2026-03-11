@@ -2,13 +2,14 @@ import { motion } from 'framer-motion'
 
 const steps = [
   { label: 'BİYOGRAFİ' },
+  { label: 'LA CATEDRAL' },
   { label: '2025 KONSER PERFORMANSLARI' },
   { label: '2026 TURNE PLANLAMASI', hasProgress: true },
   { label: 'PLATFORMLAR' },
   { label: 'İLETİŞİM' },
 ]
 
-const mobileHiddenSteps = [0, 1, 4]
+const mobileHiddenSteps = [0, 1, 5]
 
 export default function StepNav({ activeStep = 0, videoProgress = 0, light = false, hideOnMobile = false, hideOnContact = false }) {
   const hideMobileStep = mobileHiddenSteps.includes(activeStep)
