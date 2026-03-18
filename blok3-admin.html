@@ -446,22 +446,18 @@
     </div>
 
     <div class="card"><table>
-      <thead><tr><th>Platform</th><th>Rakam</th><th>Etiket</th><th>Aciklama</th><th>Sira</th><th></th></tr></thead>
-      <tbody id="pstats-tbody"><tr><td colspan="6" class="empty">Yukleniyor...</td></tr></tbody>
+      <thead><tr><th>Platform</th><th>Goruntulenme Verisi</th><th>Etiket</th><th></th></tr></thead>
+      <tbody id="pstats-tbody"><tr><td colspan="4" class="empty">Yukleniyor...</td></tr></tbody>
     </table></div>
 
     <div class="form-card" id="pstat-form" style="display:none;">
       <div class="form-row">
         <div class="form-group"><label>Platform</label><input type="text" id="pstat-platform" disabled></div>
-        <div class="form-group"><label>Rakam</label><input type="text" id="pstat-number" placeholder="2.9 MİLYAR+"></div>
+        <div class="form-group"><label>Goruntulenme Verisi</label><input type="text" id="pstat-number" placeholder="2.9 MİLYAR+"></div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label>Etiket</label><input type="text" id="pstat-label" placeholder="Toplam Stream"></div>
-        <div class="form-group" style="max-width:120px;"><label>Sira</label><input type="number" id="pstat-sort" value="0" min="0"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Aciklama</label><input type="text" id="pstat-desc" placeholder="Kisa aciklama..."></div>
-      </div>
+      <input type="hidden" id="pstat-label">
+      <input type="hidden" id="pstat-desc">
+      <input type="hidden" id="pstat-sort">
       <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
         <button class="btn" onclick="savePlatformStat()">Kaydet</button>
         <button class="btn btn-outline" onclick="hidePstatForm()">Iptal</button>
@@ -1220,13 +1216,11 @@
       const data = await res.json()
       document.getElementById('pstats-total').textContent = data.length
       const tbody = document.getElementById('pstats-tbody')
-      if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Kayit yok</td></tr>'; return }
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="4" class="empty">Kayit yok</td></tr>'; return }
       tbody.innerHTML = data.map(s => `<tr>
-        <td><strong>${s.platform}</strong></td>
-        <td>${s.number}</td>
+        <td><strong>${s.platform.toUpperCase()}</strong></td>
+        <td style="font-weight:700;font-size:1.1rem;">${s.number}</td>
         <td>${s.label}</td>
-        <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.description || ''}</td>
-        <td>${s.sort_order}</td>
         <td><button class="btn-sm" onclick="editPlatformStat('${s.id}','${s.platform}',\`${s.number}\`,\`${s.label}\`,\`${s.description || ''}\`,${s.sort_order})">Duzenle</button></td>
       </tr>`).join('')
     } catch (err) { toast('Hata: ' + err.message) }
