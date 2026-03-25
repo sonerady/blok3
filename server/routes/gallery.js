@@ -21,7 +21,7 @@ router.get('/gallery', async (req, res) => {
   }
 })
 
-// POST /api/blok3/gallery (ADMIN — multipart upload)
+// POST /api/blok3/gallery (ADMIN — single file upload)
 router.post('/gallery', requireAuth, upload.single('file'), async (req, res) => {
   try {
     const { caption, group_name } = req.body
@@ -66,6 +66,64 @@ router.post('/gallery', requireAuth, upload.single('file'), async (req, res) => 
 
     if (error) throw error
     res.status(201).json({ success: true, data })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
+
+// POST /api/blok3/gallery/bulk (ADMIN — multiple file upload)
+router.post('/gallery/bulk', requireAuth, upload.array('files', 20), async (req, res) => {
+  try {
+    const { caption, group_name } = req.body
+    const files = req.files
+
+    if (!files || !files.length) {
+      return res.status(400).json({ success: false, message: 'En az bir dosya zorunludur' })
+    }
+
+    const { data: maxRow } = await supabase
+      .from('blok3_gallery')
+      .select('sort_order')
+      .order('sort_order', { ascending: false })
+      .limit(1)
+      .single()
+
+    let nextOrder = (maxRow?.sort_order || 0) + 1
+    const results = []
+
+    for (const file of files) {
+      const ext = file.originalname.split('.').pop()
+      const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('blok3-gallery')
+        .upload(filename, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        })
+
+      if (uploadError) throw uploadError
+
+      const { data: urlData } = supabase.storage
+        .from('blok3-gallery')
+        .getPublicUrl(filename)
+
+      const { data, error } = await supabase
+        .from('blok3_gallery')
+        .insert({
+          src: urlData.publicUrl,
+          caption: caption || '',
+          sort_order: nextOrder++,
+          group_name: group_name || null,
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+      results.push(data)
+    }
+
+    res.status(201).json({ success: true, data: results, count: results.length })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }
