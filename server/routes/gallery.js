@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase.js'
 import { requireAuth } from '../middleware/auth.js'
 
 const router = Router()
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } })
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } })
 
 // GET /api/blok3/gallery
 router.get('/gallery', async (req, res) => {
