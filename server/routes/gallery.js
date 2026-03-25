@@ -24,7 +24,7 @@ router.get('/gallery', async (req, res) => {
 // POST /api/blok3/gallery (ADMIN — multipart upload)
 router.post('/gallery', requireAuth, upload.single('file'), async (req, res) => {
   try {
-    const { caption } = req.body
+    const { caption, group_name } = req.body
     const file = req.file
 
     if (!file) {
@@ -60,7 +60,7 @@ router.post('/gallery', requireAuth, upload.single('file'), async (req, res) => 
 
     const { data, error } = await supabase
       .from('blok3_gallery')
-      .insert({ src, caption: caption || '', sort_order: nextOrder })
+      .insert({ src, caption: caption || '', sort_order: nextOrder, group_name: group_name || null })
       .select()
       .single()
 
@@ -75,11 +75,12 @@ router.post('/gallery', requireAuth, upload.single('file'), async (req, res) => 
 router.put('/gallery/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params
-    const { caption, sort_order, src } = req.body
+    const { caption, sort_order, src, group_name } = req.body
     const updates = {}
     if (caption !== undefined) updates.caption = caption
     if (sort_order !== undefined) updates.sort_order = sort_order
     if (src !== undefined) updates.src = src
+    if (group_name !== undefined) updates.group_name = group_name
 
     const { data, error } = await supabase
       .from('blok3_gallery')

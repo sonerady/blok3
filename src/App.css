@@ -3147,7 +3147,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.85rem 2rem;
+  padding: 1.1rem 2.6rem;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50px;
   background: rgba(255, 255, 255, 0.05);
@@ -3155,7 +3155,7 @@
   -webkit-backdrop-filter: blur(10px);
   color: #fff;
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -4051,8 +4051,8 @@
 
   .turne-events-btn {
     bottom: 5.5rem;
-    font-size: 0.8rem;
-    padding: 0.7rem 1.5rem;
+    font-size: 0.95rem;
+    padding: 0.9rem 2rem;
   }
 
   .turne-desc {
@@ -4272,7 +4272,7 @@
 /* Ticket button */
 .event-ticket-btn {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   font-weight: 400;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -4280,7 +4280,7 @@
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.4rem;
-  padding: 0.55rem 1.3rem;
+  padding: 0.7rem 1.6rem;
   text-decoration: none;
   transition: all 0.25s ease;
   white-space: nowrap;
@@ -4346,8 +4346,8 @@
   }
 
   .event-ticket-btn {
-    font-size: 0.6rem;
-    padding: 0.45rem 0.9rem;
+    font-size: 0.72rem;
+    padding: 0.55rem 1.1rem;
   }
 }
 
@@ -5286,6 +5286,77 @@
   color: #fff;
 }
 
+/* ── Gallery group photo count badge ── */
+.gallery-item-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Gallery lightbox counter ── */
+.gallery-lightbox-counter {
+  opacity: 0.6;
+  margin-left: 0.5rem;
+}
+
+/* ── Inner thumbnail strip ── */
+.gallery-inner-thumbs {
+  position: absolute;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 80vw;
+  overflow-x: auto;
+}
+
+.gallery-inner-thumbs::-webkit-scrollbar {
+  height: 0;
+}
+
+.gallery-inner-thumb {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+}
+
+.gallery-inner-thumb:hover {
+  opacity: 0.8;
+}
+
+.gallery-inner-thumb.active {
+  opacity: 1;
+  border-color: #fff;
+}
+
+.gallery-inner-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ── Gallery Modal responsive ── */
 @media (max-width: 768px) {
   .gallery-modal {
@@ -5344,6 +5415,17 @@
   .gallery-lightbox-caption {
     bottom: 1.2rem;
     font-size: 0.7rem;
+  }
+
+  .gallery-inner-thumbs {
+    bottom: 3rem;
+    gap: 6px;
+    padding: 6px 10px;
+  }
+
+  .gallery-inner-thumb {
+    width: 44px;
+    height: 44px;
   }
 }
 
