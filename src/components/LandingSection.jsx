@@ -235,10 +235,10 @@ export default function LandingSection({ containerRef, onEventsOpen, isActive, o
   // Play/pause video based on section visibility
   useEffect(() => {
     const video = bgVideoRef.current;
-    if (!video || !entered) return;
+    if (!video) return;
     if (isActive) {
-      video.play();
-    } else {
+      video.play().catch(() => {});
+    } else if (entered) {
       video.pause();
     }
   }, [isActive, entered]);
@@ -447,56 +447,53 @@ export default function LandingSection({ containerRef, onEventsOpen, isActive, o
         />
         */}
 
-        {/* Background with spotlight — only after entry */}
-        {entered && (
-          <>
-            <motion.div className="landing-bg-wrapper" style={{ x: bgMoveX }}>
-              <motion.video
-                ref={bgVideoRef}
-                className={`landing-bg${videoEnded ? " video-ended-pulse" : ""}`}
-                src={landingBgVideo}
-                muted
-                playsInline
-                onEnded={() => setVideoEnded(true)}
-                style={{
-                  opacity: bgOpacity,
-                }}
-              />
-              {isFirstScreen && (
-                <>
-                  <div className="concert-spotlights">
-                    <div className="spotlight spotlight-1" />
-                    <div className="spotlight spotlight-2" />
-                    <div className="spotlight spotlight-3" />
-                    <div className="spotlight spotlight-4" />
-                  </div>
-                  <div className="smoke-overlay">
-                    <div className="smoke-layer smoke-layer-1" />
-                    <div className="smoke-layer smoke-layer-2" />
-                    <div className="smoke-layer smoke-layer-3" />
-                  </div>
-                </>
-              )}
-              {isFirstScreen && videoEnded && (
-                <div className="video-ended-glow" />
-              )}
-            </motion.div>
+        {/* Background with spotlight */}
+        <motion.div className="landing-bg-wrapper" style={{ x: entered ? bgMoveX : 0 }}>
+          <motion.video
+            ref={bgVideoRef}
+            className={`landing-bg${videoEnded ? " video-ended-pulse" : ""}`}
+            src={landingBgVideo}
+            muted
+            playsInline
+            autoPlay
+            onEnded={() => setVideoEnded(true)}
+            style={{
+              opacity: entered ? bgOpacity : 1,
+            }}
+          />
+          {isFirstScreen && entered && (
+            <>
+              <div className="concert-spotlights">
+                <div className="spotlight spotlight-1" />
+                <div className="spotlight spotlight-2" />
+                <div className="spotlight spotlight-3" />
+                <div className="spotlight spotlight-4" />
+              </div>
+              <div className="smoke-overlay">
+                <div className="smoke-layer smoke-layer-1" />
+                <div className="smoke-layer smoke-layer-2" />
+                <div className="smoke-layer smoke-layer-3" />
+              </div>
+            </>
+          )}
+          {isFirstScreen && videoEnded && (
+            <div className="video-ended-glow" />
+          )}
+        </motion.div>
 
-            {/* First front */}
-            <motion.img
-              className={`landing-front${frontGlitching ? " front-glitch" : ""}`}
-              src={activeFront}
-              alt=""
-              style={{ opacity: firstFrontOpacity, x: frontX }}
-            />
+        {/* First front */}
+        <motion.img
+          className={`landing-front${frontGlitching ? " front-glitch" : ""}`}
+          src={activeFront}
+          alt=""
+          style={{ opacity: entered ? firstFrontOpacity : 1, x: entered ? frontX : 0 }}
+        />
 
-            {/* Bottom gradient */}
-            <motion.div
-              className="landing-bottom-gradient"
-              style={{ opacity: bgOpacity }}
-            />
-          </>
-        )}
+        {/* Bottom gradient */}
+        <motion.div
+          className="landing-bottom-gradient"
+          style={{ opacity: entered ? bgOpacity : 0.5 }}
+        />
 
         {/* Konser Takvimi button + description */}
         <motion.button
