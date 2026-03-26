@@ -5176,20 +5176,21 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 70%);
 }
 
-.gallery-item-name {
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: 0.04em;
-  line-height: 1.3;
-}
-
 .gallery-item-overlay span {
   font-family: var(--font-body);
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.85);
   letter-spacing: 0.03em;
+}
+
+.gallery-item-overlay .gallery-item-name {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Album back button */
