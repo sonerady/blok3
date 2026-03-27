@@ -129,7 +129,7 @@ export default function LaCatedralSection({ containerRef }) {
         <img src={posterMobileImg} alt="" className="lacatedral-mobile-bg-img" />
         {/* Mobile logos */}
         <div className="lacatedral-mobile-logos">
-          <img src={bubiletLogo} alt="Bubilet" className="lacatedral-logo lacatedral-logo-bubilet" />
+          <BubiletSvg className="lacatedral-logo lacatedral-logo-bubilet" />
           <img src={passoLogo} alt="Passo" className="lacatedral-logo" />
           <img src={kralpopLogo} alt="Kral Pop" className="lacatedral-logo lacatedral-logo-kralpop" />
         </div>
