@@ -11,68 +11,69 @@ const itemFade = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
 }
 
-function groupPhotos(photos) {
-  const groups = []
-  const groupMap = {}
-
-  photos.forEach((photo) => {
-    const key = photo.group_name || `__solo_${photo.id || photo.src}`
-    if (!groupMap[key]) {
-      groupMap[key] = { name: photo.group_name || photo.caption, isSolo: !photo.group_name, photos: [] }
-      groups.push(groupMap[key])
-    }
-    groupMap[key].photos.push(photo)
-  })
-
-  return groups
-}
-
 export default function GalleryModal({ isOpen, onClose }) {
-  const [photos, setPhotos] = useState([])
+  const [albums, setAlbums] = useState([])
   const [loading, setLoading] = useState(true)
-  // null = albums view, number = album detail view
-  const [openedGroupIndex, setOpenedGroupIndex] = useState(null)
-  // null = no lightbox, number = lightbox photo index within group
+  const [openedAlbum, setOpenedAlbum] = useState(null) // { id, name, subtitle }
+  const [photos, setPhotos] = useState([])
+  const [photosLoading, setPhotosLoading] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(null)
 
+  // Fetch albums list
   useEffect(() => {
     if (!isOpen) return
     setLoading(true)
-    fetch('/api/blok3/gallery')
+    fetch('/api/blok3/albums')
       .then((res) => res.json())
       .then((data) => {
-        setPhotos(data)
+        setAlbums(data)
         setLoading(false)
       })
       .catch(() => setLoading(false))
   }, [isOpen])
 
-  const groups = groupPhotos(photos)
-  const openedGroup = openedGroupIndex !== null ? groups[openedGroupIndex] : null
-
-  const closeLightbox = () => setLightboxIndex(null)
-  const closeAlbum = () => { setOpenedGroupIndex(null); setLightboxIndex(null) }
-
-  const goNext = useCallback(() => {
-    if (!openedGroup) return
-    setLightboxIndex((prev) => (prev + 1) % openedGroup.photos.length)
-  }, [openedGroup])
-
-  const goPrev = useCallback(() => {
-    if (!openedGroup) return
-    setLightboxIndex((prev) => (prev - 1 + openedGroup.photos.length) % openedGroup.photos.length)
-  }, [openedGroup])
-
+  // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setOpenedGroupIndex(null)
+      setOpenedAlbum(null)
+      setPhotos([])
       setLightboxIndex(null)
-      return
     }
+  }, [isOpen])
+
+  // Fetch album photos when album is opened
+  useEffect(() => {
+    if (!openedAlbum) return
+    setPhotosLoading(true)
+    fetch(`/api/blok3/albums/${openedAlbum.id}/photos`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPhotos(data)
+        setPhotosLoading(false)
+      })
+      .catch(() => setPhotosLoading(false))
+  }, [openedAlbum])
+
+  const closeLightbox = () => setLightboxIndex(null)
+  const closeAlbum = () => { setOpenedAlbum(null); setPhotos([]); setLightboxIndex(null) }
+
+  const goNext = useCallback(() => {
+    if (!photos.length) return
+    setLightboxIndex((prev) => (prev + 1) % photos.length)
+  }, [photos])
+
+  const goPrev = useCallback(() => {
+    if (!photos.length) return
+    setLightboxIndex((prev) => (prev - 1 + photos.length) % photos.length)
+  }, [photos])
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return
     const handleKey = (e) => {
       if (e.key === 'Escape') {
         if (lightboxIndex !== null) closeLightbox()
-        else if (openedGroupIndex !== null) closeAlbum()
+        else if (openedAlbum) closeAlbum()
         else onClose()
       }
       if (lightboxIndex !== null) {
@@ -82,19 +83,12 @@ export default function GalleryModal({ isOpen, onClose }) {
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [isOpen, openedGroupIndex, lightboxIndex, onClose, goNext, goPrev])
+  }, [isOpen, openedAlbum, lightboxIndex, onClose, goNext, goPrev])
 
-  const handleAlbumClick = (groupIndex) => {
-    const group = groups[groupIndex]
-    // Solo photo (no group) — open lightbox directly
-    if (group.isSolo) {
-      setOpenedGroupIndex(groupIndex)
-      setLightboxIndex(0)
-    } else {
-      // Album with group — open album detail
-      setOpenedGroupIndex(groupIndex)
-      setLightboxIndex(null)
-    }
+  const handleAlbumClick = (album) => {
+    if (album.photo_count === 0) return
+    setOpenedAlbum(album)
+    setLightboxIndex(null)
   }
 
   // ─── ALBUMS VIEW ───
@@ -105,42 +99,39 @@ export default function GalleryModal({ isOpen, onClose }) {
       <p className="gallery-desc">Turkiye ve Avrupa turnelerinden sahne anlari</p>
 
       {loading && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '3rem' }}>Yukleniyor...</p>}
-      {!loading && (
+      {!loading && !albums.length && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '3rem' }}>Henuz album yok</p>}
+      {!loading && albums.length > 0 && (
         <motion.div className="gallery-grid" variants={gridStagger} initial="hidden" animate="visible">
-          {groups.map((group, i) => {
-            const cover = group.photos[0]
-            const count = group.photos.length
-            return (
-              <motion.div
-                key={i}
-                className="gallery-item"
-                variants={itemFade}
-                onClick={() => handleAlbumClick(i)}
-              >
-                <img src={cover.src} alt={cover.caption} loading="lazy" />
-                <div className="gallery-item-overlay">
-                  <span className="gallery-item-name">{group.name}</span>
-                  {count > 1 && (
-                    <span className="gallery-item-count">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <line x1="9" y1="3" x2="9" y2="21" />
-                      </svg>
-                      {count}
-                    </span>
-                  )}
-                </div>
-              </motion.div>
-            )
-          })}
+          {albums.filter(a => a.photo_count > 0).map((album) => (
+            <motion.div
+              key={album.id}
+              className="gallery-item"
+              variants={itemFade}
+              onClick={() => handleAlbumClick(album)}
+            >
+              <img src={album.cover} alt={album.name} loading="lazy" />
+              <div className="gallery-item-overlay">
+                <span className="gallery-item-name">{album.name}</span>
+                {album.photo_count > 1 && (
+                  <span className="gallery-item-count">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <line x1="9" y1="3" x2="9" y2="21" />
+                    </svg>
+                    {album.photo_count}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       )}
     </div>
   )
 
-  // ─── ALBUM DETAIL VIEW ───
-  const renderAlbumDetail = () => {
-    if (!openedGroup) return null
+  // ─── ALBUM PHOTOS VIEW ───
+  const renderAlbumPhotos = () => {
+    if (!openedAlbum) return null
     return (
       <div className="gallery-modal-content">
         <button className="gallery-album-back" onClick={closeAlbum}>
@@ -149,25 +140,26 @@ export default function GalleryModal({ isOpen, onClose }) {
           </svg>
           Geri
         </button>
-        <h2 className="gallery-heading" style={{ marginTop: '0.5rem' }}>{openedGroup.name}</h2>
-        <p className="gallery-desc">{openedGroup.photos.length} gorsel</p>
+        <h2 className="gallery-heading" style={{ marginTop: '0.5rem' }}>{openedAlbum.name}</h2>
+        {openedAlbum.subtitle && <p className="gallery-desc">{openedAlbum.subtitle}</p>}
+        <p className="gallery-desc">{photos.length} gorsel</p>
 
-        <motion.div className="gallery-grid" variants={gridStagger} initial="hidden" animate="visible">
-          {openedGroup.photos.map((photo, idx) => (
-            <motion.div
-              key={idx}
-              className={`gallery-item${idx === 0 ? ' gallery-item-cover' : ''}`}
-              variants={itemFade}
-              onClick={() => setLightboxIndex(idx)}
-            >
-              <img src={photo.src} alt={photo.caption} loading="lazy" />
-              {idx === 0 && <span className="gallery-cover-badge">Kapak</span>}
-              <div className="gallery-item-overlay">
-                <span>{photo.caption}</span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+        {photosLoading && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '3rem' }}>Yukleniyor...</p>}
+        {!photosLoading && (
+          <motion.div className="gallery-grid" variants={gridStagger} initial="hidden" animate="visible">
+            {photos.map((photo, idx) => (
+              <motion.div
+                key={photo.id}
+                className={`gallery-item${idx === 0 ? ' gallery-item-cover' : ''}`}
+                variants={itemFade}
+                onClick={() => setLightboxIndex(idx)}
+              >
+                <img src={photo.src} alt={photo.caption} loading="lazy" />
+                {idx === 0 && <span className="gallery-cover-badge">Kapak</span>}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </div>
     )
   }
@@ -198,15 +190,12 @@ export default function GalleryModal({ isOpen, onClose }) {
               </svg>
             </button>
 
-            {openedGroupIndex === null || (openedGroup && openedGroup.isSolo)
-              ? renderAlbumsView()
-              : renderAlbumDetail()
-            }
+            {openedAlbum === null ? renderAlbumsView() : renderAlbumPhotos()}
           </motion.div>
 
           {/* Lightbox */}
           <AnimatePresence>
-            {openedGroup && lightboxIndex !== null && openedGroup.photos[lightboxIndex] && (
+            {lightboxIndex !== null && photos[lightboxIndex] && (
               <motion.div
                 className="gallery-lightbox"
                 initial={{ opacity: 0 }}
@@ -216,9 +205,9 @@ export default function GalleryModal({ isOpen, onClose }) {
                 onClick={closeLightbox}
               >
                 <motion.img
-                  key={`${openedGroupIndex}-${lightboxIndex}`}
-                  src={openedGroup.photos[lightboxIndex].src}
-                  alt={openedGroup.photos[lightboxIndex].caption}
+                  key={lightboxIndex}
+                  src={photos[lightboxIndex].src}
+                  alt={photos[lightboxIndex].caption}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
@@ -227,10 +216,10 @@ export default function GalleryModal({ isOpen, onClose }) {
                 />
 
                 <span className="gallery-lightbox-caption">
-                  {openedGroup.photos[lightboxIndex].caption}
-                  {openedGroup.photos.length > 1 && (
+                  {photos[lightboxIndex].caption}
+                  {photos.length > 1 && (
                     <span className="gallery-lightbox-counter">
-                      {' '}{lightboxIndex + 1} / {openedGroup.photos.length}
+                      {' '}{lightboxIndex + 1} / {photos.length}
                     </span>
                   )}
                 </span>
