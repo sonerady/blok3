@@ -198,7 +198,7 @@ export default function LaCatedralSection({ containerRef }) {
             120 KİŞİLİK DEV SENFONİ
           </motion.span>
           <motion.a
-            href="https://www.bubilet.com.tr"
+            href="https://www.bubilet.com.tr/istanbul/etkinlik/blok3-la-catedral"
             target="_blank"
             rel="noreferrer"
             className="lacatedral-cta-btn"
