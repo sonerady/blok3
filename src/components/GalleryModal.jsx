@@ -141,21 +141,20 @@ export default function GalleryModal({ isOpen, onClose }) {
           Geri
         </button>
         <h2 className="gallery-heading" style={{ marginTop: '0.5rem' }}>{openedAlbum.name}</h2>
-        {openedAlbum.subtitle && <p className="gallery-desc">{openedAlbum.subtitle}</p>}
+        {openedAlbum.subtitle ? <p className="gallery-desc">{openedAlbum.subtitle}</p> : null}
         <p className="gallery-desc">{photos.length} gorsel</p>
 
         {photosLoading && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '3rem' }}>Yukleniyor...</p>}
         {!photosLoading && (
           <motion.div className="gallery-grid" variants={gridStagger} initial="hidden" animate="visible">
-            {photos.map((photo, idx) => (
+            {photos.map((photo) => (
               <motion.div
                 key={photo.id}
-                className={`gallery-item${idx === 0 ? ' gallery-item-cover' : ''}`}
+                className="gallery-item"
                 variants={itemFade}
-                onClick={() => setLightboxIndex(idx)}
+                onClick={() => setLightboxIndex(photos.indexOf(photo))}
               >
                 <img src={photo.src} alt={photo.caption} loading="lazy" />
-                {idx === 0 && <span className="gallery-cover-badge">Kapak</span>}
               </motion.div>
             ))}
           </motion.div>
