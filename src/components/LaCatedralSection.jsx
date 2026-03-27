@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from 'framer-motion'
 import posterImg from '../assets/la_catedral.png'
 import posterMobileImg from '../assets/katedral_mobile.png'
-import passoLogo from '../assets/passo_logo.png'
+import passoLogo from '../assets/passo-logo-tr-TR.png'
 import kralpopLogo from '../assets/kralpop.png'
 
 function BubiletSvg({ className }) {
