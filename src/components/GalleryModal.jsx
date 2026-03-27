@@ -201,7 +201,7 @@ export default function GalleryModal({ isOpen, onClose }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                onClick={closeLightbox}
+                onClick={(e) => { e.stopPropagation(); closeLightbox() }}
               >
                 <motion.img
                   key={lightboxIndex}
@@ -248,7 +248,7 @@ export default function GalleryModal({ isOpen, onClose }) {
                 {/* Close lightbox */}
                 <button
                   className="gallery-lightbox-close"
-                  onClick={closeLightbox}
+                  onClick={(e) => { e.stopPropagation(); closeLightbox() }}
                   aria-label="Kapat"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
