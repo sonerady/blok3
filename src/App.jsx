@@ -84,12 +84,12 @@ function App() {
       const turneEnd = viewportHeight * 2
       // LaCatedralSection (100vh) after Turne
       const catedralEnd = turneEnd + viewportHeight
-      // CTASection (100vh) after LaCatedral
-      const ctaEnd = catedralEnd + viewportHeight
-      // LandingSection (100vh) after CTA
-      const landingEnd = ctaEnd + viewportHeight
-      // PlatformShowcase (100vh) after Landing
-      const showcaseEnd = landingEnd + viewportHeight
+      // LandingSection (100vh) after LaCatedral — 2026 TURNE
+      const landingEnd = catedralEnd + viewportHeight
+      // CTASection (100vh) after Landing — 2025 KONSER
+      const ctaEnd = landingEnd + viewportHeight
+      // PlatformShowcase (100vh) after CTA
+      const showcaseEnd = ctaEnd + viewportHeight
 
       if (scrollTop < turneEnd) {
         setActiveStep(0) // BİYOGRAFİ
@@ -97,11 +97,11 @@ function App() {
       } else if (scrollTop < catedralEnd) {
         setActiveStep(1) // LA CATEDRAL
         setHideStepNav(false)
-      } else if (scrollTop < ctaEnd) {
-        setActiveStep(2) // 2025 KONSER PERFORMANSLARI
-        setHideStepNav(false)
       } else if (scrollTop < landingEnd) {
-        setActiveStep(3) // 2026 TURNE PLANLAMASI
+        setActiveStep(2) // 2026 TURNE PLANLAMASI
+        setHideStepNav(false)
+      } else if (scrollTop < ctaEnd) {
+        setActiveStep(3) // 2025 KONSER PERFORMANSLARI
         setHideStepNav(false)
       } else if (scrollTop < showcaseEnd) {
         setActiveStep(4) // PLATFORMLAR
@@ -191,14 +191,14 @@ function App() {
       <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} />
       <TurneSection containerRef={containerRef} />
       <LaCatedralSection containerRef={containerRef} />
-      <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} concertStats={concertStats} />
-      <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 3} onEnter={() => {
+      <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 2} onEnter={() => {
         const audio = audioRef.current
         if (audio) {
           audio.volume = 0.4
           audio.play()
         }
       }} />
+      <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} concertStats={concertStats} />
       {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
       <PlatformShowcase containerRef={containerRef} links={links} platformStats={platformStats} />
       <ContactSection socialLinks={socialLinks} />
