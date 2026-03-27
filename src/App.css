@@ -2872,7 +2872,10 @@
 }
 
 .lacatedral-poster-logos .lacatedral-logo-bubilet {
-  height: 32px;
+  height: auto;
+  width: 120px;
+  color: #fff;
+  filter: none;
 }
 
 .lacatedral-poster-logos .lacatedral-logo-kralpop {
@@ -2897,7 +2900,10 @@
 }
 
 .lacatedral-mobile-logos .lacatedral-logo-bubilet {
-  height: 38px;
+  height: auto;
+  width: 100px;
+  color: #fff;
+  filter: none;
 }
 
 .lacatedral-mobile-logos .lacatedral-logo-kralpop {
