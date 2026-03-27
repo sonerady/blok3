@@ -4,6 +4,7 @@ import posterImg from '../assets/la_catedral.png'
 import posterMobileImg from '../assets/katedral_mobile.png'
 import passoLogo from '../assets/passo_logo.png'
 import bubiletLogo from '../assets/bubilet_logo.webp'
+import kralpopLogo from '../assets/kralpop.png'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
@@ -119,6 +120,12 @@ export default function LaCatedralSection({ containerRef }) {
         }}
       >
         <img src={posterMobileImg} alt="" className="lacatedral-mobile-bg-img" />
+        {/* Mobile logos */}
+        <div className="lacatedral-mobile-logos">
+          <img src={bubiletLogo} alt="Bubilet" className="lacatedral-logo lacatedral-logo-bubilet" />
+          <img src={passoLogo} alt="Passo" className="lacatedral-logo" />
+          <img src={kralpopLogo} alt="Kral Pop" className="lacatedral-logo lacatedral-logo-kralpop" />
+        </div>
       </motion.div>
 
       <div className="lacatedral-bg-overlay" />
@@ -161,6 +168,12 @@ export default function LaCatedralSection({ containerRef }) {
           <div className="lacatedral-poster-glow" />
           <img src={posterImg} alt="La Catedral" className="lacatedral-poster-img" />
           <div className="lacatedral-poster-shine" />
+          {/* Logos on poster bottom-left */}
+          <motion.div className="lacatedral-poster-logos" variants={fadeUp}>
+            <img src={bubiletLogo} alt="Bubilet" className="lacatedral-logo lacatedral-logo-bubilet" />
+            <img src={passoLogo} alt="Passo" className="lacatedral-logo" />
+            <img src={kralpopLogo} alt="Kral Pop" className="lacatedral-logo lacatedral-logo-kralpop" />
+          </motion.div>
         </motion.div>
 
         {/* Right side — date */}
@@ -169,7 +182,7 @@ export default function LaCatedralSection({ containerRef }) {
           <motion.span className="lacatedral-big-year" variants={slideRight}>2026</motion.span>
         </motion.div>
 
-        {/* Bottom — venue + logos */}
+        {/* Bottom — venue + CTA */}
         <motion.div className="lacatedral-text-bottom" variants={fadeUp}>
           <motion.span className="lacatedral-venue" variants={fadeUp}>
             BEŞİKTAŞ TÜPRAŞ STADYUMU / İSTANBUL
@@ -177,10 +190,15 @@ export default function LaCatedralSection({ containerRef }) {
           <motion.span className="lacatedral-senfoni" variants={fadeUp}>
             120 KİŞİLİK DEV SENFONİ
           </motion.span>
-          <motion.div className="lacatedral-logos" variants={fadeUp}>
-            <img src={bubiletLogo} alt="Bubilet" className="lacatedral-logo lacatedral-logo-bubilet" />
-            <img src={passoLogo} alt="Passo" className="lacatedral-logo" />
-          </motion.div>
+          <motion.a
+            href="https://www.bubilet.com.tr"
+            target="_blank"
+            rel="noreferrer"
+            className="lacatedral-cta-btn"
+            variants={fadeUp}
+          >
+            Biletini Al
+          </motion.a>
         </motion.div>
       </motion.div>
 

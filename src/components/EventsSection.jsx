@@ -119,7 +119,7 @@ export default function EventsModal({ isOpen, onClose }) {
                         className={`event-ticket-btn${isPast ? ' disabled' : ''}`}
                         onClick={(e) => isPast && e.preventDefault()}
                       >
-                        {isPast ? 'Geçti' : 'Bilet Al'}
+                        {isPast ? 'Sold Out' : 'Bilet Al'}
                       </a>
                     </motion.div>
                   )
