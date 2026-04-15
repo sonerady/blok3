@@ -146,7 +146,11 @@ export default function LandingSection({ containerRef, onEventsOpen, isActive, o
   const sectionRef = useRef(null);
   // const secondVideoRef = useRef(null);
   const bgVideoRef = useRef(null);
-  const [entered, setEntered] = useState(false);
+  const [entered, setEntered] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      localStorage.getItem("blok3_subscribed") === "true"
+  );
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -202,6 +206,12 @@ export default function LandingSection({ containerRef, onEventsOpen, isActive, o
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // If user already subscribed, trigger onEnter on mount (audio/video)
+  useEffect(() => {
+    if (entered && onEnter) onEnter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const showFirstContent = entered && videoEnded;
 
   // Scroll-driven crossfade
@@ -255,6 +265,7 @@ export default function LandingSection({ containerRef, onEventsOpen, isActive, o
     } catch (err) {
       // sessizce devam et
     }
+    localStorage.setItem("blok3_subscribed", "true");
     setLoading(false);
     handleEnter();
   };
@@ -371,11 +382,21 @@ export default function LandingSection({ containerRef, onEventsOpen, isActive, o
                 <input
                   className="entry-input"
                   type="tel"
-                  placeholder="Telefon (opsiyonel)"
+                  inputMode="numeric"
+                  placeholder="xxx xxx xxxx"
+                  maxLength={12}
                   value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const digits = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+                    const parts = [
+                      digits.slice(0, 3),
+                      digits.slice(3, 6),
+                      digits.slice(6, 10),
+                    ].filter(Boolean);
+                    setFormData({ ...formData, phone: parts.join(" ") });
+                  }}
                 />
               </div>
               <select
