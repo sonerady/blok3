@@ -30,7 +30,8 @@ function App() {
   const [links, setLinks] = useState([])
   const [platformStats, setPlatformStats] = useState([])
   const [concertStats, setConcertStats] = useState([])
-  const [activeMusicUrl, setActiveMusicUrl] = useState(gitMusic)
+  const [playlist, setPlaylist] = useState([])
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
 
   useEffect(() => {
     fetch('/api/blok3/links')
@@ -45,13 +46,24 @@ function App() {
       .then((res) => res.json())
       .then((data) => setConcertStats(data))
       .catch(() => {})
-    fetch('/api/blok3/music/active')
+    fetch('/api/blok3/music/playlist')
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.file_url) setActiveMusicUrl(data.file_url)
+        if (Array.isArray(data) && data.length > 0) {
+          setPlaylist(data)
+        }
       })
       .catch(() => {})
   }, [])
+
+  const currentTrackUrl = playlist.length > 0
+    ? playlist[currentTrackIndex % playlist.length]?.file_url
+    : gitMusic
+
+  const handleTrackEnded = () => {
+    if (playlist.length === 0) return
+    setCurrentTrackIndex((i) => (i + 1) % playlist.length)
+  }
 
   const musicLinks = links.filter((l) => l.category === 'music')
   const socialLinks = links.filter((l) => l.category === 'social')
@@ -68,6 +80,13 @@ function App() {
       audio.removeEventListener('pause', onPause)
     }
   }, [])
+
+  // When track index changes (playlist advance), auto-play if music was already started
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio || !hasStarted) return
+    audio.play().catch(() => {})
+  }, [currentTrackIndex, hasStarted])
 
   const toggleMusic = () => {
     const audio = audioRef.current
@@ -128,7 +147,7 @@ function App() {
 
   return (
     <div className="app" ref={containerRef}>
-      <audio ref={audioRef} src={activeMusicUrl} loop />
+      <audio ref={audioRef} src={currentTrackUrl} onEnded={handleTrackEnded} loop={playlist.length <= 1} />
 
       <nav className={`global-nav${isLight ? ' light' : ''}`}>
         <div className="global-nav-left">
