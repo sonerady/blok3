@@ -4,8 +4,35 @@ import { signToken, requireAuth } from '../middleware/auth.js'
 
 const router = Router()
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin'
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'blok3admin'
+// Collect admin users from env:
+//   ADMIN_USERNAME / ADMIN_PASSWORD         (primary)
+//   ADMIN_USERNAME_2 / ADMIN_PASSWORD_2     (additional)
+//   ADMIN_USERNAME_3 / ADMIN_PASSWORD_3
+//   ... up to _20
+function loadAdminUsers() {
+  const users = []
+  const primaryU = process.env.ADMIN_USERNAME
+  const primaryP = process.env.ADMIN_PASSWORD
+  if (primaryU && primaryP) users.push({ username: primaryU, password: primaryP })
+
+  for (let i = 2; i <= 20; i++) {
+    const u = process.env['ADMIN_USERNAME_' + i]
+    const p = process.env['ADMIN_PASSWORD_' + i]
+    if (u && p) users.push({ username: u, password: p })
+  }
+
+  if (users.length === 0) {
+    users.push({ username: 'admin', password: 'blok3admin' })
+  }
+  return users
+}
+
+const ADMIN_USERS = loadAdminUsers()
+
+function timingSafeEquals(a, b) {
+  if (a.length !== b.length) return false
+  return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b))
+}
 
 // POST /api/blok3/auth/login
 router.post('/auth/login', (req, res) => {
@@ -15,20 +42,20 @@ router.post('/auth/login', (req, res) => {
     return res.status(400).json({ success: false, message: 'Kullanici adi ve sifre zorunludur' })
   }
 
-  // Timing-safe comparison to prevent timing attacks
-  const usernameMatch =
-    username.length === ADMIN_USERNAME.length &&
-    crypto.timingSafeEqual(Buffer.from(username), Buffer.from(ADMIN_USERNAME))
+  // Iterate all admin users, timing-safe
+  let matchedUser = null
+  for (const u of ADMIN_USERS) {
+    if (timingSafeEquals(username, u.username) && timingSafeEquals(password, u.password)) {
+      matchedUser = u
+      break
+    }
+  }
 
-  const passwordMatch =
-    password.length === ADMIN_PASSWORD.length &&
-    crypto.timingSafeEqual(Buffer.from(password), Buffer.from(ADMIN_PASSWORD))
-
-  if (!usernameMatch || !passwordMatch) {
+  if (!matchedUser) {
     return res.status(401).json({ success: false, message: 'Gecersiz kullanici adi veya sifre' })
   }
 
-  const token = signToken({ username: ADMIN_USERNAME, role: 'admin' }, 8)
+  const token = signToken({ username: matchedUser.username, role: 'admin' }, 8)
 
   res.json({
     success: true,

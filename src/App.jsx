@@ -30,6 +30,7 @@ function App() {
   const [links, setLinks] = useState([])
   const [platformStats, setPlatformStats] = useState([])
   const [concertStats, setConcertStats] = useState([])
+  const [activeMusicUrl, setActiveMusicUrl] = useState(gitMusic)
 
   useEffect(() => {
     fetch('/api/blok3/links')
@@ -43,6 +44,12 @@ function App() {
     fetch('/api/blok3/concert-stats')
       .then((res) => res.json())
       .then((data) => setConcertStats(data))
+      .catch(() => {})
+    fetch('/api/blok3/music/active')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.file_url) setActiveMusicUrl(data.file_url)
+      })
       .catch(() => {})
   }, [])
 
@@ -121,7 +128,7 @@ function App() {
 
   return (
     <div className="app" ref={containerRef}>
-      <audio ref={audioRef} src={gitMusic} loop />
+      <audio ref={audioRef} src={activeMusicUrl} loop />
 
       <nav className={`global-nav${isLight ? ' light' : ''}`}>
         <div className="global-nav-left">

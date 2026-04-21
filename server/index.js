@@ -10,6 +10,7 @@ import pressRouter from './routes/press.js'
 import linksRouter from './routes/links.js'
 import platformStatsRouter from './routes/platformStats.js'
 import concertStatsRouter from './routes/concertStats.js'
+import musicRouter from './routes/music.js'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -31,6 +32,7 @@ app.use('/api/blok3', pressRouter)
 app.use('/api/blok3', linksRouter)
 app.use('/api/blok3', platformStatsRouter)
 app.use('/api/blok3', concertStatsRouter)
+app.use('/api/blok3', musicRouter)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
