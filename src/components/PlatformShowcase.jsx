@@ -125,7 +125,7 @@ export default function PlatformShowcase({ containerRef, links = [], platformSta
         setTimeout(() => setIsGlitching(false), 300)
         return next
       })
-    }, 4000)
+    }, 7000)
     return () => clearInterval(intervalRef.current)
   }, [])
 
@@ -141,7 +141,7 @@ export default function PlatformShowcase({ containerRef, links = [], platformSta
         setTimeout(() => setIsGlitching(false), 300)
         return next
       })
-    }, 4000)
+    }, 7000)
   }
 
   const current = dynamicPlatforms[activeIndex]
@@ -204,7 +204,9 @@ export default function PlatformShowcase({ containerRef, links = [], platformSta
                 rel="noreferrer"
                 style={{ borderColor: current.color, color: current.color }}
               >
-                {current.name}&rsquo;da Dinle
+                {current.id === 'spotify' || current.id === 'youtube'
+                  ? `${current.name}'da Dinle`
+                  : `${current.name}'da Takip Et`}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M7 17L17 7" /><path d="M7 7h10v10" />
                 </svg>
