@@ -94,7 +94,7 @@ export default function GalleryModal({ isOpen, onClose }) {
   // ─── ALBUMS VIEW ───
   const renderAlbumsView = () => (
     <div className="gallery-modal-content">
-      <span className="gallery-label">2025 TURNE</span>
+      <span className="gallery-label">TURNE</span>
       <h2 className="gallery-heading">Konser Galerisi</h2>
       <p className="gallery-desc">Turkiye ve Avrupa turnelerinden sahne anlari</p>
 

@@ -196,7 +196,6 @@ export default function CTASection({ containerRef, onGalleryOpen, concertStats =
       >
         {/* Left column — title + description */}
         <div className="cta-col-left">
-          <motion.span className="cta-year" variants={slideLeft}>2025</motion.span>
           <motion.h2 className="cta-heading" variants={slideLeft}>
             KONSER<br />PERFORMANS<span className="cta-heading-accent">LARI</span>
           </motion.h2>
