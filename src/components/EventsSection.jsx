@@ -42,6 +42,7 @@ export default function EventsModal({ isOpen, onClose }) {
     fetch('/api/blok3/events')
       .then((res) => res.json())
       .then((data) => {
+        // Backend sort_order ASC, date DESC ile sirali doner — admin panel sirasina sadik kal
         setEvents(data.map((e) => ({ ...e, ticketUrl: e.ticket_url })))
         setLoading(false)
       })

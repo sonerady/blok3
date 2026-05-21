@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from 'framer-motion'
-import posterImg from '../assets/poster.png'
-import posterMobileImg from '../assets/poster_mobile.png'
+import posterImg from '../assets/poster.jpg'
+import posterMobileImg from '../assets/poster_mobile.jpg'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
