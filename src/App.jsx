@@ -5,6 +5,7 @@ import PlatformShowcase from './components/PlatformShowcase'
 import CTASection from './components/CTASection'
 import TurneSection from './components/TurneSection'
 // import AlbumSection from './components/AlbumSection'
+import AlbumCoverSection from './components/AlbumCoverSection'
 import LaCatedralSection from './components/LaCatedralSection'
 import ContactSection from './components/ContactSection'
 import EventsModal from './components/EventsSection'
@@ -108,8 +109,10 @@ function App() {
 
       // TurneSection (200vh)
       const turneEnd = viewportHeight * 2
-      // LaCatedralSection (100vh) after Turne
-      const catedralEnd = turneEnd + viewportHeight
+      // AlbumCoverSection (100vh) after Turne — YENİ ALBÜM
+      const albumEnd = turneEnd + viewportHeight
+      // LaCatedralSection (100vh) after Album
+      const catedralEnd = albumEnd + viewportHeight
       // LandingSection (100vh) after LaCatedral — 2026 TURNE
       const landingEnd = catedralEnd + viewportHeight
       // CTASection (100vh) after Landing — 2025 KONSER
@@ -120,20 +123,23 @@ function App() {
       if (scrollTop < turneEnd) {
         setActiveStep(0) // BİYOGRAFİ
         setHideStepNav(false)
+      } else if (scrollTop < albumEnd) {
+        setActiveStep(1) // YENİ ALBÜM
+        setHideStepNav(true)
       } else if (scrollTop < catedralEnd) {
-        setActiveStep(1) // LA CATEDRAL
+        setActiveStep(2) // LA CATEDRAL
         setHideStepNav(false)
       } else if (scrollTop < landingEnd) {
-        setActiveStep(2) // 2026 TURNE PLANLAMASI
+        setActiveStep(3) // 2026 TURNE PLANLAMASI
         setHideStepNav(false)
       } else if (scrollTop < ctaEnd) {
-        setActiveStep(3) // 2025 KONSER PERFORMANSLARI
+        setActiveStep(4) // 2025 KONSER PERFORMANSLARI
         setHideStepNav(false)
       } else if (scrollTop < showcaseEnd) {
-        setActiveStep(4) // PLATFORMLAR
+        setActiveStep(5) // PLATFORMLAR
         setHideStepNav(false)
       } else {
-        setActiveStep(5) // İLETİŞİM
+        setActiveStep(6) // İLETİŞİM
         setHideStepNav(true)
       }
     }
@@ -216,6 +222,7 @@ function App() {
       </nav>
       <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} />
       <TurneSection containerRef={containerRef} />
+      <AlbumCoverSection containerRef={containerRef} />
       <LaCatedralSection containerRef={containerRef} />
       <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 2} onEnter={() => {
         const audio = audioRef.current

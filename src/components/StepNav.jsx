@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 
 const steps = [
   { label: 'BİYOGRAFİ' },
+  { label: 'YENİ ALBÜM' },
   { label: 'LA CATEDRAL' },
   { label: '2026 TURNE PLANLAMASI', hasProgress: true },
   { label: '2025 KONSER PERFORMANSLARI' },

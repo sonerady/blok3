@@ -5755,3 +5755,166 @@
     padding: 1rem 1.2rem 1.2rem;
   }
 }
+
+/* ============================================================
+   ALBUM COVER SECTION — "Kayıp Persona" (gotik/altın konsept)
+   ============================================================ */
+.album-cover-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #050304;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.album-bg {
+  position: absolute;
+  inset: -3%;
+  width: 106%;
+  height: 106%;
+  background-size: cover;
+  background-position: center center;
+  z-index: 1;
+  will-change: transform;
+}
+.album-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 42% 60%, transparent 30%, rgba(5,3,4,0.55) 78%),
+    linear-gradient(90deg, rgba(5,3,4,0.5) 0%, transparent 35%, transparent 60%, rgba(5,3,4,0.85) 100%);
+}
+.album-front {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  z-index: 3;
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 30px 80px rgba(0,0,0,0.4));
+}
+
+/* İçerik — sağ kolonda şarkı listesi */
+.album-content {
+  position: relative;
+  z-index: 4;
+  width: min(46%, 640px);
+  padding: 0 2.5vw 0 0;
+  color: #E9D9B8;
+  text-align: right;
+}
+.album-kicker {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.42em;
+  font-weight: 600;
+  color: #B8935A;
+  margin-bottom: 0.6rem;
+}
+.album-title {
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(2.6rem, 4.4vw, 4.4rem);
+  line-height: 1.04;
+  letter-spacing: 0.01em;
+  margin: 0 0 2.2rem;
+  color: #E9D9B8;
+  background: linear-gradient(180deg, #F3E4C4 0%, #C49A5E 60%, #8A6532 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 30px rgba(180,140,80,0.18);
+}
+.album-tracklist {
+  list-style: none;
+  margin: 0 0 2.4rem;
+  padding: 0;
+}
+.album-track-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 1.1rem;
+  padding: 0.78rem 0;
+  text-decoration: none;
+  color: #DCCBA6;
+  transition: color 0.25s ease, transform 0.25s ease, padding-right 0.25s ease;
+}
+.album-track-link:hover {
+  color: #F6E8C6;
+  padding-right: 0.5rem;
+}
+.album-track-no {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 0.92rem;
+  color: #9A7A47;
+  min-width: 2.1rem;
+}
+.album-track-name {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.35vw, 1.28rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  order: 2;
+}
+.album-track-no { order: 3; }
+.album-track-spotify { order: 1; }
+.album-track-spotify {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: #1DB954;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  flex-shrink: 0;
+  align-self: center;
+}
+.album-track-link:hover .album-track-spotify {
+  opacity: 1;
+  transform: translateX(0);
+}
+.album-cta {
+  display: inline-flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 0.7rem;
+  background: linear-gradient(180deg, #1ED760 0%, #1DB954 100%);
+  color: #07120A;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 1.02rem;
+  letter-spacing: 0.01em;
+  padding: 0.95rem 2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 12px 34px rgba(29,185,84,0.32);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.album-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 42px rgba(29,185,84,0.44);
+}
+.album-cta-icon { width: 1.4rem; height: 1.4rem; fill: #07120A; }
+
+/* Mobil — dikey 9:16, içerik alta akar */
+@media (max-width: 768px) {
+  .album-cover-section { height: auto; min-height: 100vh; flex-direction: column; justify-content: flex-start; }
+  .album-front { inset: 0; width: 100%; height: 66%; object-position: center top; }
+  .album-vignette {
+    background: linear-gradient(180deg, rgba(5,3,4,0.2) 0%, transparent 30%, rgba(5,3,4,0.92) 76%, #050304 100%);
+  }
+  .album-content {
+    width: 100%;
+    margin: 52vh 0 0;
+    padding: 0 7vw 14vw;
+  }
+  .album-title { font-size: clamp(2.4rem, 11vw, 3.4rem); }
+}
