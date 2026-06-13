@@ -5767,7 +5767,7 @@
   background: #050304;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 .album-bg {
   position: absolute;
@@ -5785,8 +5785,8 @@
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 42% 60%, transparent 30%, rgba(5,3,4,0.55) 78%),
-    linear-gradient(90deg, rgba(5,3,4,0.5) 0%, transparent 35%, transparent 60%, rgba(5,3,4,0.85) 100%);
+    radial-gradient(ellipse at 58% 60%, transparent 30%, rgba(5,3,4,0.55) 78%),
+    linear-gradient(90deg, rgba(5,3,4,0.85) 0%, transparent 40%, transparent 65%, rgba(5,3,4,0.5) 100%);
 }
 .album-front {
   position: absolute;
@@ -5801,14 +5801,14 @@
   filter: drop-shadow(0 30px 80px rgba(0,0,0,0.4));
 }
 
-/* İçerik — sağ kolonda şarkı listesi */
+/* İçerik — sol kolonda şarkı listesi */
 .album-content {
   position: relative;
   z-index: 4;
   width: min(46%, 640px);
-  padding: 0 2.5vw 0 0;
+  padding: 0 0 0 2.5vw;
   color: #E9D9B8;
-  text-align: right;
+  text-align: left;
 }
 .album-kicker {
   display: inline-block;
@@ -5841,22 +5841,23 @@
 .album-track-link {
   display: flex;
   align-items: baseline;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 1.1rem;
   padding: 0.78rem 0;
   text-decoration: none;
   color: #DCCBA6;
-  transition: color 0.25s ease, transform 0.25s ease, padding-right 0.25s ease;
+  transition: color 0.25s ease, transform 0.25s ease, padding-left 0.25s ease;
 }
 .album-track-link:hover {
   color: #F6E8C6;
-  padding-right: 0.5rem;
+  padding-left: 0.5rem;
 }
 .album-track-no {
   font-family: 'Cinzel', Georgia, serif;
   font-size: 0.92rem;
   color: #9A7A47;
   min-width: 2.1rem;
+  order: 1;
 }
 .album-track-name {
   font-family: var(--font-body);
@@ -5865,44 +5866,60 @@
   letter-spacing: 0.01em;
   order: 2;
 }
-.album-track-no { order: 3; }
-.album-track-spotify { order: 1; }
-.album-track-spotify {
-  width: 1.25rem;
-  height: 1.25rem;
-  fill: #1DB954;
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  flex-shrink: 0;
-  align-self: center;
-}
-.album-track-link:hover .album-track-spotify {
-  opacity: 1;
-  transform: translateX(0);
+.album-cta-group {
+  position: absolute;
+  left: 2.5vw;
+  bottom: 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  z-index: 5;
 }
 .album-cta {
   display: inline-flex;
-  margin-left: auto;
   align-items: center;
-  gap: 0.7rem;
-  background: linear-gradient(180deg, #1ED760 0%, #1DB954 100%);
-  color: #07120A;
+  gap: 0.55rem;
   font-family: var(--font-body);
-  font-weight: 800;
-  font-size: 1.02rem;
-  letter-spacing: 0.01em;
-  padding: 0.95rem 2rem;
+  font-weight: 500;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  padding: 0.7rem 1.3rem;
   border-radius: 999px;
   text-decoration: none;
-  box-shadow: 0 12px 34px rgba(29,185,84,0.32);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  color: #E9D9B8;
+  background: rgba(20, 14, 10, 0.32);
+  border: 1px solid rgba(233, 217, 184, 0.18);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 24px rgba(0, 0, 0, 0.28);
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 .album-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 42px rgba(29,185,84,0.44);
+  background: rgba(40, 28, 18, 0.45);
+  border-color: rgba(233, 217, 184, 0.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 12px 36px rgba(0, 0, 0, 0.4);
 }
-.album-cta-icon { width: 1.4rem; height: 1.4rem; fill: #07120A; }
+.album-cta-icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  transition: transform 0.25s ease;
+}
+.album-cta:hover .album-cta-icon { transform: scale(1.08); }
+
+/* Marka renkleri sadece ikonlarda yaşar */
+.album-cta-spotify .album-cta-icon { fill: #1DB954; }
+.album-cta-youtube .album-cta-icon { fill: #FF3B30; }
+.album-cta-apple .album-cta-icon { fill: #E9D9B8; }
 
 /* Başlık front resmin ARKASINDA — sadece mobil */
 .album-title-behind { display: none; }
@@ -5962,12 +5979,24 @@
   }
   .album-track-no { order: 1; font-size: 0.78rem; min-width: 1.5rem; color: #9A7A47; }
   .album-track-name { order: 2; font-size: 0.92rem; line-height: 1.15; }
-  .album-track-spotify { display: none; }
 
-  /* Spotify CTA — ekrana sabit alt */
-  .album-cta {
-    position: absolute; left: 6vw; right: 6vw; bottom: calc(1.1rem + env(safe-area-inset-bottom));
-    margin: 0; justify-content: center; width: auto;
-    padding: 1rem 2rem; font-size: 1.05rem; z-index: 6;
+  /* Platform butonları — mobil: alt orta, sadece ikon */
+  .album-cta-group {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: calc(1.1rem + env(safe-area-inset-bottom));
+    justify-content: center;
+    gap: 0.7rem;
+    z-index: 6;
+    padding: 0 6vw;
   }
+  .album-cta {
+    padding: 0.85rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    justify-content: center;
+    border-radius: 999px;
+  }
+  .album-cta-icon { width: 1.4rem; height: 1.4rem; }
+  .album-cta-text { display: none; }
 }
