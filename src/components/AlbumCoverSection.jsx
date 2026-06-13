@@ -80,12 +80,15 @@ export default function AlbumCoverSection({ containerRef }) {
       />
       <div className="album-vignette" />
 
-      {/* Ön katman — melek + mumlar, daha güçlü parallax */}
+      {/* Mobil: başlık front resmin ARKASINDA (behind-image efekti) */}
+      {isMobile && <h2 className="album-title-behind">Kayıp Persona</h2>}
+
+      {/* Ön katman — masa + figürler. Mobilde de desktop front kullanılır */}
       <motion.img
-        src={isMobile ? albumFrontMobile : albumFront}
+        src={albumFront}
         alt="Kayıp Persona"
         className="album-front"
-        style={{ y: frontY, x: frontX, translateY: frontMX, scale: 2.05, transformOrigin: 'center center' }}
+        style={{ y: frontY, x: frontX, translateY: frontMX, scale: isMobile ? 1.02 : 2.05, transformOrigin: 'center center' }}
         draggable={false}
       />
 
@@ -96,7 +99,7 @@ export default function AlbumCoverSection({ containerRef }) {
           <h2 className="album-title">Kayıp Persona</h2>
         </div>
 
-        <ol className="album-tracklist">
+        <ol className="album-tracklist" data-count={TRACKS.length}>
           {TRACKS.map((t, i) => (
             <li key={t} className="album-track">
               <a
