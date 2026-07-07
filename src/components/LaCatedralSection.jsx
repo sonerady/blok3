@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform, useMotionValue, useSpring, useInView } from 'framer-motion'
-import posterImg from '../assets/poster.jpg'
-import posterMobileImg from '../assets/poster_mobile.jpg'
+import posterImg from '../assets/album/kayip_persona_poster.jpg'
+import posterMobileImg from '../assets/album/kayip_persona_poster_mobile.jpg'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 
@@ -135,7 +135,7 @@ export default function LaCatedralSection({ containerRef }) {
         {/* Bottom-right — CTA */}
         <motion.div className="lacatedral-text-bottom" variants={fadeUp}>
           <motion.a
-            href="https://www.bubilet.com.tr/istanbul/etkinlik/blok3-la-catedral"
+            href="https://www.bubilet.com.tr/sanatci/blok3-"
             target="_blank"
             rel="noreferrer"
             className="lacatedral-cta-btn"
