@@ -42,13 +42,13 @@ export default function EventsModal({ isOpen, onClose }) {
     fetch('/api/blok3/events')
       .then((res) => res.json())
       .then((data) => {
-        // Bugünden önceki konserleri gizle, kalanları en yeniden en eskiye sırala
+        // Bugünden önceki konserleri gizle; en yakın tarih en üstte olacak şekilde sırala
         const today = new Date()
         today.setHours(0, 0, 0, 0)
         const upcoming = data
           .map((e) => ({ ...e, ticketUrl: e.ticket_url }))
           .filter((e) => new Date(e.date) >= today)
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
         setEvents(upcoming)
         setLoading(false)
       })
