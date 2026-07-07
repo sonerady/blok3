@@ -42,8 +42,14 @@ export default function EventsModal({ isOpen, onClose }) {
     fetch('/api/blok3/events')
       .then((res) => res.json())
       .then((data) => {
-        // Backend sort_order ASC, date DESC ile sirali doner — admin panel sirasina sadik kal
-        setEvents(data.map((e) => ({ ...e, ticketUrl: e.ticket_url })))
+        // Bugünden önceki konserleri gizle, kalanları en yeniden en eskiye sırala
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const upcoming = data
+          .map((e) => ({ ...e, ticketUrl: e.ticket_url }))
+          .filter((e) => new Date(e.date) >= today)
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+        setEvents(upcoming)
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -85,20 +91,20 @@ export default function EventsModal({ isOpen, onClose }) {
 
               <div className="events-list">
                 {loading && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '2rem' }}>Yükleniyor...</p>}
+                {!loading && !events.length && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '2rem' }}>Yaklaşan konser bulunmuyor</p>}
                 {!loading && events.map((event, i) => {
                   const d = parseDate(event.date)
-                  const isPast = new Date(event.date) < new Date()
                   return (
                     <motion.div
                       key={event.date + event.city}
-                      className={`event-card${isPast ? ' event-past' : ''}`}
+                      className="event-card"
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.35, delay: 0.1 + i * 0.04 }}
                     >
                       <div className="event-date-block">
                         <span className="event-day">{d.day}</span>
-                        <span className="event-month">{d.month}</span>
+                        <span className="event-month">{d.month} {d.year}</span>
                         <span className="event-day-name">{d.dayName}</span>
                       </div>
 
@@ -117,10 +123,9 @@ export default function EventsModal({ isOpen, onClose }) {
                         href={event.ticketUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className={`event-ticket-btn${isPast ? ' disabled' : ''}`}
-                        onClick={(e) => isPast && e.preventDefault()}
+                        className="event-ticket-btn"
                       >
-                        {isPast ? 'Sold Out' : 'Bilet Al'}
+                        Bilet Al
                       </a>
                     </motion.div>
                   )
