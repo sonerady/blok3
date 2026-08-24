@@ -7,11 +7,14 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import landingBgVideo from "../assets/section_v1_background_video_v4.mp4";
-import landingFront from "../assets/section_v1_front.png";
-import landingFrontMobile from "../assets/section_v1_front_mobile.png";
+// Videonun ilk karesi. Video yüklenene kadar ekran siyah kalmasın diye:
+// 80 KB'lik poster anında boyanır, video hazır olunca üstünü kaplar.
+import landingBgPoster from "../assets/section_v1_video_poster.webp";
+import landingFront from "../assets/section_v1_front.webp";
+import landingFrontMobile from "../assets/section_v1_front_mobile.webp";
 // import secondVideo from "../assets/second_video.mp4";
-// import secondFrontDesktop from "../assets/second_front.png";
-// import secondFrontMobile from "../assets/second_front_mobile.png";
+// import secondFrontDesktop from "../assets/second_front.webp";
+// import secondFrontMobile from "../assets/second_front_mobile.webp";
 
 // const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
 
@@ -474,6 +477,7 @@ export default function LandingSection({ containerRef, onEventsOpen, isActive, o
             ref={bgVideoRef}
             className={`landing-bg${videoEnded ? " video-ended-pulse" : ""}`}
             src={landingBgVideo}
+            poster={landingBgPoster}
             muted
             playsInline
             autoPlay

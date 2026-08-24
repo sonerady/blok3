@@ -1,19 +1,19 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
-import turneBg1 from '../assets/2026_concer_section_backgorund.jpg'
-import turneBg3 from '../assets/2026_concer_section_backgorund_3.jpg'
-import turneBg2 from '../assets/2026_concer_section_backgorund_2.jpg'
-import turneBg4 from '../assets/2026_concer_section_backgorund_4.jpg'
-import turneBgMobile from '../assets/2026_concer_section_backgorund_mobile.png'
-import turneBg2Mobile from '../assets/2026_concer_section_backgorund_2_mobile.jpg'
-import turneBg3Mobile from '../assets/2026_concer_section_backgorund_3_mobile.png'
-import turneBg4Mobile from '../assets/2026_concer_section_backgorund_4_mobile.png'
+import turneBg1 from '../assets/2026_concer_section_backgorund.webp'
+import turneBg3 from '../assets/2026_concer_section_backgorund_3.webp'
+import turneBg2 from '../assets/2026_concer_section_backgorund_2.webp'
+import turneBg4 from '../assets/2026_concer_section_backgorund_4.webp'
+import turneBgMobile from '../assets/2026_concer_section_backgorund_mobile.webp'
+import turneBg2Mobile from '../assets/2026_concer_section_backgorund_2_mobile.webp'
+import turneBg3Mobile from '../assets/2026_concer_section_backgorund_3_mobile.webp'
+import turneBg4Mobile from '../assets/2026_concer_section_backgorund_4_mobile.webp'
 
 const bgImages = [turneBg1, turneBg3, turneBg2, turneBg4]
 const bgImagesMobile = [turneBgMobile, turneBg2Mobile, turneBg3Mobile, turneBg4Mobile]
-import turneFront1 from '../assets/2026_concer_section_front_1.png'
-import turneFront2 from '../assets/2026_concer_section_front_2.png'
-import turneFront2Goat from '../assets/2026_concer_section_front_2_goat.png'
+import turneFront1 from '../assets/2026_concer_section_front_1.webp'
+import turneFront2 from '../assets/2026_concer_section_front_2.webp'
+import turneFront2Goat from '../assets/2026_concer_section_front_2_goat.webp'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 

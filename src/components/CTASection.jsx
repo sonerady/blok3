@@ -18,12 +18,12 @@ function TypewriterHeading({ text, active, speed = 40 }) {
     </span>
   )
 }
-import concerBg1 from '../assets/concer_section_1.jpg'
-import concerBg2 from '../assets/concer_section_2.jpg'
-import concerBg3 from '../assets/concer_section_3.jpg'
-import concerBg4 from '../assets/concer_section_4.jpg'
-import concerBg5 from '../assets/concer_section_5.jpg'
-import concerFront from '../assets/concer_section_front.png'
+import concerBg1 from '../assets/concer_section_1.webp'
+import concerBg2 from '../assets/concer_section_2.webp'
+import concerBg3 from '../assets/concer_section_3.webp'
+import concerBg4 from '../assets/concer_section_4.webp'
+import concerBg5 from '../assets/concer_section_5.webp'
+import concerFront from '../assets/concer_section_front.webp'
 
 const bgImages = [concerBg1, concerBg2, concerBg3, concerBg4, concerBg5]
 

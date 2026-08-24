@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion'
 import heroVideo from '../assets/home_backgorund_video.mp4'
-import heroFront from '../assets/video_front.png'
+import heroFront from '../assets/video_front.webp'
 
 const springConfig = { damping: 25, stiffness: 150, mass: 0.5 }
 

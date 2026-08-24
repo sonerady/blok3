@@ -1,10 +1,10 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'framer-motion'
 // Katmanlar — fal smart-resize + qwen layer çıktıları (görsel işlenince doldurulacak)
-import albumBg from '../assets/album/kayip_persona_bg.jpg'           // geniş arka plan (koyu zemin)
-import albumFront from '../assets/album/kayip_persona_front.png'      // ön katman (melek + mumlar, şeffaf)
-import albumBgMobile from '../assets/album/kayip_persona_bg_mobile.jpg'
-import albumFrontMobile from '../assets/album/kayip_persona_front_mobile.png'
+import albumBg from '../assets/album/kayip_persona_bg.webp'           // geniş arka plan (koyu zemin)
+import albumFront from '../assets/album/kayip_persona_front.webp'      // ön katman (melek + mumlar, şeffaf)
+import albumBgMobile from '../assets/album/kayip_persona_bg_mobile.webp'
+import albumFrontMobile from '../assets/album/kayip_persona_front_mobile.webp'
 
 const springConfig = { damping: 28, stiffness: 140, mass: 0.6 }
 

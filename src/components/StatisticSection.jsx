@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, memo } from 'react'
 import { motion, useInView, useScroll, useSpring, useMotionValue, AnimatePresence } from 'framer-motion'
-import statisticImg from '../assets/statistic_gold.jpg'
-import statisticGoat from '../assets/statistic_gold_goat.jpg'
+import statisticImg from '../assets/statistic_gold.webp'
+import statisticGoat from '../assets/statistic_gold_goat.webp'
 
 /* ── Animated number counter ── */
 const AnimatedCounter = memo(function AnimatedCounter({ target, suffix = '' }) {

@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import spotifyImg from '../assets/platform/spotify.png'
-import youtubeImg from '../assets/platform/youtube.png'
-import tiktokImg from '../assets/platform/tiktok.png'
-import instagramImg from '../assets/platform/instagram.png'
-import spotifyMobileImg from '../assets/platform/spotify_mobile.png'
-import youtubeMobileImg from '../assets/platform/youtube_mobile.png'
-import tiktokMobileImg from '../assets/platform/tiktok_mobile.png'
-import instagramMobileImg from '../assets/platform/instagram_mobile.png'
+import spotifyImg from '../assets/platform/spotify.webp'
+import youtubeImg from '../assets/platform/youtube.webp'
+import tiktokImg from '../assets/platform/tiktok.webp'
+import instagramImg from '../assets/platform/instagram.webp'
+import spotifyMobileImg from '../assets/platform/spotify_mobile.webp'
+import youtubeMobileImg from '../assets/platform/youtube_mobile.webp'
+import tiktokMobileImg from '../assets/platform/tiktok_mobile.webp'
+import instagramMobileImg from '../assets/platform/instagram_mobile.webp'
 
 const platforms = [
   {
