@@ -7,7 +7,7 @@ import TurneSection from './components/TurneSection'
 // import AlbumSection from './components/AlbumSection'
 import AlbumCoverSection from './components/AlbumCoverSection'
 import PromoSection from './components/PromoSection'
-import LaCatedralSection from './components/LaCatedralSection'
+// import LaCatedralSection from './components/LaCatedralSection'
 import ContactSection from './components/ContactSection'
 import EventsModal from './components/EventsSection'
 import ContactModal from './components/ContactModal'
@@ -121,10 +121,8 @@ function App() {
       const albumEnd = turneEnd + viewportHeight
       // PromoSection (100vh) after Album — dashboard-yönetimli
       const promoEnd = albumEnd + viewportHeight
-      // LaCatedralSection (100vh) after Promo — TÜRKİYE TOUR
-      const catedralEnd = promoEnd + viewportHeight
-      // LandingSection (100vh) after LaCatedral — 2026 TURNE
-      const landingEnd = catedralEnd + viewportHeight
+      // LandingSection (100vh) after Promo — 2026 TURNE
+      const landingEnd = promoEnd + viewportHeight
       // CTASection (100vh) after Landing — 2025 KONSER
       const ctaEnd = landingEnd + viewportHeight
       // PlatformShowcase (100vh) after CTA
@@ -139,20 +137,17 @@ function App() {
       } else if (scrollTop < promoEnd) {
         setActiveStep(2) // PROMO (dashboard)
         setHideStepNav(false)
-      } else if (scrollTop < catedralEnd) {
-        setActiveStep(3) // LA CATEDRAL — TÜRKİYE TOUR
-        setHideStepNav(false)
       } else if (scrollTop < landingEnd) {
-        setActiveStep(4) // 2026 TURNE PLANLAMASI
+        setActiveStep(3) // 2026 TURNE PLANLAMASI
         setHideStepNav(false)
       } else if (scrollTop < ctaEnd) {
-        setActiveStep(5) // 2025 KONSER PERFORMANSLARI
+        setActiveStep(4) // 2025 KONSER PERFORMANSLARI
         setHideStepNav(false)
       } else if (scrollTop < showcaseEnd) {
-        setActiveStep(6) // PLATFORMLAR
+        setActiveStep(5) // PLATFORMLAR
         setHideStepNav(false)
       } else {
-        setActiveStep(7) // İLETİŞİM
+        setActiveStep(6) // İLETİŞİM
         setHideStepNav(true)
       }
     }
@@ -237,8 +232,8 @@ function App() {
       <TurneSection containerRef={containerRef} />
       <AlbumCoverSection containerRef={containerRef} />
       <PromoSection containerRef={containerRef} data={promo} />
-      <LaCatedralSection containerRef={containerRef} />
-      <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 3} onEnter={() => {
+      {/* <LaCatedralSection containerRef={containerRef} /> — TÜRKİYE TOUR kaldırıldı */}
+      <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 2} onEnter={() => {
         const audio = audioRef.current
         if (audio) {
           audio.volume = 0.4

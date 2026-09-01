@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion'
 
-const mobileHiddenSteps = [0, 1, 6]
+const mobileHiddenSteps = [0, 1, 5]
 
 export default function StepNav({ activeStep = 0, videoProgress = 0, light = false, hideOnMobile = false, hideOnContact = false, promoLabel }) {
   const steps = [
     { label: 'BİYOGRAFİ' },
     { label: 'YENİ ALBÜM' },
     { label: promoLabel || 'ÖZEL DUYURU' }, // dashboard'dan gelir (blok3_promo_section.step_label)
-    { label: 'TÜRKİYE TOUR' },
     { label: '2026 TURNE PLANLAMASI', hasProgress: true },
     { label: 'KONSER PERFORMANSLARI' },
     { label: 'PLATFORMLAR' },
