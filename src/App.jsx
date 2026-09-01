@@ -6,6 +6,7 @@ import CTASection from './components/CTASection'
 import TurneSection from './components/TurneSection'
 // import AlbumSection from './components/AlbumSection'
 import AlbumCoverSection from './components/AlbumCoverSection'
+import PromoSection from './components/PromoSection'
 import LaCatedralSection from './components/LaCatedralSection'
 import ContactSection from './components/ContactSection'
 import EventsModal from './components/EventsSection'
@@ -33,6 +34,7 @@ function App() {
   const [concertStats, setConcertStats] = useState([])
   const [playlist, setPlaylist] = useState([])
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
+  const [promo, setPromo] = useState(null)
 
   useEffect(() => {
     fetch('/api/blok3/links')
@@ -46,6 +48,12 @@ function App() {
     fetch('/api/blok3/concert-stats')
       .then((res) => res.json())
       .then((data) => setConcertStats(data))
+      .catch(() => {})
+    fetch('/api/blok3/promo-section')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.id) setPromo(data)
+      })
       .catch(() => {})
     fetch('/api/blok3/music/playlist')
       .then((res) => res.json())
@@ -111,8 +119,10 @@ function App() {
       const turneEnd = viewportHeight * 2
       // AlbumCoverSection (100vh) after Turne — YENİ ALBÜM
       const albumEnd = turneEnd + viewportHeight
-      // LaCatedralSection (100vh) after Album
-      const catedralEnd = albumEnd + viewportHeight
+      // PromoSection (100vh) after Album — dashboard-yönetimli
+      const promoEnd = albumEnd + viewportHeight
+      // LaCatedralSection (100vh) after Promo — TÜRKİYE TOUR
+      const catedralEnd = promoEnd + viewportHeight
       // LandingSection (100vh) after LaCatedral — 2026 TURNE
       const landingEnd = catedralEnd + viewportHeight
       // CTASection (100vh) after Landing — 2025 KONSER
@@ -126,20 +136,23 @@ function App() {
       } else if (scrollTop < albumEnd) {
         setActiveStep(1) // YENİ ALBÜM
         setHideStepNav(true)
+      } else if (scrollTop < promoEnd) {
+        setActiveStep(2) // PROMO (dashboard)
+        setHideStepNav(false)
       } else if (scrollTop < catedralEnd) {
-        setActiveStep(2) // LA CATEDRAL
+        setActiveStep(3) // LA CATEDRAL — TÜRKİYE TOUR
         setHideStepNav(false)
       } else if (scrollTop < landingEnd) {
-        setActiveStep(3) // 2026 TURNE PLANLAMASI
+        setActiveStep(4) // 2026 TURNE PLANLAMASI
         setHideStepNav(false)
       } else if (scrollTop < ctaEnd) {
-        setActiveStep(4) // 2025 KONSER PERFORMANSLARI
+        setActiveStep(5) // 2025 KONSER PERFORMANSLARI
         setHideStepNav(false)
       } else if (scrollTop < showcaseEnd) {
-        setActiveStep(5) // PLATFORMLAR
+        setActiveStep(6) // PLATFORMLAR
         setHideStepNav(false)
       } else {
-        setActiveStep(6) // İLETİŞİM
+        setActiveStep(7) // İLETİŞİM
         setHideStepNav(true)
       }
     }
@@ -220,11 +233,12 @@ function App() {
           </div>
         </div>
       </nav>
-      <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} />
+      <StepNav activeStep={activeStep} light={isLight} hideOnContact={hideStepNav} promoLabel={promo?.step_label} />
       <TurneSection containerRef={containerRef} />
       <AlbumCoverSection containerRef={containerRef} />
+      <PromoSection containerRef={containerRef} data={promo} />
       <LaCatedralSection containerRef={containerRef} />
-      <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 2} onEnter={() => {
+      <LandingSection containerRef={containerRef} onEventsOpen={() => setEventsOpen(true)} isActive={activeStep === 3} onEnter={() => {
         const audio = audioRef.current
         if (audio) {
           audio.volume = 0.4
