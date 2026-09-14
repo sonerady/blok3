@@ -1,3 +1,4 @@
+import '../fonts.css'
 import '../App.css'
 
 export default function ClientDocument() {
