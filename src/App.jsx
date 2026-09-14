@@ -1,3 +1,4 @@
+import './index.css'
 import { useRef, useState, useEffect } from 'react'
 import './App.css'
 import LandingSection from './components/LandingSection'

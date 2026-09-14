@@ -27,3 +27,5 @@ dist-ssr
 
 # Album source materials (not used by app)
 materials/
+.vercel
+.env*

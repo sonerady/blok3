@@ -1,266 +1,78 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-
-const gridStagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.06 } },
-}
-
-const itemFade = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
-}
-
+import { useState, useEffect, useRef, useMemo } from 'react'
+import './ConcertGallery.css'
+const API = 'https://blok-3-server-production.up.railway.app/api/blok3'
+const normalizeSearch = value => String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i')
+// Parent App supplies the visibility boolean and close callback.
+// eslint-disable-next-line react/prop-types
 export default function GalleryModal({ isOpen, onClose }) {
-  const [albums, setAlbums] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [openedAlbum, setOpenedAlbum] = useState(null) // { id, name, subtitle }
-  const [photos, setPhotos] = useState([])
-  const [photosLoading, setPhotosLoading] = useState(false)
-  const [lightboxIndex, setLightboxIndex] = useState(null)
-
-  // Fetch albums list
+  const [albums, setAlbums] = useState([]), [album, setAlbum] = useState(null), [items, setItems] = useState([])
+  const [type, setType] = useState('image'), [term, setTerm] = useState(''), [city, setCity] = useState(''), [sort, setSort] = useState('newest')
+  const [status, setStatus] = useState('loading'), [mediaStatus, setMediaStatus] = useState('loading'), [active, setActive] = useState(null), [retry, setRetry] = useState(0)
+  const panel = useRef(null)
   useEffect(() => {
     if (!isOpen) return
-    setLoading(true)
-    fetch('/api/blok3/albums')
-      .then((res) => res.json())
-      .then((data) => {
-        setAlbums(data)
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
+    const controller = new AbortController()
+    setStatus('loading')
+    fetch(`${API}/albums`, { signal: controller.signal }).then(async res => { if (!res.ok) throw new Error();const data=await res.json();if(!Array.isArray(data))throw new Error();setAlbums(data);setStatus('ready') }).catch(e => { if(e.name!=='AbortError')setStatus('error') })
+    return () => controller.abort()
+  }, [isOpen, retry])
+  useEffect(() => {
+    if (!isOpen || !album) return
+    const controller = new AbortController();setItems([]);setMediaStatus('loading')
+    fetch(`${API}/albums/${album.id}/photos`, { signal: controller.signal }).then(async res => { if(!res.ok)throw new Error();const data=await res.json();if(!Array.isArray(data))throw new Error();setItems(data);setMediaStatus('ready') }).catch(e => { if(e.name!=='AbortError')setMediaStatus('error') })
+    return () => controller.abort()
+  }, [isOpen, album, retry])
+  useEffect(() => {
+    if (!isOpen) {setAlbum(null);setActive(null);return}
+    const previous = document.activeElement, overflow=document.body.style.overflow
+    document.body.style.overflow='hidden';panel.current?.focus()
+    return () => {document.body.style.overflow=overflow;previous?.focus()}
   }, [isOpen])
-
-  // Reset state when modal closes
-  useEffect(() => {
-    if (!isOpen) {
-      setOpenedAlbum(null)
-      setPhotos([])
-      setLightboxIndex(null)
+  const cities = [...new Set(albums.map(a => a.city || a.name.split(' - ')[0]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'))
+  const shownAlbums = useMemo(() => albums.filter(a => {
+    const matchType = type === 'video' ? (a.video_count || 0) > 0 : a.photo_count > 0
+    return matchType && (!city || (a.city || a.name.split(' - ')[0]) === city) && normalizeSearch(`${a.name} ${a.subtitle} ${a.city}`).includes(normalizeSearch(term))
+  }).sort((a,b) => sort==='az' ? a.name.localeCompare(b.name,'tr') : sort==='order' ? a.sort_order-b.sort_order : sort==='oldest' ? new Date(a.created_at)-new Date(b.created_at) : new Date(b.created_at)-new Date(a.created_at)), [albums, city, term, type, sort])
+  const shownItems = items.filter(i => (i.media_type || 'image') === type && normalizeSearch(i.caption).includes(normalizeSearch(term))).sort((a,b) => sort==='az' ? (a.caption||'').localeCompare(b.caption||'','tr') : sort==='order' ? a.sort_order-b.sort_order : sort==='oldest' ? new Date(a.created_at)-new Date(b.created_at) : new Date(b.created_at)-new Date(a.created_at))
+  const switchType = value => {setType(value);setActive(null)}
+  const back = () => {setAlbum(null);setItems([]);setTerm('');setActive(null)}
+  const move = step => { const index=shownItems.findIndex(i=>i.id===active?.id);setActive(shownItems[(index+step+shownItems.length)%shownItems.length]) }
+  function handleKeys(e) {
+    if(e.key==='Escape'){e.stopPropagation();if(active)setActive(null);else if(album)back();else onClose()}
+    if(active && e.key==='ArrowRight')move(1)
+    if(active && e.key==='ArrowLeft')move(-1)
+    if(e.key==='Tab'){
+      const root=active ? panel.current.querySelector('.cg-lightbox') : panel.current
+      const focusable=[...root.querySelectorAll('button, input, select, a[href], video[controls]')].filter(el=>!el.disabled)
+      const first=focusable[0],last=focusable.at(-1)
+      if(e.shiftKey && (document.activeElement===first || document.activeElement===root)){e.preventDefault();last?.focus()}
+      else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first?.focus()}
     }
-  }, [isOpen])
-
-  // Fetch album photos when album is opened
-  useEffect(() => {
-    if (!openedAlbum) return
-    setPhotosLoading(true)
-    fetch(`/api/blok3/albums/${openedAlbum.id}/photos`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPhotos(data)
-        setPhotosLoading(false)
-      })
-      .catch(() => setPhotosLoading(false))
-  }, [openedAlbum])
-
-  const closeLightbox = () => setLightboxIndex(null)
-  const closeAlbum = () => { setOpenedAlbum(null); setPhotos([]); setLightboxIndex(null) }
-
-  const goNext = useCallback(() => {
-    if (!photos.length) return
-    setLightboxIndex((prev) => (prev + 1) % photos.length)
-  }, [photos])
-
-  const goPrev = useCallback(() => {
-    if (!photos.length) return
-    setLightboxIndex((prev) => (prev - 1 + photos.length) % photos.length)
-  }, [photos])
-
-  // Keyboard navigation
-  useEffect(() => {
-    if (!isOpen) return
-    const handleKey = (e) => {
-      if (e.key === 'Escape') {
-        if (lightboxIndex !== null) closeLightbox()
-        else if (openedAlbum) closeAlbum()
-        else onClose()
-      }
-      if (lightboxIndex !== null) {
-        if (e.key === 'ArrowRight') goNext()
-        if (e.key === 'ArrowLeft') goPrev()
-      }
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [isOpen, openedAlbum, lightboxIndex, onClose, goNext, goPrev])
-
-  const handleAlbumClick = (album) => {
-    if (album.photo_count === 0) return
-    setOpenedAlbum(album)
-    setLightboxIndex(null)
   }
-
-  // ─── ALBUMS VIEW ───
-  const renderAlbumsView = () => (
-    <div className="gallery-modal-content">
-      <span className="gallery-label">TURNE</span>
-      <h2 className="gallery-heading">Konser Galerisi</h2>
-      <p className="gallery-desc">Turkiye ve Avrupa turnelerinden sahne anlari</p>
-
-      {loading && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '3rem' }}>Yukleniyor...</p>}
-      {!loading && !albums.length && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '3rem' }}>Henuz album yok</p>}
-      {!loading && albums.length > 0 && (
-        <motion.div className="gallery-grid" variants={gridStagger} initial="hidden" animate="visible">
-          {albums.filter(a => a.photo_count > 0).map((album) => (
-            <motion.div
-              key={album.id}
-              className="gallery-item"
-              variants={itemFade}
-              onClick={() => handleAlbumClick(album)}
-            >
-              <img src={album.cover} alt={album.name} loading="lazy" />
-              <div className="gallery-item-overlay">
-                <span className="gallery-item-name">{album.name}</span>
-                {album.photo_count > 1 && (
-                  <span className="gallery-item-count">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" />
-                      <line x1="9" y1="3" x2="9" y2="21" />
-                    </svg>
-                    {album.photo_count}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
+  if(!isOpen)return null
+  return <div className="cg-overlay" onClick={onClose}><section ref={panel} tabIndex={-1} className="cg-panel" role="dialog" aria-modal="true" aria-label="Konser galerisi" onKeyDown={handleKeys} onClick={e=>e.stopPropagation()}>
+    <header className="cg-header"><span>BLOK3 / SAHNEDEN</span><button className="cg-close" onClick={onClose} aria-label="Galeriyi kapat">✕</button></header>
+    {album && <button className="cg-back" onClick={back}>← Tüm konserler</button>}
+    <div className="cg-intro"><h2>{album ? album.name : <>O gece.<br/><em>O enerji.</em></>}</h2><p>{album ? album.subtitle : 'Sahnenin önünden, kalabalığın içinden.\nTurnenin unutulmaz anları.'}</p></div>
+    <div className="cg-toolbar"><div className="cg-tabs" role="group" aria-label="Medya türü"><button aria-pressed={type==='image'} onClick={()=>switchType('image')}>Fotoğraflar</button><button aria-pressed={type==='video'} onClick={()=>switchType('video')}>Videolar</button></div>
+      <div className="cg-filters"><label className="cg-search"><span aria-hidden="true">⌕</span><input aria-label="Galeride ara" placeholder={album?'Açıklamada ara…':'Konser, şehir veya mekan ara…'} value={term} onChange={e=>setTerm(e.target.value)}/></label>
+      {!album && <select aria-label="Şehir filtresi" value={city} onChange={e=>setCity(e.target.value)}><option value="">Tüm şehirler</option>{cities.map(c=><option key={c}>{c}</option>)}</select>}
+      <select aria-label="Sıralama" value={sort} onChange={e=>setSort(e.target.value)}><option value="newest">Son eklenen</option><option value="oldest">İlk eklenen</option><option value="az">A → Z</option><option value="order">Önerilen sıra</option></select></div>
     </div>
-  )
-
-  // ─── ALBUM PHOTOS VIEW ───
-  const renderAlbumPhotos = () => {
-    if (!openedAlbum) return null
-    return (
-      <div className="gallery-modal-content">
-        <button className="gallery-album-back" onClick={closeAlbum}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-          Geri
-        </button>
-        <h2 className="gallery-heading" style={{ marginTop: '0.5rem' }}>{openedAlbum.name}</h2>
-        {openedAlbum.subtitle ? <p className="gallery-desc">{openedAlbum.subtitle}</p> : null}
-        <p className="gallery-desc">{photos.length} gorsel</p>
-
-        {photosLoading && <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '3rem' }}>Yukleniyor...</p>}
-        {!photosLoading && (
-          <motion.div className="gallery-grid" variants={gridStagger} initial="hidden" animate="visible">
-            {photos.map((photo) => (
-              <motion.div
-                key={photo.id}
-                className="gallery-item"
-                variants={itemFade}
-                onClick={() => setLightboxIndex(photos.indexOf(photo))}
-              >
-                <img src={photo.src} alt={photo.caption} loading="lazy" />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </div>
-    )
-  }
-
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="gallery-modal-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="gallery-modal"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="gallery-modal-close" onClick={onClose} aria-label="Kapat">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-
-            {openedAlbum === null ? renderAlbumsView() : renderAlbumPhotos()}
-          </motion.div>
-
-          {/* Lightbox */}
-          <AnimatePresence>
-            {lightboxIndex !== null && photos[lightboxIndex] && (
-              <motion.div
-                className="gallery-lightbox"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-              >
-                <motion.img
-                  key={lightboxIndex}
-                  src={photos[lightboxIndex].src}
-                  alt={photos[lightboxIndex].caption}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-
-                <span className="gallery-lightbox-caption">
-                  {photos[lightboxIndex].caption}
-                  {photos.length > 1 && (
-                    <span className="gallery-lightbox-counter">
-                      {' '}{lightboxIndex + 1} / {photos.length}
-                    </span>
-                  )}
-                </span>
-
-                {/* Prev */}
-                <button
-                  className="gallery-lightbox-nav prev"
-                  onClick={(e) => { e.stopPropagation(); goPrev() }}
-                  aria-label="Onceki"
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </button>
-
-                {/* Next */}
-                <button
-                  className="gallery-lightbox-nav next"
-                  onClick={(e) => { e.stopPropagation(); goNext() }}
-                  aria-label="Sonraki"
-                >
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-
-                {/* Close lightbox */}
-                <button
-                  className="gallery-lightbox-close"
-                  onClick={(e) => { e.stopPropagation(); closeLightbox() }}
-                  aria-label="Kapat"
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
+    {(album?mediaStatus:status)==='loading' ? <p className="cg-state" role="status">Sahneden anlar yükleniyor…</p> : (album?mediaStatus:status)==='error' ? <div className="cg-state"><p>Galeri yüklenemedi.</p><button onClick={()=>setRetry(x=>x+1)}>Tekrar dene</button></div> : <>
+      <div className="cg-count">{album ? shownItems.length : shownAlbums.length} {album?(type==='video'?'video':'fotoğraf'):'konser'}</div>
+      {(album?shownItems:shownAlbums).length===0 ? <div className="cg-state"><h3>{type==='video'?'Bu seçimde henüz video yok.':'Eşleşen fotoğraf bulunamadı.'}</h3><p>Başka bir şehir veya arama deneyebilirsin.</p>{(term||city) && <button onClick={()=>{setTerm('');setCity('')}}>Filtreleri temizle</button>}</div> :
+      <div className="cg-grid">{album ? shownItems.map((item,index)=><button key={item.id} className="cg-tile" onClick={()=>setActive(item)} aria-label={`${item.media_type==='video'?'Videoyu oynat':'Fotoğrafı aç'} ${item.caption||index+1}`}>
+        {item.media_type==='video' ? <>{item.poster_url?<img src={item.poster_url} alt="" loading="lazy"/>:<div className="cg-video-art"><span>BLOK3</span><small>LIVE ON STAGE</small></div>}<span className="cg-play">▶</span></>:<img src={item.src} alt={item.caption||`${album.name} konser fotoğrafı ${index+1}`} loading="lazy"/>}
+        {item.caption && <span className="cg-tile-caption">{item.caption}</span>}
+      </button>) : shownAlbums.map(a=><button key={a.id} className="cg-tile cg-album" onClick={()=>{setAlbum(a);setTerm('')}}>
+        {a.cover?<img src={a.cover} alt="" loading="lazy"/>:<div className="cg-video-art"><span>BLOK3</span></div>}
+        <span className="cg-badge">{type==='video'?a.video_count:a.photo_count} {type==='video'?'video':'fotoğraf'}</span><span className="cg-album-label"><small>{a.city||'KONSER'}</small><strong>{a.name}</strong><span>{a.subtitle}</span></span>
+      </button>)}</div>}
+    </>}
+    {active && <div className="cg-lightbox" role="dialog" aria-modal="true" aria-label={active.caption||'Medya önizleme'} onClick={()=>setActive(null)}><button autoFocus className="cg-close" onClick={()=>setActive(null)} aria-label="Önizlemeyi kapat">✕</button>
+      {active.media_type==='video'?<video key={active.id} controls autoPlay playsInline preload="none" poster={active.poster_url||undefined} src={active.src} onClick={e=>e.stopPropagation()}/>:<img src={active.src} alt={active.caption||album.name} onClick={e=>e.stopPropagation()}/>}
+      <div className="cg-viewer-bar" onClick={e=>e.stopPropagation()}><button onClick={()=>move(-1)} aria-label="Önceki">←</button><span>{active.caption || album.name}<small>{shownItems.findIndex(i=>i.id===active.id)+1} / {shownItems.length}</small></span><button onClick={()=>move(1)} aria-label="Sonraki">→</button></div>
+    </div>}
+  </section></div>
 }
