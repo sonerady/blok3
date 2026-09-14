@@ -241,7 +241,7 @@ function App() {
           audio.play()
         }
       }} />
-      <CTASection containerRef={containerRef} onGalleryOpen={() => setGalleryOpen(true)} concertStats={concertStats} />
+      <CTASection containerRef={containerRef} onGalleryOpen={() => { setIsPlaying(false); setGalleryOpen(true) }} concertStats={concertStats} />
       {/* <AlbumSection containerRef={containerRef} onDarkChange={setIsDarkAlbum} /> */}
       <PlatformShowcase containerRef={containerRef} links={links} platformStats={platformStats} />
       <ContactSection socialLinks={socialLinks} />
