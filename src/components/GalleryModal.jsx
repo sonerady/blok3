@@ -1,3 +1,4 @@
+import { newestGalleryFirst } from '../utils/galleryOrder.js'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import './ConcertGallery.css'
 const API = 'https://blok-3-server-production.up.railway.app/api/blok3'
@@ -32,8 +33,8 @@ export default function GalleryModal({ isOpen, onClose }) {
   const shownAlbums = useMemo(() => albums.filter(a => {
     const matchType = type === 'video' ? (a.video_count || 0) > 0 : a.photo_count > 0
     return matchType && (!city || (a.city || a.name.split(' - ')[0]) === city) && normalizeSearch(`${a.name} ${a.subtitle} ${a.city}`).includes(normalizeSearch(term))
-  }).sort((a,b) => sort==='az' ? a.name.localeCompare(b.name,'tr') : sort==='order' ? a.sort_order-b.sort_order : sort==='oldest' ? new Date(a.created_at)-new Date(b.created_at) : new Date(b.created_at)-new Date(a.created_at)), [albums, city, term, type, sort])
-  const shownItems = items.filter(i => (i.media_type || 'image') === type && normalizeSearch(i.caption).includes(normalizeSearch(term))).sort((a,b) => sort==='az' ? (a.caption||'').localeCompare(b.caption||'','tr') : sort==='order' ? a.sort_order-b.sort_order : sort==='oldest' ? new Date(a.created_at)-new Date(b.created_at) : new Date(b.created_at)-new Date(a.created_at))
+  }).sort((a,b) => sort==='az' ? a.name.localeCompare(b.name,'tr') : sort==='order' ? a.sort_order-b.sort_order : sort==='oldest' ? newestGalleryFirst(b,a) : newestGalleryFirst(a,b)), [albums, city, term, type, sort])
+  const shownItems = items.filter(i => (i.media_type || 'image') === type && normalizeSearch(i.caption).includes(normalizeSearch(term))).sort((a,b) => sort==='az' ? (a.caption||'').localeCompare(b.caption||'','tr') : sort==='order' ? a.sort_order-b.sort_order : sort==='oldest' ? newestGalleryFirst(b,a) : newestGalleryFirst(a,b))
   const switchType = value => {setType(value);setActive(null)}
   const back = () => {setAlbum(null);setItems([]);setTerm('');setActive(null)}
   const move = step => { const index=shownItems.findIndex(i=>i.id===active?.id);setActive(shownItems[(index+step+shownItems.length)%shownItems.length]) }
@@ -57,7 +58,7 @@ export default function GalleryModal({ isOpen, onClose }) {
     <div className="cg-toolbar"><div className="cg-tabs" role="group" aria-label="Medya türü"><button aria-pressed={type==='image'} onClick={()=>switchType('image')}>Fotoğraflar</button><button aria-pressed={type==='video'} onClick={()=>switchType('video')}>Videolar</button></div>
       <div className="cg-filters"><label className="cg-search"><span aria-hidden="true">⌕</span><input aria-label="Galeride ara" placeholder={album?'Açıklamada ara…':'Konser, şehir veya mekan ara…'} value={term} onChange={e=>setTerm(e.target.value)}/></label>
       {!album && <select aria-label="Şehir filtresi" value={city} onChange={e=>setCity(e.target.value)}><option value="">Tüm şehirler</option>{cities.map(c=><option key={c}>{c}</option>)}</select>}
-      <select aria-label="Sıralama" value={sort} onChange={e=>setSort(e.target.value)}><option value="newest">Son eklenen</option><option value="oldest">İlk eklenen</option><option value="az">A → Z</option><option value="order">Önerilen sıra</option></select></div>
+      <select aria-label="Sıralama" value={sort} onChange={e=>setSort(e.target.value)}><option value="newest">En yeni tarih</option><option value="oldest">En eski tarih</option><option value="az">A → Z</option><option value="order">Önerilen sıra</option></select></div>
     </div>
     {(album?mediaStatus:status)==='loading' ? <p className="cg-state" role="status">Sahneden anlar yükleniyor…</p> : (album?mediaStatus:status)==='error' ? <div className="cg-state"><p>Galeri yüklenemedi.</p><button onClick={()=>setRetry(x=>x+1)}>Tekrar dene</button></div> : <>
       <div className="cg-count">{album ? shownItems.length : shownAlbums.length} {album?(type==='video'?'video':'fotoğraf'):'konser'}</div>
